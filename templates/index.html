@@ -204,58 +204,135 @@
             position: relative;
         }
 
-        .citation:hover {
-            background: rgba(102, 126, 234, 0.15);
-        }
-
-        /* Citation Popup Tooltip */
-        .citation-popup {
+        /* Citation Side Panel - NotebookLM Style */
+        .citation-panel {
             position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
             background: white;
-            border: 2px solid #667eea;
-            border-radius: 12px;
-            padding: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.25);
-            max-width: 450px;
-            min-width: 300px;
+            box-shadow: -4px 0 20px rgba(0,0,0,0.15);
             z-index: 10000;
-            display: none;
-            font-size: 13px;
-            line-height: 1.5;
+            transition: right 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
         }
 
-        .citation-popup.active {
-            display: block;
+        .citation-panel.active {
+            right: 0;
         }
 
-        .citation-popup .citation-header {
+        .citation-panel-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .citation-panel-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .close-panel-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 32px;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .close-panel-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .citation-panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .citation-panel-placeholder {
+            color: #999;
+            font-style: italic;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .citation-card {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .citation-card-header {
             font-weight: 700;
             color: #667eea;
             margin-bottom: 12px;
-            font-size: 14px;
+            font-size: 15px;
             border-bottom: 1px solid #e0e0e0;
             padding-bottom: 8px;
         }
 
-        .citation-popup .citation-body {
-            color: #333;
+        .citation-card-detail {
+            margin: 8px 0;
+            font-size: 14px;
+            line-height: 1.6;
         }
 
-        .citation-popup .citation-detail {
-            margin: 6px 0;
-            display: flex;
-            gap: 8px;
-        }
-
-        .citation-popup .citation-detail strong {
+        .citation-card-detail strong {
             color: #555;
-            min-width: 80px;
-            flex-shrink: 0;
+            display: inline-block;
+            min-width: 90px;
         }
 
-        .citation-popup .citation-detail span {
+        .citation-card-detail span {
             color: #333;
-            flex: 1;
+        }
+
+        .citation-card-quote {
+            background: white;
+            border-left: 3px solid #667eea;
+            padding: 12px;
+            margin-top: 12px;
+            font-style: italic;
+            color: #555;
+            border-radius: 4px;
+        }
+
+        /* Make citations clickable instead of hover */
+        .citation {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .citation.active {
+            background: #667eea;
+            color: white;
+            padding: 2px 5px;
+        }
+
+        /* Responsive design for side panel */
+        @media (max-width: 768px) {
+            .citation-panel {
+                width: 100%;
+                right: -100%;
+            }
         }
 
         .references {
@@ -517,7 +594,6 @@
     <script>
         // Global variables
         let pendingCrudOperation = null;
-        let currentCitations = {};
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
@@ -530,6 +606,9 @@
                     sendMessage();
                 }
             });
+
+            // Initialize close panel button
+            document.getElementById('close-panel-btn').addEventListener('click', closeCitationPanel);
         });
 
         async function loadSystemStatus() {
@@ -627,24 +706,14 @@
                     console.log('Citations array:', data.citations);
                     console.log('Sample citation fields:', data.citations && data.citations[0] ? Object.keys(data.citations[0]) : 'No citations');
 
-                    // Store citations globally for popup access
-                    if (data.citations && Array.isArray(data.citations)) {
-                        currentCitations = {};
-                        data.citations.forEach(cit => {
-                            currentCitations[cit.number] = cit;
-                        });
-                        console.log('[Citations] Loaded', data.citations.length, 'citations:', currentCitations);
-                    } else {
-                        console.log('[Citations] No citations in response');
-                    }
+                    // Add message with citations stored in data attribute
+                    addMessage('assistant', formatAnswer(data.answer), data.citations || []);
 
-                    addMessage('assistant', formatAnswer(data.answer));
-
-                    // Attach popup handlers after DOM update
+                    // Attach click handlers after DOM update
                     setTimeout(() => {
-                        attachCitationHandlers();
+                        attachCitationClickHandlers();
                         const citationElements = document.querySelectorAll('.citation');
-                        console.log('[Citations] Attached handlers to', citationElements.length, 'citation elements');
+                        console.log('[Citations] Attached click handlers to', citationElements.length, 'citation elements');
                     }, 100);
                 }
             } catch (error) {
@@ -653,7 +722,7 @@
             }
         }
 
-        function addMessage(role, content) {
+        function addMessage(role, content, citations = null) {
             const chatArea = document.getElementById('chat-area');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${role}`;
@@ -665,6 +734,12 @@
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
             contentDiv.innerHTML = content;
+
+            // Store citations as data attribute on the message content div
+            if (citations && citations.length > 0) {
+                contentDiv.dataset.citations = JSON.stringify(citations);
+                console.log('[Citations] Stored', citations.length, 'citations in message data attribute');
+            }
 
             messageDiv.appendChild(avatar);
             messageDiv.appendChild(contentDiv);
@@ -750,8 +825,12 @@
         }
 
         function formatAnswer(answer) {
+            // Remove References/Sources/Bibliography sections (MUST come first)
+            let formatted = answer.replace(/\n\s*(References|Sources|Bibliography):?\s*\n[\s\S]*$/i, '');
+            formatted = formatted.replace(/\n\s*━+\s*\n\s*(References|Sources|Bibliography):?\s*\n[\s\S]*$/i, '');
+
             // Convert markdown-style references section
-            let formatted = answer.replace(/━{70}/g, '<hr style="margin: 15px 0;">');
+            formatted = formatted.replace(/━{70}/g, '<hr style="margin: 15px 0;">');
 
             // Detect and convert markdown tables
             const tableRegex = /\n(\|[^\n]+\|)\n(\|[-: |]+\|)\n((?:\|[^\n]+\|\n?)+)/g;
@@ -821,132 +900,137 @@
             }
         }
 
-        // ===== CITATION POPUP FUNCTIONS =====
+        // ===== CITATION SIDE PANEL FUNCTIONS (NEW) =====
 
-        function attachCitationHandlers() {
+        function attachCitationClickHandlers() {
             document.querySelectorAll('.citation').forEach(el => {
-                el.addEventListener('mouseenter', showCitationPopup);
-                el.addEventListener('mouseleave', hideCitationPopup);
+                el.removeEventListener('click', handleCitationClick); // Remove old listeners
+                el.addEventListener('click', handleCitationClick);
             });
         }
 
-        function showCitationPopup(event) {
+        function handleCitationClick(event) {
             const citNum = parseInt(event.target.dataset.citation);
-            console.log('[Citation Popup] Showing citation:', citNum);
-            const citation = currentCitations[citNum];
+            console.log('[Citation Click] Clicked citation:', citNum);
 
-            if (!citation) {
-                console.warn('[Citation Popup] Citation not found:', citNum, 'Available:', Object.keys(currentCitations));
+            // Find the message content div that contains this citation
+            const messageContent = event.target.closest('.message-content');
+            if (!messageContent || !messageContent.dataset.citations) {
+                console.warn('[Citation Click] No citations data found in parent message');
                 return;
             }
 
-            console.log('[Citation Popup] Citation data:', citation);
+            // Parse citations from the message data attribute
+            const citations = JSON.parse(messageContent.dataset.citations);
+            console.log('[Citation Click] Citations in message:', citations);
 
-            const popup = document.getElementById('citation-popup');
-            const header = popup.querySelector('.citation-header');
-            const body = popup.querySelector('.citation-body');
+            // Find the citation with matching number
+            const citation = citations.find(c => c.number === citNum);
+            if (!citation) {
+                console.warn('[Citation Click] Citation', citNum, 'not found in message data');
+                return;
+            }
 
-            // Build popup content based on citation type
+            console.log('[Citation Click] Citation data:', citation);
+
+            // Remove active class from all citations
+            document.querySelectorAll('.citation').forEach(el => el.classList.remove('active'));
+
+            // Add active class to clicked citation
+            event.target.classList.add('active');
+
+            // Show citation in side panel
+            showCitationInPanel(citation);
+        }
+
+        function showCitationInPanel(citation) {
+            const panel = document.getElementById('citation-panel');
+            const panelContent = document.getElementById('citation-panel-content');
+
+            // Build citation card HTML
+            let cardHTML = '<div class="citation-card">';
+
             if (citation.type === 'asset_data') {
-                header.textContent = `[${citation.number}] Asset Data`;
+                cardHTML += `<div class="citation-card-header">[${citation.number}] Asset Data</div>`;
 
-                let bodyHTML = '';
                 if (citation.source_file) {
-                    bodyHTML += `<div class="citation-detail"><strong>Source:</strong><span>${citation.source_file}</span></div>`;
+                    cardHTML += `<div class="citation-card-detail"><strong>Source:</strong><span>${citation.source_file}</span></div>`;
                 }
                 if (citation.sheet_name) {
-                    bodyHTML += `<div class="citation-detail"><strong>Sheet:</strong><span>${citation.sheet_name}</span></div>`;
+                    cardHTML += `<div class="citation-card-detail"><strong>Sheet:</strong><span>${citation.sheet_name}</span></div>`;
                 }
                 if (citation.field) {
-                    bodyHTML += `<div class="citation-detail"><strong>Field:</strong><span>${citation.field}</span></div>`;
+                    cardHTML += `<div class="citation-card-detail"><strong>Field:</strong><span>${citation.field}</span></div>`;
                 }
                 if (citation.filter) {
-                    bodyHTML += `<div class="citation-detail"><strong>Filter:</strong><span>${citation.filter}</span></div>`;
+                    cardHTML += `<div class="citation-card-detail"><strong>Filter:</strong><span>${citation.filter}</span></div>`;
                 }
                 if (citation.count !== undefined) {
-                    bodyHTML += `<div class="citation-detail"><strong>Records:</strong><span>${citation.count.toLocaleString()}</span></div>`;
+                    cardHTML += `<div class="citation-card-detail"><strong>Records:</strong><span>${citation.count.toLocaleString()}</span></div>`;
                 }
                 if (citation.asset_ids && citation.asset_ids.length > 0) {
                     const idsDisplay = citation.asset_ids.slice(0, 5).join(', ');
                     const remaining = citation.count > citation.asset_ids.length ? ` +${citation.count - citation.asset_ids.length} more` : '';
-                    bodyHTML += `<div class="citation-detail"><strong>Asset IDs:</strong><span>${idsDisplay}${remaining}</span></div>`;
+                    cardHTML += `<div class="citation-card-detail"><strong>Asset IDs:</strong><span>${idsDisplay}${remaining}</span></div>`;
                 }
-
-                body.innerHTML = bodyHTML;
 
             } else if (citation.type === 'iso_standard') {
-                header.textContent = `[${citation.number}] ${citation.standard || 'ISO Standard'}`;
+                cardHTML += `<div class="citation-card-header">[${citation.number}] ${citation.standard || 'ISO Standard'}</div>`;
 
-                let bodyHTML = '';
                 if (citation.section) {
-                    bodyHTML += `<div class="citation-detail"><strong>Section:</strong><span>${citation.section}${citation.title ? ' - ' + citation.title : ''}</span></div>`;
+                    cardHTML += `<div class="citation-card-detail"><strong>Section:</strong><span>${citation.section}${citation.title ? ' - ' + citation.title : ''}</span></div>`;
                 }
                 if (citation.pages) {
-                    bodyHTML += `<div class="citation-detail"><strong>Pages:</strong><span>${citation.pages}</span></div>`;
+                    cardHTML += `<div class="citation-card-detail"><strong>Pages:</strong><span>${citation.pages}</span></div>`;
                 }
                 if (citation.quote) {
-                    const shortQuote = citation.quote.length > 150 ? citation.quote.substring(0, 150) + '...' : citation.quote;
-                    bodyHTML += `<div class="citation-detail"><strong>Excerpt:</strong><span><em>"${shortQuote}"</em></span></div>`;
+                    cardHTML += `<div class="citation-card-quote">"${citation.quote}"</div>`;
                 }
-
-                body.innerHTML = bodyHTML;
 
             } else if (citation.type === 'calculation') {
-                header.textContent = `[${citation.number}] Calculation`;
+                cardHTML += `<div class="citation-card-header">[${citation.number}] Calculation</div>`;
 
-                let bodyHTML = '';
                 if (citation.description) {
-                    bodyHTML += `<div class="citation-detail"><strong>Description:</strong><span>${citation.description}</span></div>`;
+                    cardHTML += `<div class="citation-card-detail"><strong>Description:</strong><span>${citation.description}</span></div>`;
                 }
                 if (citation.formula) {
-                    bodyHTML += `<div class="citation-detail"><strong>Formula:</strong><span><code>${citation.formula}</code></span></div>`;
+                    cardHTML += `<div class="citation-card-detail"><strong>Formula:</strong><span><code>${citation.formula}</code></span></div>`;
                 }
                 if (citation.sources && citation.sources.length > 0) {
-                    bodyHTML += `<div class="citation-detail"><strong>Sources:</strong><span>${citation.sources.join(', ')}</span></div>`;
+                    cardHTML += `<div class="citation-card-detail"><strong>Sources:</strong><span>${citation.sources.join(', ')}</span></div>`;
                 }
-
-                body.innerHTML = bodyHTML;
             }
 
-            // Position popup near cursor (with bounds checking)
-            const rect = event.target.getBoundingClientRect();
-            let left = rect.right + 10;
-            let top = rect.top;
+            cardHTML += '</div>';
 
-            // Show popup to measure it
-            popup.style.left = left + 'px';
-            popup.style.top = top + 'px';
-            popup.classList.add('active');
-            console.log('[Citation Popup] Popup activated at position:', {left, top});
+            // Update panel content
+            panelContent.innerHTML = cardHTML;
 
-            // Adjust if off-screen
-            const popupRect = popup.getBoundingClientRect();
-
-            if (popupRect.right > window.innerWidth) {
-                left = rect.left - popupRect.width - 10;
-                popup.style.left = left + 'px';
-            }
-
-            if (popupRect.bottom > window.innerHeight) {
-                top = window.innerHeight - popupRect.height - 20;
-                popup.style.top = top + 'px';
-            }
-
-            if (top < 0) {
-                popup.style.top = '10px';
-            }
+            // Show panel
+            panel.classList.add('active');
+            console.log('[Citation Panel] Panel opened with citation', citation.number);
         }
 
-        function hideCitationPopup() {
-            const popup = document.getElementById('citation-popup');
-            popup.classList.remove('active');
+        function closeCitationPanel() {
+            const panel = document.getElementById('citation-panel');
+            panel.classList.remove('active');
+
+            // Remove active class from all citations
+            document.querySelectorAll('.citation').forEach(el => el.classList.remove('active'));
+
+            console.log('[Citation Panel] Panel closed');
         }
     </script>
 
-    <!-- Citation Popup Container -->
-    <div id="citation-popup" class="citation-popup">
-        <div class="citation-header"></div>
-        <div class="citation-body"></div>
+    <!-- Citation Side Panel (NotebookLM Style) -->
+    <div id="citation-panel" class="citation-panel">
+        <div class="citation-panel-header">
+            <h3>Source Details</h3>
+            <button id="close-panel-btn" class="close-panel-btn">&times;</button>
+        </div>
+        <div class="citation-panel-content" id="citation-panel-content">
+            <p class="citation-panel-placeholder">Click on a citation number to view details</p>
+        </div>
     </div>
 </body>
 </html>
