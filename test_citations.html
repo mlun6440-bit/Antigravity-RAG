@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citation Popup Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 40px;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .citation {
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            padding: 1px 3px;
+            border-radius: 3px;
+            transition: background 0.2s;
+            font-size: 0.75em;
+            vertical-align: super;
+            line-height: 0;
+            position: relative;
+        }
+
+        .citation:hover {
+            background: rgba(102, 126, 234, 0.15);
+        }
+
+        .citation-popup {
+            position: fixed;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+            max-width: 450px;
+            min-width: 300px;
+            z-index: 10000;
+            display: none;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .citation-popup.active {
+            display: block;
+        }
+
+        .citation-popup .citation-header {
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 12px;
+            font-size: 14px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 8px;
+        }
+
+        .citation-popup .citation-body {
+            color: #333;
+        }
+
+        .citation-popup .citation-detail {
+            margin: 6px 0;
+            display: flex;
+            gap: 8px;
+        }
+
+        .citation-popup .citation-detail strong {
+            color: #555;
+            min-width: 80px;
+            flex-shrink: 0;
+        }
+
+        .citation-popup .citation-detail span {
+            color: #333;
+            flex: 1;
+        }
+
+        .test-content {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .instructions {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .debug-output {
+            background: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .debug-output .log-line {
+            margin: 2px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Citation Popup Test Page</h1>
+
+    <div class="instructions">
+        <strong>Instructions:</strong>
+        <ol>
+            <li>Hover your mouse over the blue superscript numbers in the text below</li>
+            <li>A popup tooltip should appear showing citation details</li>
+            <li>Check the debug console below for log messages</li>
+            <li>Open browser DevTools (F12) to see additional console logs</li>
+        </ol>
+    </div>
+
+    <div class="test-content">
+        <p>
+            According to ISO 55001:2014, organizations must establish processes for risk management<sup class="citation" data-citation="1">1</sup>.
+            The standard requires a systematic approach to managing change<sup class="citation" data-citation="2">2</sup> and
+            proper documentation of all asset management activities<sup class="citation" data-citation="3">3</sup>.
+        </p>
+    </div>
+
+    <h2>Debug Console</h2>
+    <div class="debug-output" id="debugConsole">
+        <div class="log-line">[System] Page loaded</div>
+    </div>
+
+    <!-- Citation Popup Container -->
+    <div id="citation-popup" class="citation-popup">
+        <div class="citation-header"></div>
+        <div class="citation-body"></div>
+    </div>
+
+    <script>
+        // Debug logging function
+        function debugLog(message, data = null) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logLine = document.createElement('div');
+            logLine.className = 'log-line';
+            logLine.textContent = `[${timestamp}] ${message}` + (data ? ': ' + JSON.stringify(data) : '');
+            document.getElementById('debugConsole').appendChild(logLine);
+            console.log(message, data);
+        }
+
+        // Sample citation data
+        const currentCitations = {
+            1: {
+                number: 1,
+                type: 'iso_standard',
+                standard: 'ISO 55001:2014',
+                section: '6.1',
+                title: 'Risk Management',
+                pages: 'p. 15-17',
+                quote: 'The organization shall establish, implement and maintain processes for managing risk associated with assets and the asset management system.'
+            },
+            2: {
+                number: 2,
+                type: 'iso_standard',
+                standard: 'ISO 55001:2014',
+                section: '8.3',
+                title: 'Management of Change',
+                pages: 'p. 24',
+                quote: 'The organization shall establish, implement and maintain process(es) to manage changes that impact the asset management system.'
+            },
+            3: {
+                number: 3,
+                type: 'iso_standard',
+                standard: 'ISO 55002:2018',
+                section: '4.3',
+                title: 'Documentation Requirements',
+                pages: 'p. 12-14',
+                quote: 'Documentation should be controlled and readily available to those who need it.'
+            }
+        };
+
+        debugLog('Citations loaded', { count: Object.keys(currentCitations).length });
+
+        // Show citation popup
+        function showCitationPopup(event) {
+            const citNum = parseInt(event.target.dataset.citation);
+            debugLog('Mouse entered citation', { citNum });
+
+            const citation = currentCitations[citNum];
+
+            if (!citation) {
+                debugLog('ERROR: Citation not found', { citNum, available: Object.keys(currentCitations) });
+                return;
+            }
+
+            debugLog('Citation data retrieved', citation);
+
+            const popup = document.getElementById('citation-popup');
+            const header = popup.querySelector('.citation-header');
+            const body = popup.querySelector('.citation-body');
+
+            // Build popup content based on citation type
+            if (citation.type === 'iso_standard') {
+                header.textContent = `[${citation.number}] ${citation.standard || 'ISO Standard'}`;
+
+                let bodyHTML = '';
+                if (citation.section) {
+                    bodyHTML += `<div class="citation-detail"><strong>Section:</strong><span>${citation.section}${citation.title ? ' - ' + citation.title : ''}</span></div>`;
+                }
+                if (citation.pages) {
+                    bodyHTML += `<div class="citation-detail"><strong>Pages:</strong><span>${citation.pages}</span></div>`;
+                }
+                if (citation.quote) {
+                    const shortQuote = citation.quote.length > 150 ? citation.quote.substring(0, 150) + '...' : citation.quote;
+                    bodyHTML += `<div class="citation-detail"><strong>Excerpt:</strong><span><em>"${shortQuote}"</em></span></div>`;
+                }
+
+                body.innerHTML = bodyHTML;
+            }
+
+            // Position popup near cursor
+            const rect = event.target.getBoundingClientRect();
+            let left = rect.right + 10;
+            let top = rect.top;
+
+            debugLog('Initial popup position', { left, top });
+
+            // Show popup
+            popup.style.left = left + 'px';
+            popup.style.top = top + 'px';
+            popup.classList.add('active');
+
+            debugLog('Popup activated', {
+                display: window.getComputedStyle(popup).display,
+                hasActiveClass: popup.classList.contains('active')
+            });
+
+            // Adjust if off-screen
+            const popupRect = popup.getBoundingClientRect();
+
+            if (popupRect.right > window.innerWidth) {
+                left = rect.left - popupRect.width - 10;
+                popup.style.left = left + 'px';
+                debugLog('Adjusted popup position (off-screen right)', { left });
+            }
+
+            if (popupRect.bottom > window.innerHeight) {
+                top = window.innerHeight - popupRect.height - 20;
+                popup.style.top = top + 'px';
+                debugLog('Adjusted popup position (off-screen bottom)', { top });
+            }
+
+            if (top < 0) {
+                popup.style.top = '10px';
+                debugLog('Adjusted popup position (off-screen top)');
+            }
+        }
+
+        // Hide citation popup
+        function hideCitationPopup() {
+            debugLog('Mouse left citation - hiding popup');
+            const popup = document.getElementById('citation-popup');
+            popup.classList.remove('active');
+        }
+
+        // Attach event handlers
+        function attachCitationHandlers() {
+            const citationElements = document.querySelectorAll('.citation');
+            debugLog('Attaching handlers to citation elements', { count: citationElements.length });
+
+            citationElements.forEach((el, index) => {
+                el.addEventListener('mouseenter', showCitationPopup);
+                el.addEventListener('mouseleave', hideCitationPopup);
+                debugLog(`Handler attached to citation ${index + 1}`, { citation: el.dataset.citation });
+            });
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            debugLog('DOM loaded - initializing citation handlers');
+            attachCitationHandlers();
+            debugLog('Initialization complete');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+# Asset Management ISO 55000 Specialist - Git Ignore File
+
+# ========================================
+# SENSITIVE DATA (NEVER COMMIT THESE!)
+# ========================================
+
+# Environment variables and API keys
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+credentials.json
+token.pickle
+
+# ========================================
+# TEMPORARY DATA & GENERATED FILES
+# ========================================
+
+# Data directory with processed knowledge bases
+data/.tmp/
+data/.tmp/*.json
+data/.tmp/*.pkl
+
+# Logs
+logs/
+*.log
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# ========================================
+# IDE & EDITOR FILES
+# ========================================
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ========================================
+# OPERATING SYSTEM FILES
+# ========================================
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+
+# ========================================
+# PROJECT-SPECIFIC EXCLUDES
+# ========================================
+
+# Test files (keep test_citations.html but exclude test results)
+test_results/
+*.test.json
+
+# Backup files
+*.bak
+*.backup
+*_backup.*
+
+# Compiled Python files
+*.pyc
+*.pyo
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ========================================
+# IMPORTANT: KEEP THESE FILES
+# ========================================
+# The following will be INCLUDED in git:
+# - Source code (*.py)
+# - HTML templates (templates/*.html)
+# - Documentation (*.md, CITATION_DEBUGGING_GUIDE.md)
+# - Sample data files (if any)
+# - Requirements (requirements.txt)
+# - Test pages (test_citations.html)
+# - README and setup files

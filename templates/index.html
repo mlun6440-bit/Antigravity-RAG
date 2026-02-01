@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Register ISO 55000 Specialist</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            height: 90vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .status-bar {
+            background: #f8f9fa;
+            padding: 12px 30px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-dot.active {
+            background: #4caf50;
+            box-shadow: 0 0 8px #4caf50;
+        }
+
+        .status-dot.inactive {
+            background: #f44336;
+        }
+
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: #f5f5f5;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .message.user .message-avatar {
+            background: #667eea;
+        }
+
+        .message.assistant .message-avatar {
+            background: #764ba2;
+        }
+
+        .message-content {
+            max-width: 70%;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .message.user .message-content {
+            background: #667eea;
+            color: white;
+        }
+
+        .message-content pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 10px 0;
+            font-size: 13px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .data-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .data-table th {
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #764ba2;
+        }
+
+        .data-table td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .data-table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .data-table tbody tr:hover {
+            background: #e8eaf6;
+            transition: background 0.3s;
+        }
+
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .message.user .message-content pre {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        /* Superscript Citation Numbers - NotebookLM Style */
+        .citation {
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            padding: 1px 3px;
+            border-radius: 3px;
+            transition: background 0.2s;
+            font-size: 0.75em;
+            vertical-align: super;
+            line-height: 0;
+            position: relative;
+        }
+
+        .citation:hover {
+            background: rgba(102, 126, 234, 0.15);
+        }
+
+        /* Citation Popup Tooltip */
+        .citation-popup {
+            position: fixed;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+            max-width: 450px;
+            min-width: 300px;
+            z-index: 10000;
+            display: none;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .citation-popup.active {
+            display: block;
+        }
+
+        .citation-popup .citation-header {
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 12px;
+            font-size: 14px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 8px;
+        }
+
+        .citation-popup .citation-body {
+            color: #333;
+        }
+
+        .citation-popup .citation-detail {
+            margin: 6px 0;
+            display: flex;
+            gap: 8px;
+        }
+
+        .citation-popup .citation-detail strong {
+            color: #555;
+            min-width: 80px;
+            flex-shrink: 0;
+        }
+
+        .citation-popup .citation-detail span {
+            color: #333;
+            flex: 1;
+        }
+
+        .references {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #e0e0e0;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .references h4 {
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .reference-item {
+            margin-bottom: 8px;
+            padding-left: 15px;
+        }
+
+        .confirmation-dialog {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .confirmation-dialog .buttons {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .confirmation-dialog button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-confirm {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-confirm:hover {
+            background: #45a049;
+        }
+
+        .btn-cancel {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #da190b;
+        }
+
+        .suggestions {
+            padding: 20px 30px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .suggestions h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .suggestion-chips {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .suggestion-chip {
+            background: #f0f0f0;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #e0e0e0;
+        }
+
+        .suggestion-chip:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .input-area {
+            padding: 20px 30px;
+            background: white;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        #user-input:focus {
+            border-color: #667eea;
+        }
+
+        #send-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        #send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .loading-dots {
+            display: inline-block;
+        }
+
+        .loading-dots span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            margin: 0 3px;
+            animation: loading 1.4s infinite ease-in-out both;
+        }
+
+        .loading-dots span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .loading-dots span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes loading {
+            0%, 80%, 100% {
+                transform: scale(0);
+            }
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #f5c6cb;
+            margin-top: 10px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Asset Register ISO 55000 Specialist</h1>
+            <p>Ask questions, update assets, and get ISO 55000-compliant answers with citations</p>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-indicator">
+                <span>System Status:</span>
+                <span class="status-dot" id="status-dot"></span>
+                <span id="status-text">Checking...</span>
+            </div>
+            <div id="stats-info"></div>
+        </div>
+
+        <div class="chat-area" id="chat-area">
+            <div class="message assistant">
+                <div class="message-avatar">AI</div>
+                <div class="message-content">
+                    <p>Hello! I'm your Asset Register ISO 55000 Specialist. I can help you with:</p>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>Answering questions about your assets</li>
+                        <li>Providing ISO 55000-compliant guidance</li>
+                        <li>Updating asset information</li>
+                        <li>Creating or deleting asset records</li>
+                    </ul>
+                    <p style="margin-top: 10px;">Try asking me something, or click a suggestion below!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="suggestions" id="suggestions-container">
+            <h3>Suggested Questions:</h3>
+            <div class="suggestion-chips" id="suggestion-chips"></div>
+        </div>
+
+        <div class="input-area">
+            <div class="input-container">
+                <input type="text" id="user-input" placeholder="Ask a question or give a command..." />
+                <button id="send-btn">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let pendingCrudOperation = null;
+        let currentCitations = {};
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSystemStatus();
+            loadSuggestions();
+
+            document.getElementById('send-btn').addEventListener('click', sendMessage);
+            document.getElementById('user-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        });
+
+        async function loadSystemStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+
+                const statusDot = document.getElementById('status-dot');
+                const statusText = document.getElementById('status-text');
+                const statsInfo = document.getElementById('stats-info');
+
+                if (data.asset_index && data.iso_kb) {
+                    statusDot.className = 'status-dot active';
+                    statusText.textContent = 'Online';
+
+                    if (data.stats) {
+                        statsInfo.innerHTML = `Assets: ${data.stats.total_assets} | Fields: ${data.stats.total_fields} | Sources: ${data.stats.source_files}`;
+                    }
+                } else if (data.iso_kb) {
+                    statusDot.className = 'status-dot active';
+                    statusText.textContent = 'ISO KB Only';
+                    statsInfo.innerHTML = 'Asset data not loaded';
+                } else {
+                    statusDot.className = 'status-dot inactive';
+                    statusText.textContent = 'Setup Required';
+                }
+            } catch (error) {
+                console.error('Status check failed:', error);
+                document.getElementById('status-dot').className = 'status-dot inactive';
+                document.getElementById('status-text').textContent = 'Offline';
+            }
+        }
+
+        async function loadSuggestions() {
+            try {
+                const response = await fetch('/api/suggestions?num=5');
+                const data = await response.json();
+
+                const chipsContainer = document.getElementById('suggestion-chips');
+                chipsContainer.innerHTML = '';
+
+                data.suggestions.forEach(suggestion => {
+                    const chip = document.createElement('div');
+                    chip.className = 'suggestion-chip';
+                    chip.textContent = suggestion.question;
+                    chip.addEventListener('click', () => {
+                        document.getElementById('user-input').value = suggestion.question;
+                        sendMessage();
+                    });
+                    chipsContainer.appendChild(chip);
+                });
+            } catch (error) {
+                console.error('Failed to load suggestions:', error);
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            // Add user message to chat
+            addMessage('user', message);
+            input.value = '';
+
+            // Show loading
+            showLoading();
+
+            try {
+                const response = await fetch('/api/query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ question: message })
+                });
+
+                const data = await response.json();
+                hideLoading();
+
+                if (data.error) {
+                    addMessage('assistant', `<div class="error-message">Error: ${data.error}</div>`);
+                } else if (data.requires_confirmation) {
+                    // CRUD operation needs confirmation
+                    pendingCrudOperation = {
+                        operation: data.intent,
+                        params: data.params
+                    };
+                    addCrudConfirmation(data.intent, data.params, data.message);
+                } else {
+                    // Regular answer with citations
+                    console.log('=== API RESPONSE DEBUG ===');
+                    console.log('Full response data:', data);
+                    console.log('Citations array:', data.citations);
+                    console.log('Sample citation fields:', data.citations && data.citations[0] ? Object.keys(data.citations[0]) : 'No citations');
+
+                    // Store citations globally for popup access
+                    if (data.citations && Array.isArray(data.citations)) {
+                        currentCitations = {};
+                        data.citations.forEach(cit => {
+                            currentCitations[cit.number] = cit;
+                        });
+                        console.log('[Citations] Loaded', data.citations.length, 'citations:', currentCitations);
+                    } else {
+                        console.log('[Citations] No citations in response');
+                    }
+
+                    addMessage('assistant', formatAnswer(data.answer));
+
+                    // Attach popup handlers after DOM update
+                    setTimeout(() => {
+                        attachCitationHandlers();
+                        const citationElements = document.querySelectorAll('.citation');
+                        console.log('[Citations] Attached handlers to', citationElements.length, 'citation elements');
+                    }, 100);
+                }
+            } catch (error) {
+                hideLoading();
+                addMessage('assistant', `<div class="error-message">Error: ${error.message}</div>`);
+            }
+        }
+
+        function addMessage(role, content) {
+            const chatArea = document.getElementById('chat-area');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = role === 'user' ? 'U' : 'AI';
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.innerHTML = content;
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(contentDiv);
+            chatArea.appendChild(messageDiv);
+
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function addCrudConfirmation(operation, params, message) {
+            const chatArea = document.getElementById('chat-area');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message assistant';
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = 'AI';
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+
+            let paramsHtml = '<ul style="margin: 10px 0; padding-left: 20px;">';
+            for (const [key, value] of Object.entries(params)) {
+                paramsHtml += `<li><strong>${key}:</strong> ${value}</li>`;
+            }
+            paramsHtml += '</ul>';
+
+            contentDiv.innerHTML = `
+                <div class="confirmation-dialog">
+                    <strong>${message}</strong>
+                    ${paramsHtml}
+                    <div class="buttons">
+                        <button class="btn-confirm" onclick="confirmCrud()">Confirm</button>
+                        <button class="btn-cancel" onclick="cancelCrud()">Cancel</button>
+                    </div>
+                </div>
+            `;
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(contentDiv);
+            chatArea.appendChild(messageDiv);
+
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        async function confirmCrud() {
+            if (!pendingCrudOperation) return;
+
+            showLoading();
+
+            try {
+                const response = await fetch('/api/crud', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        operation: pendingCrudOperation.operation,
+                        params: pendingCrudOperation.params,
+                        confirmed: true
+                    })
+                });
+
+                const data = await response.json();
+                hideLoading();
+
+                if (data.success) {
+                    addMessage('assistant', `<div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 10px;">Success: ${data.message}</div>`);
+                } else {
+                    addMessage('assistant', `<div class="error-message">Error: ${data.error}</div>`);
+                }
+
+                pendingCrudOperation = null;
+            } catch (error) {
+                hideLoading();
+                addMessage('assistant', `<div class="error-message">Error: ${error.message}</div>`);
+                pendingCrudOperation = null;
+            }
+        }
+
+        function cancelCrud() {
+            addMessage('assistant', 'Operation cancelled.');
+            pendingCrudOperation = null;
+        }
+
+        function formatAnswer(answer) {
+            // Convert markdown-style references section
+            let formatted = answer.replace(/━{70}/g, '<hr style="margin: 15px 0;">');
+
+            // Detect and convert markdown tables
+            const tableRegex = /\n(\|[^\n]+\|)\n(\|[-: |]+\|)\n((?:\|[^\n]+\|\n?)+)/g;
+            formatted = formatted.replace(tableRegex, (match, header, separator, rows) => {
+                const headers = header.split('|').filter(h => h.trim()).map(h => h.trim());
+                const rowData = rows.trim().split('\n').map(row =>
+                    row.split('|').filter(cell => cell.trim()).map(cell => cell.trim())
+                );
+
+                let tableHTML = '<table class="data-table"><thead><tr>';
+                headers.forEach(h => tableHTML += `<th>${h}</th>`);
+                tableHTML += '</tr></thead><tbody>';
+
+                rowData.forEach(row => {
+                    tableHTML += '<tr>';
+                    row.forEach(cell => tableHTML += `<td>${cell}</td>`);
+                    tableHTML += '</tr>';
+                });
+
+                tableHTML += '</tbody></table>';
+                return tableHTML;
+            });
+
+            // Detect and convert simple list-based tables (Status: X assets format)
+            const statsPattern = /(?:^|\n)([\w\s]+):\s*(\d+)\s*assets?/gm;
+            let statsMatches = [];
+            let match;
+            while ((match = statsPattern.exec(formatted)) !== null) {
+                statsMatches.push({index: match.index, text: match[0], label: match[1], count: match[2]});
+            }
+
+            // If we found 3 or more consecutive stats, convert to table
+            if (statsMatches.length >= 3) {
+                let tableHTML = '<table class="data-table"><thead><tr><th>Status</th><th>Count</th></tr></thead><tbody>';
+                statsMatches.forEach(stat => {
+                    tableHTML += `<tr><td>${stat.label}</td><td>${stat.count}</td></tr>`;
+                    formatted = formatted.replace(stat.text, '');
+                });
+                tableHTML += '</tbody></table>';
+                formatted = formatted + tableHTML;
+            }
+
+            // Convert citations [1], [2], etc. to superscript with data attributes
+            formatted = formatted.replace(/\[(\d+)\]/g, '<sup class="citation" data-citation="$1">$1</sup>');
+
+            // Convert line breaks
+            formatted = formatted.replace(/\n\n/g, '</p><p>');
+            formatted = '<p>' + formatted + '</p>';
+
+            return formatted;
+        }
+
+        function showLoading() {
+            const chatArea = document.getElementById('chat-area');
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'loading active';
+            loadingDiv.id = 'loading-indicator';
+            loadingDiv.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+            chatArea.appendChild(loadingDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function hideLoading() {
+            const loadingDiv = document.getElementById('loading-indicator');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+        }
+
+        // ===== CITATION POPUP FUNCTIONS =====
+
+        function attachCitationHandlers() {
+            document.querySelectorAll('.citation').forEach(el => {
+                el.addEventListener('mouseenter', showCitationPopup);
+                el.addEventListener('mouseleave', hideCitationPopup);
+            });
+        }
+
+        function showCitationPopup(event) {
+            const citNum = parseInt(event.target.dataset.citation);
+            console.log('[Citation Popup] Showing citation:', citNum);
+            const citation = currentCitations[citNum];
+
+            if (!citation) {
+                console.warn('[Citation Popup] Citation not found:', citNum, 'Available:', Object.keys(currentCitations));
+                return;
+            }
+
+            console.log('[Citation Popup] Citation data:', citation);
+
+            const popup = document.getElementById('citation-popup');
+            const header = popup.querySelector('.citation-header');
+            const body = popup.querySelector('.citation-body');
+
+            // Build popup content based on citation type
+            if (citation.type === 'asset_data') {
+                header.textContent = `[${citation.number}] Asset Data`;
+
+                let bodyHTML = '';
+                if (citation.source_file) {
+                    bodyHTML += `<div class="citation-detail"><strong>Source:</strong><span>${citation.source_file}</span></div>`;
+                }
+                if (citation.sheet_name) {
+                    bodyHTML += `<div class="citation-detail"><strong>Sheet:</strong><span>${citation.sheet_name}</span></div>`;
+                }
+                if (citation.field) {
+                    bodyHTML += `<div class="citation-detail"><strong>Field:</strong><span>${citation.field}</span></div>`;
+                }
+                if (citation.filter) {
+                    bodyHTML += `<div class="citation-detail"><strong>Filter:</strong><span>${citation.filter}</span></div>`;
+                }
+                if (citation.count !== undefined) {
+                    bodyHTML += `<div class="citation-detail"><strong>Records:</strong><span>${citation.count.toLocaleString()}</span></div>`;
+                }
+                if (citation.asset_ids && citation.asset_ids.length > 0) {
+                    const idsDisplay = citation.asset_ids.slice(0, 5).join(', ');
+                    const remaining = citation.count > citation.asset_ids.length ? ` +${citation.count - citation.asset_ids.length} more` : '';
+                    bodyHTML += `<div class="citation-detail"><strong>Asset IDs:</strong><span>${idsDisplay}${remaining}</span></div>`;
+                }
+
+                body.innerHTML = bodyHTML;
+
+            } else if (citation.type === 'iso_standard') {
+                header.textContent = `[${citation.number}] ${citation.standard || 'ISO Standard'}`;
+
+                let bodyHTML = '';
+                if (citation.section) {
+                    bodyHTML += `<div class="citation-detail"><strong>Section:</strong><span>${citation.section}${citation.title ? ' - ' + citation.title : ''}</span></div>`;
+                }
+                if (citation.pages) {
+                    bodyHTML += `<div class="citation-detail"><strong>Pages:</strong><span>${citation.pages}</span></div>`;
+                }
+                if (citation.quote) {
+                    const shortQuote = citation.quote.length > 150 ? citation.quote.substring(0, 150) + '...' : citation.quote;
+                    bodyHTML += `<div class="citation-detail"><strong>Excerpt:</strong><span><em>"${shortQuote}"</em></span></div>`;
+                }
+
+                body.innerHTML = bodyHTML;
+
+            } else if (citation.type === 'calculation') {
+                header.textContent = `[${citation.number}] Calculation`;
+
+                let bodyHTML = '';
+                if (citation.description) {
+                    bodyHTML += `<div class="citation-detail"><strong>Description:</strong><span>${citation.description}</span></div>`;
+                }
+                if (citation.formula) {
+                    bodyHTML += `<div class="citation-detail"><strong>Formula:</strong><span><code>${citation.formula}</code></span></div>`;
+                }
+                if (citation.sources && citation.sources.length > 0) {
+                    bodyHTML += `<div class="citation-detail"><strong>Sources:</strong><span>${citation.sources.join(', ')}</span></div>`;
+                }
+
+                body.innerHTML = bodyHTML;
+            }
+
+            // Position popup near cursor (with bounds checking)
+            const rect = event.target.getBoundingClientRect();
+            let left = rect.right + 10;
+            let top = rect.top;
+
+            // Show popup to measure it
+            popup.style.left = left + 'px';
+            popup.style.top = top + 'px';
+            popup.classList.add('active');
+            console.log('[Citation Popup] Popup activated at position:', {left, top});
+
+            // Adjust if off-screen
+            const popupRect = popup.getBoundingClientRect();
+
+            if (popupRect.right > window.innerWidth) {
+                left = rect.left - popupRect.width - 10;
+                popup.style.left = left + 'px';
+            }
+
+            if (popupRect.bottom > window.innerHeight) {
+                top = window.innerHeight - popupRect.height - 20;
+                popup.style.top = top + 'px';
+            }
+
+            if (top < 0) {
+                popup.style.top = '10px';
+            }
+        }
+
+        function hideCitationPopup() {
+            const popup = document.getElementById('citation-popup');
+            popup.classList.remove('active');
+        }
+    </script>
+
+    <!-- Citation Popup Container -->
+    <div id="citation-popup" class="citation-popup">
+        <div class="citation-header"></div>
+        <div class="citation-body"></div>
+    </div>
+</body>
+</html>
