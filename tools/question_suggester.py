@@ -27,163 +27,185 @@ class QuestionSuggester:
     def _load_question_templates(self) -> Dict[str, List[Dict[str, str]]]:
         """Load question templates organized by category."""
         return {
+            "data_quality": [
+                {
+                    "question": "Which critical assets lack risk assessments?",
+                    "category": "Data Quality",
+                    "explanation": "ISO 55000: Identify risk assessment gaps to improve register completeness"
+                },
+                {
+                    "question": "Which assets have incomplete condition data?",
+                    "category": "Data Quality",
+                    "explanation": "ISO 55001: Find assets needing condition updates for better decision-making"
+                },
+                {
+                    "question": "Which assets are missing installation dates?",
+                    "category": "Data Quality",
+                    "explanation": "ISO 55000: Complete lifecycle data for accurate age-based planning"
+                },
+                {
+                    "question": "Which assets lack maintenance history?",
+                    "category": "Data Quality",
+                    "explanation": "ISO 55001: Build maintenance records for reliability analysis"
+                },
+                {
+                    "question": "What asset data is missing for full ISO 55000 compliance?",
+                    "category": "Data Quality",
+                    "explanation": "ISO 55002: Systematic gap analysis to improve register maturity"
+                }
+            ],
             "beginner": [
                 {
                     "question": "How many total assets are in the register?",
-                    "category": "Inventory",
-                    "explanation": "Get an overview of your asset count"
+                    "category": "Portfolio Overview",
+                    "explanation": "ISO 55000: Understand portfolio scope and scale"
                 },
                 {
                     "question": "What types of assets do we manage?",
-                    "category": "Inventory",
-                    "explanation": "Understand the diversity of your asset portfolio"
+                    "category": "Portfolio Overview",
+                    "explanation": "ISO 55000: Map asset diversity for strategic planning"
                 },
                 {
-                    "question": "Which assets were added most recently?",
-                    "category": "Inventory",
-                    "explanation": "Track recent asset acquisitions"
+                    "question": "How many poor condition fire systems do we have?",
+                    "category": "Critical Assets",
+                    "explanation": "ISO 55000: Prioritize life safety assets for immediate action"
                 },
                 {
-                    "question": "Show me a summary of assets by location",
-                    "category": "Inventory",
-                    "explanation": "Understand geographical distribution"
-                },
-                {
-                    "question": "What fields are tracked for each asset?",
-                    "category": "Data Structure",
-                    "explanation": "Learn what information is recorded"
+                    "question": "Show me all R4-R5 rated assets requiring immediate action",
+                    "category": "Critical Assets",
+                    "explanation": "ISO 55001: Identify critical condition assets for intervention planning"
                 }
             ],
             "maintenance": [
                 {
-                    "question": "Which assets need maintenance this month?",
-                    "category": "Maintenance",
-                    "explanation": "Identify upcoming maintenance requirements"
+                    "question": "Which electrical switchboards are over 20 years old?",
+                    "category": "Lifecycle Planning",
+                    "explanation": "ISO 55000: Age-based intervention planning for critical infrastructure"
                 },
                 {
-                    "question": "Show me assets with overdue maintenance",
-                    "category": "Maintenance",
-                    "explanation": "Find maintenance backlogs"
+                    "question": "Which assets need replacement in the next 2 years?",
+                    "category": "Lifecycle Planning",
+                    "explanation": "ISO 55001: Capital planning based on remaining useful life"
                 },
                 {
-                    "question": "What is the maintenance schedule for critical assets?",
-                    "category": "Maintenance",
-                    "explanation": "Plan preventive maintenance"
+                    "question": "Show me assets approaching end-of-life with high criticality",
+                    "category": "Lifecycle Planning",
+                    "explanation": "ISO 55000: Prioritize replacement planning by risk and age"
                 },
                 {
-                    "question": "Which assets have the highest maintenance costs?",
-                    "category": "Maintenance",
-                    "explanation": "Identify maintenance cost drivers"
+                    "question": "What is the maintenance backlog for R4-R5 condition assets?",
+                    "category": "Maintenance Optimization",
+                    "explanation": "ISO 55001: Identify maintenance deferrals causing condition degradation"
                 }
             ],
-            "compliance": [
+            "iso_learning": [
                 {
-                    "question": "Are our asset records compliant with ISO 55000?",
-                    "category": "Compliance",
-                    "explanation": "Check ISO 55000 compliance status"
+                    "question": "What does ISO 55000 say about risk assessment?",
+                    "category": "ISO 55000 Learning",
+                    "explanation": "Learn ISO 55000 risk management framework principles"
                 },
                 {
-                    "question": "What asset data is missing for full ISO 55000 compliance?",
-                    "category": "Compliance",
-                    "explanation": "Identify compliance gaps"
+                    "question": "How should we measure asset performance per ISO 55000?",
+                    "category": "ISO 55000 Learning",
+                    "explanation": "Understand ISO performance measurement requirements"
                 },
                 {
-                    "question": "How do we track asset lifecycle according to ISO 55000?",
-                    "category": "Compliance",
-                    "explanation": "Understand lifecycle management practices"
+                    "question": "What are ISO 55001 requirements for lifecycle costing?",
+                    "category": "ISO 55000 Learning",
+                    "explanation": "Learn whole-of-life cost analysis methods"
                 },
                 {
-                    "question": "What ISO 55000 requirements apply to asset performance monitoring?",
-                    "category": "Compliance",
-                    "explanation": "Learn performance monitoring standards"
+                    "question": "How does ISO 55000 recommend prioritizing asset interventions?",
+                    "category": "ISO 55000 Learning",
+                    "explanation": "Learn risk-based decision-making frameworks"
                 }
             ],
-            "financial": [
+            "strategic_improvement": [
                 {
-                    "question": "What is the total value of all assets?",
-                    "category": "Financial",
-                    "explanation": "Calculate total asset value"
+                    "question": "What building services assets need replacement in next 2 years?",
+                    "category": "Capital Planning",
+                    "explanation": "ISO 55001: Long-term capital planning for building services portfolio"
                 },
                 {
-                    "question": "Show me the most expensive assets",
-                    "category": "Financial",
-                    "explanation": "Identify high-value assets"
+                    "question": "Which asset categories have the most data quality issues?",
+                    "category": "Register Improvement",
+                    "explanation": "ISO 55000: Identify systematic data gaps for targeted improvement"
                 },
                 {
-                    "question": "What is the average asset age by category?",
-                    "category": "Financial",
-                    "explanation": "Assess asset aging and depreciation"
+                    "question": "What is the average condition rating by asset type?",
+                    "category": "Portfolio Health",
+                    "explanation": "ISO 55000: Benchmark portfolio health to identify weak areas"
                 },
                 {
-                    "question": "Which assets are approaching end of useful life?",
-                    "category": "Financial",
-                    "explanation": "Plan for asset replacement"
+                    "question": "Which locations have the most critical condition assets?",
+                    "category": "Portfolio Health",
+                    "explanation": "ISO 55000: Geographic risk profiling for intervention prioritization"
                 }
             ],
             "risk": [
                 {
-                    "question": "Which assets have high risk ratings?",
-                    "category": "Risk",
-                    "explanation": "Identify high-risk assets"
+                    "question": "Show me high criticality assets with poor condition ratings",
+                    "category": "Risk Assessment",
+                    "explanation": "ISO 55000: Risk-based prioritization combining consequence and condition"
                 },
                 {
-                    "question": "What are the common risk factors across assets?",
-                    "category": "Risk",
-                    "explanation": "Understand risk patterns"
+                    "question": "What are the interdependencies between our critical assets?",
+                    "category": "System Risk",
+                    "explanation": "ISO 55001: Understand cascading failure risks in asset systems"
                 },
                 {
-                    "question": "How does ISO 55000 recommend we assess asset risk?",
-                    "category": "Risk",
-                    "explanation": "Learn ISO risk assessment framework"
+                    "question": "Which life safety systems lack recent inspections?",
+                    "category": "Risk Assessment",
+                    "explanation": "ISO 55001: Identify compliance risks for critical safety assets"
                 },
                 {
-                    "question": "Which critical assets lack risk assessments?",
-                    "category": "Risk",
-                    "explanation": "Find risk assessment gaps"
+                    "question": "What is our exposure to assets with unknown condition?",
+                    "category": "Risk Assessment",
+                    "explanation": "ISO 55000: Quantify uncertainty risk from incomplete data"
                 }
             ],
-            "performance": [
+            "continuous_improvement": [
                 {
-                    "question": "What are the key performance indicators for our assets?",
-                    "category": "Performance",
-                    "explanation": "Identify asset KPIs"
+                    "question": "What patterns exist in our asset failures?",
+                    "category": "Continuous Improvement",
+                    "explanation": "ISO 55001: Learn from failures to improve preventive strategies"
                 },
                 {
-                    "question": "Which assets are underperforming?",
-                    "category": "Performance",
-                    "explanation": "Find performance issues"
+                    "question": "Which asset types consistently degrade faster than expected?",
+                    "category": "Continuous Improvement",
+                    "explanation": "ISO 55000: Identify systematic issues for root cause analysis"
                 },
                 {
-                    "question": "How should we measure asset performance per ISO 55000?",
-                    "category": "Performance",
-                    "explanation": "Learn ISO performance standards"
+                    "question": "How accurate are our condition assessments compared to actual failures?",
+                    "category": "Continuous Improvement",
+                    "explanation": "ISO 55001: Validate and improve condition assessment methods"
                 },
                 {
-                    "question": "Show me asset utilization rates",
-                    "category": "Performance",
-                    "explanation": "Assess asset utilization"
+                    "question": "What is the correlation between maintenance frequency and asset condition?",
+                    "category": "Continuous Improvement",
+                    "explanation": "ISO 55000: Optimize maintenance strategies based on evidence"
                 }
             ],
             "advanced": [
                 {
-                    "question": "What is our asset lifecycle cost profile?",
-                    "category": "Lifecycle",
-                    "explanation": "Analyze total cost of ownership"
-                },
-                {
-                    "question": "How can we optimize asset replacement strategies?",
-                    "category": "Optimization",
-                    "explanation": "Improve replacement planning"
-                },
-                {
-                    "question": "What are the interdependencies between our critical assets?",
-                    "category": "System Analysis",
-                    "explanation": "Understand asset relationships"
+                    "question": "What is the lifecycle cost profile for building services vs infrastructure?",
+                    "category": "Advanced Analysis",
+                    "explanation": "ISO 55002: Compare total cost of ownership across asset categories"
                 },
                 {
                     "question": "How do our asset management practices align with organizational objectives per ISO 55000?",
-                    "category": "Strategic",
-                    "explanation": "Assess strategic alignment"
+                    "category": "Strategic Alignment",
+                    "explanation": "ISO 55001: Connect asset decisions to organizational strategy"
+                },
+                {
+                    "question": "What is the optimal renewal timing for assets approaching end-of-life?",
+                    "category": "Advanced Analysis",
+                    "explanation": "ISO 55000: Balance risk, cost, and performance for renewal decisions"
+                },
+                {
+                    "question": "How can we improve asset data quality systematically?",
+                    "category": "Register Maturity",
+                    "explanation": "ISO 55001: Develop data quality improvement roadmap"
                 }
             ]
         }
@@ -230,24 +252,28 @@ class QuestionSuggester:
         """
         all_questions = []
 
-        # Always include beginner questions
+        # Priority 1: Data Quality Improvement (always show these)
+        all_questions.extend(self.question_templates['data_quality'])
+
+        # Priority 2: ISO 55000 Learning (always show these)
+        all_questions.extend(self.question_templates['iso_learning'])
+
+        # Priority 3: Basic queries for immediate action
         all_questions.extend(self.question_templates['beginner'])
 
-        # Include category-specific questions if data exists
-        if context.get('has_maintenance_data'):
-            all_questions.extend(self.question_templates['maintenance'])
+        # Priority 4: Strategic improvement questions
+        all_questions.extend(self.question_templates['strategic_improvement'])
 
-        if context.get('has_financial_data'):
-            all_questions.extend(self.question_templates['financial'])
+        # Priority 5: Risk-based questions
+        all_questions.extend(self.question_templates['risk'])
 
-        if context.get('has_risk_data'):
-            all_questions.extend(self.question_templates['risk'])
+        # Priority 6: Lifecycle planning
+        all_questions.extend(self.question_templates['maintenance'])
 
-        # Always include compliance questions (ISO 55000 focus)
-        all_questions.extend(self.question_templates['compliance'])
+        # Priority 7: Continuous improvement
+        all_questions.extend(self.question_templates['continuous_improvement'])
 
-        # Include performance and advanced
-        all_questions.extend(self.question_templates['performance'])
+        # Priority 8: Advanced analysis
         all_questions.extend(self.question_templates['advanced'])
 
         return all_questions

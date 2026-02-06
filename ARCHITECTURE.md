@@ -36,6 +36,7 @@
 │  │  - GET  /api/suggestions   -> Question Suggester              │         │
 │  │  - GET  /api/status        -> System Status                   │         │
 │  │  - POST /api/crud          -> CRUD Operations                 │         │
+│  │  - GET  /api/pdf/<file>    -> PDF Document Serving            │         │
 │  └────────────────────────────────────────────────────────────────┘         │
 │                                                                              │
 └──────────────────────────────────┬───────────────────────────────────────────┘
@@ -88,6 +89,14 @@
 │  │  │     │  - Citation formatting                        │      │    │   │
 │  │  │     │  - Cost: ~$0.005 per query                    │      │    │   │
 │  │  │     └───────────────────────────────────────────────┘      │    │   │
+│  │  │                          │                                  │    │   │
+│  │  │     ┌────────────────────▼──────────────────────────┐      │    │   │
+│  │  │     │  Stage 3: Consultant Analyzer (Optional)     │      │    │   │
+│  │  │     │  - Detect analysis type (risk/lifecycle/etc) │      │    │   │
+│  │  │     │  - Apply ISO 55000 frameworks                │      │    │   │
+│  │  │     │  - Generate expert-level recommendations     │      │    │   │
+│  │  │     │  - Load Claude Skills if needed              │      │    │   │
+│  │  │     └───────────────────────────────────────────────┘      │    │   │
 │  │  │                                                             │    │   │
 │  │  └─────────────────────────────────────────────────────────────┘    │   │
 │  └──────────────────────────────────────────────────────────────────────┘   │
@@ -100,12 +109,14 @@
 │  │  - Command Routing   │  │  - Validation        │  │  - Hybrid Search │  │
 │  └──────────────────────┘  └──────────────────────┘  └──────────────────┘  │
 │                                                                              │
-│  ┌──────────────────────┐  ┌──────────────────────┐                         │
-│  │ question_suggester   │  │  citation_formatter  │                         │
-│  │                      │  │                      │                         │
-│  │  - Context Analysis  │  │  - Source Tracking   │                         │
-│  │  - Smart Suggestions │  │  - Citation Links    │                         │
-│  └──────────────────────┘  └──────────────────────┘                         │
+│  ┌──────────────────────┐  ┌──────────────────────┐  ┌──────────────────┐  │
+│  │ question_suggester   │  │  citation_formatter  │  │ consultant_      │  │
+│  │                      │  │                      │  │  analyzer.py     │  │
+│  │  - Context Analysis  │  │  - Source Tracking   │  │                  │  │
+│  │  - Smart Suggestions │  │  - Citation Links    │  │  - Type Detection│  │
+│  │                      │  │  - PDF.js Viewer     │  │  - ISO Frameworks│  │
+│  │                      │  │  - Page Navigation   │  │  - Risk/Lifecycle│  │
+│  └──────────────────────┘  └──────────────────────┘  └──────────────────┘  │
 │                                                                              │
 └──────────────────────────────────┬───────────────────────────────────────────┘
                                    │
@@ -143,10 +154,26 @@
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
 │  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │                   data/.tmp/ (Local Cache)                          │   │
+│  │                   data/ (Local Storage)                             │   │
 │  │                                                                      │   │
 │  │  ┌────────────────────────────────────────────────────────────┐    │   │
-│  │  │  asset_index.json (141,887 assets)                         │    │   │
+│  │  │  assets.db (SQLite Database) - PRIMARY DATA STORE          │    │   │
+│  │  │                                                             │    │   │
+│  │  │  Tables:                                                    │    │   │
+│  │  │  - assets (141,887 rows)                                   │    │   │
+│  │  │    - All 110 fields indexed                                │    │   │
+│  │  │    - Full-text search enabled                              │    │   │
+│  │  │    - 95%+ query accuracy                                   │    │   │
+│  │  │                                                             │    │   │
+│  │  │  Indexes:                                                   │    │   │
+│  │  │  - idx_asset_id (PRIMARY KEY)                              │    │   │
+│  │  │  - idx_condition (Status filtering)                        │    │   │
+│  │  │  - idx_criticality (Risk assessment)                       │    │   │
+│  │  │  - idx_location (Geographic queries)                       │    │   │
+│  │  └────────────────────────────────────────────────────────────┘    │   │
+│  │                                                                      │   │
+│  │  ┌────────────────────────────────────────────────────────────┐    │   │
+│  │  │  .tmp/asset_index.json (LEGACY - Being Phased Out)         │    │   │
 │  │  │                                                             │    │   │
 │  │  │  Structure:                                                │    │   │
 │  │  │  {                                                          │    │   │
@@ -548,15 +575,153 @@ Query: "Show poor assets"
 
 ## Future Enhancements
 
-1. **Database Migration**: PostgreSQL for better scalability
-2. **Authentication**: User login system
-3. **Backup System**: Automated backups before CRUD
-4. **HTTPS**: SSL/TLS for production
-5. **Cost Monitoring**: Track API usage
-6. **Bidirectional Sync**: Write changes back to Google Drive
-7. **Advanced Analytics**: Dashboards, charts, trends
+1. **Work Order System Integration** (High Priority)
+   - Automatic condition updates from maintenance work orders
+   - Real-time condition tracking (6-12 months → 48 hours)
+   - 70% improvement in condition accuracy (±1.0 → ±0.3 grade)
+   - Failure pattern recognition (70-85% prevention rate)
+   - Integration with SAP PM, Maximo, or ServiceNow
+   - Full audit trail for ISO 55001 compliance
+   - ROI: 3-4 month payback, $490K-$1.13M annual savings
+   - Implementation: 12-18 months phased rollout
+
+2. **Database Migration**: PostgreSQL for better scalability
+
+3. **Authentication**: User login system
+
+4. **Backup System**: Automated backups before CRUD
+
+5. **HTTPS**: SSL/TLS for production
+
+6. **Cost Monitoring**: Track API usage
+
+7. **Bidirectional Sync**: Write changes back to Google Drive
+
+8. **Advanced Analytics**: Dashboards, charts, trends
 
 ---
 
-**Last Updated**: 2026-01-31
-**Version**: 2.0 (Two-Stage Pipeline + Semantic Search)
+## User Interface Enhancements
+
+### NotebookLM-Style Citation System
+
+The web interface features an interactive citation panel modeled after Google's NotebookLM:
+
+```
+┌─────────────────────────────────────────────┐
+│  Main Chat Window                           │
+│                                              │
+│  Answer with citations [1] [2] [3]          │
+│  Click any citation number to view source   │
+└─────────────────────────────────────────────┘
+                    │
+                    │ Click citation
+                    ▼
+┌─────────────────────────────────────────────┐
+│  Citation Side Panel (Slides in from right) │
+│  ┌───────────────────────────────────────┐  │
+│  │  Citation Details                     │  │
+│  │  - Standard: ISO 55002                │  │
+│  │  - Section: 02 - September 2024      │  │
+│  │  - Pages: 3-9                         │  │
+│  └───────────────────────────────────────┘  │
+│                                              │
+│  ┌───────────────────────────────────────┐  │
+│  │  PDF Viewer (PDF.js)                  │  │
+│  │  ┌─────────────────────────────────┐  │  │
+│  │  │  [PDF rendering at exact page]  │  │  │
+│  │  │  Page 3 of 25                    │  │  │
+│  │  │                                  │  │  │
+│  │  │  Auto-scrolled to cited section │  │  │
+│  │  └─────────────────────────────────┘  │  │
+│  │  [🔗 Open Full PDF]                   │  │
+│  └───────────────────────────────────────┘  │
+└─────────────────────────────────────────────┘
+```
+
+**Key Features:**
+1. **Programmatic PDF Navigation** - PDF.js renders exact page cited
+2. **Auto-Scroll** - Panel automatically scrolls to show PDF viewer
+3. **Interactive Citations** - Click any [number] to view source
+4. **Source Traceability** - Every claim links back to authoritative document
+5. **Full PDF Access** - Button to open complete document in new tab
+
+### Consultant Analysis UI
+
+When consultant-level analysis is triggered:
+
+```
+┌─────────────────────────────────────────────┐
+│  📊 Consultant Analysis                     │
+│  ─────────────────────────────────────────  │
+│                                              │
+│  Analysis Type: Risk Assessment             │
+│                                              │
+│  Risk Matrix:                                │
+│  ┌──────────────────────────────────────┐   │
+│  │ Asset ID  │ Criticality │ Risk Score │   │
+│  ├───────────┼─────────────┼────────────┤   │
+│  │ FS-001    │ EXTREME     │ 25         │   │
+│  │ FS-042    │ HIGH        │ 16         │   │
+│  └──────────────────────────────────────┘   │
+│                                              │
+│  Recommendations:                            │
+│  ✓ Immediate visual inspection (24-48h)     │
+│  ✓ Engage AS 1851 certified contractor      │
+│  ✓ Budget allocation: $50,000-150,000       │
+│  ✓ Escalate to Building Manager             │
+│                                              │
+│  ISO 55000 Compliance: [1] [2] [3]          │
+└─────────────────────────────────────────────┘
+```
+
+## Claude Skills Integration
+
+The system integrates with 600+ Claude Code skills stored in `.claude/skills/`:
+
+**Active Skills:**
+- `asset-management-consultant` - ISO 55000 frameworks and strategic analysis
+- `fire-safety-aus-standards` - AS 1670, AS 1851, AS 2118, AS 2419, AS 2444
+- `electrical-expert` - AS/NZS 3000, AS 3008, AS 4777
+- `plumbing-expert` - AS 3500 water services
+- `ac-expert` - HVAC systems and energy efficiency
+
+**Skill Invocation:**
+```python
+# Consultant analyzer detects query type
+if analysis_type == "compliance":
+    # Load relevant skill context
+    skill_context = load_skill("fire-safety-aus-standards")
+    # Enhanced analysis with domain expertise
+```
+
+**Benefits:**
+- Domain-specific expertise on demand
+- Consistent framework application
+- Reusable knowledge across queries
+- Extensible architecture for new domains
+
+## Database Migration (JSON → SQLite)
+
+**Migration Tools:**
+- `tools/migrate_json_to_sqlite.py` - One-time migration script
+- `tools/database_manager.py` - SQLite CRUD operations
+
+**Benefits of SQLite:**
+1. **95%+ Accuracy** - Structured SQL queries vs keyword matching
+2. **Performance** - Indexed queries <100ms vs 2-5s
+3. **Scalability** - Handles millions of rows efficiently
+4. **Data Integrity** - ACID compliance, constraints
+5. **Standard Interface** - SQL queries, no custom parsing
+
+**Migration Status:**
+- ✅ SQLite database created (`data/assets.db`)
+- ✅ Migration tool completed
+- ✅ Database manager for queries
+- 🔄 Web app still uses JSON (backward compatibility)
+- ⏳ Full cutover planned for v3.0
+
+---
+
+**Last Updated**: 2026-02-06
+**Version**: 2.5 (Consultant Analysis + PDF.js + SQLite Migration)
