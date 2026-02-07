@@ -16,6 +16,7 @@ from dotenv import load_dotenv
 # Add citation support
 sys.path.insert(0, os.path.dirname(__file__))
 from citation_formatter import CitationFormatter
+from structured_query_detector import StructuredQueryDetector
 
 # Python 3.13 handles UTF-8 natively on Windows
 if sys.platform == 'win32':
@@ -62,6 +63,14 @@ class GeminiQueryEngine:
 
         # Initialize citation formatter
         self.citation_formatter = CitationFormatter()
+
+        # Initialize structured query detector for SQL-based field queries
+        try:
+            self.structured_query_detector = StructuredQueryDetector()
+            print(f"[OK] Structured query detector enabled (SQL-based field queries)")
+        except Exception as e:
+            self.structured_query_detector = None
+            print(f"[WARN] Structured query detector not available: {e}")
 
         # Try to load embedding manager (optional, won't fail if deps missing)
         try:
@@ -326,17 +335,23 @@ Return ONLY the numbers of the top {top_k} most relevant assets, comma-separated
                 # Extract just the chunks (results are tuples of (chunk, score))
                 relevant_chunks = [chunk for chunk, score in results]
 
-                print(f"[OK] Found {len(relevant_chunks)} relevant ISO chunks (semantic search)")
-                return relevant_chunks
+                # If semantic search returned results, use them
+                if relevant_chunks:
+                    print(f"[OK] Found {len(relevant_chunks)} relevant ISO chunks (semantic search)")
+                    return relevant_chunks
+                else:
+                    print(f"[WARN] Semantic search returned 0 results, falling back to keyword search")
+                    # Fall through to keyword search below
 
             except Exception as e:
                 print(f"[WARN] Vector search failed: {e}, falling back to keyword search")
                 # Fall through to keyword search below
 
         # Fallback to keyword search
-        print(f"[INFO] Using keyword search for ISO content")
+        print(f"[INFO] Using keyword search for ISO content (total chunks: {len(all_chunks)})")
         query_lower = query.lower()
         keywords = query_lower.split()
+        print(f"[DEBUG] Keywords: {keywords}")
 
         relevant_chunks = []
         for chunk in all_chunks:
@@ -444,8 +459,10 @@ Return ONLY the numbers of the top {top_k} most relevant assets, comma-separated
         # Add relevant ISO content with citation tracking (only if iso_kb provided)
         if iso_kb:
             relevant_iso = self.search_relevant_iso_content(query, iso_kb)
+            print(f"[ISO SEARCH] Found {len(relevant_iso)} relevant ISO chunks")
         else:
             relevant_iso = []
+            print(f"[ISO SEARCH] No ISO KB provided")
         if relevant_iso:
             context_parts.append(f"\n=== RELEVANT ISO 55000 STANDARDS ===")
             for i, chunk in enumerate(relevant_iso, 1):
@@ -521,6 +538,173 @@ ISO 55000 Core Principles:
 
 Answer concisely and use inline citations [X] when referencing specific data or standards."""
 
+    def _handle_structured_query(self, question: str, asset_index_file: str, iso_kb_file: str) -> Dict[str, Any]:
+        """
+        Handle structured field queries using SQL for high accuracy.
+
+        Args:
+            question: User question (e.g., "How many Precise Fire assets?")
+            asset_index_file: Path to asset index (for citation metadata)
+            iso_kb_file: Path to ISO knowledge base (for ISO context if needed)
+
+        Returns:
+            Query result with accurate SQL-based answer
+        """
+        # Build SQL query
+        sql_query = self.structured_query_detector.build_sql_query(question)
+
+        if not sql_query:
+            print("[WARN] Could not build SQL query, falling back to RAG")
+            # Fall back to regular RAG pipeline
+            return self.query(question, asset_index_file, iso_kb_file)
+
+        # Execute SQL query
+        print(f"SQL: {sql_query['sql']}")
+        print(f"Params: {sql_query['params']}")
+
+        sql_result = self.structured_query_detector.execute_sql_query(sql_query)
+
+        if not sql_result['success']:
+            print(f"[ERROR] SQL query failed: {sql_result['error']}")
+            return {
+                'question': question,
+                'answer': f"I encountered an error querying the database: {sql_result['error']}",
+                'citations': [],
+                'model': 'SQL',
+                'context_size': 0,
+                'citation_count': 0,
+                'status': 'error'
+            }
+
+        # Format results into answer
+        answer = self._format_sql_results(question, sql_query, sql_result)
+
+        # Reset citations and add SQL-based citation
+        self.citation_formatter.reset()
+
+        # Add citation for SQL query
+        cit_num = self.citation_formatter.add_asset_citation(
+            asset_ids=[],  # SQL queries don't return specific asset IDs
+            source_file="Asset Database (SQLite)",
+            sheet_name="assets",
+            field=sql_query.get('field', 'Multiple fields'),
+            filter_criteria=sql_query['description'],
+            count=sql_result.get('count', len(sql_result['results']))
+        )
+
+        # Add citation to answer
+        answer += f" [{cit_num}]"
+
+        print(f"[OK] SQL query returned {len(sql_result['results'])} results")
+
+        return {
+            'question': question,
+            'answer': answer,
+            'citations': self.citation_formatter.get_citations_as_json(),
+            'model': 'SQL (Structured Query)',
+            'context_size': len(str(sql_result)),
+            'citation_count': self.citation_formatter.citation_counter,
+            'status': 'success',
+            'sql_query': sql_query['sql'],  # Include SQL for transparency
+            'query_type': 'structured'
+        }
+
+    def _format_sql_results(self, question: str, sql_query: Dict[str, Any], sql_result: Dict[str, Any]) -> str:
+        """
+        Format SQL results into natural language answer.
+
+        Args:
+            question: Original question
+            sql_query: SQL query metadata
+            sql_result: SQL execution results
+
+        Returns:
+            Formatted answer text
+        """
+        results = sql_result['results']
+
+        if sql_query['type'] == 'count':
+            # Count query (single or multi-filter)
+            if not results or len(results) == 0:
+                return f"**0 assets** matching your criteria."
+
+            count = results[0].get('count', 0)
+
+            # Check if multi-filter
+            if sql_query.get('filter_count', 0) > 1:
+                # Multi-filter response - build natural description
+                filters = sql_query.get('filters', [])
+                description_parts = []
+
+                for field, value in filters:
+                    clean_field = field.split('__')[0] if '__' in field else field
+
+                    if clean_field == 'data_source':
+                        description_parts.insert(0, value)  # Put source first
+                    elif clean_field == 'condition':
+                        description_parts.append(f"in {value} condition")
+                    elif clean_field == 'criticality':
+                        description_parts.append(f"({value} criticality)")
+                    elif clean_field == 'current_age':
+                        # Age comparisons
+                        if '__gt' in field:
+                            description_parts.append(f"over {value} years old")
+                        elif '__lt' in field:
+                            description_parts.append(f"under {value} years old")
+                    else:
+                        description_parts.append(f"{clean_field}='{value}'")
+
+                description = ' '.join(description_parts)
+                return f"**{count:,}** {description} assets."
+            else:
+                # Single filter response
+                # Check if we have 'field' and 'value' or need to extract from 'filters'
+                if 'filters' in sql_query and sql_query['filters']:
+                    field, value = sql_query['filters'][0]
+                else:
+                    value = sql_query.get('value', 'value')
+                    field = sql_query.get('field', 'field')
+
+                # Natural formatting based on field type
+                if field == 'data_source':
+                    return f"**{count:,}** {value} assets."
+                elif field == 'condition':
+                    return f"**{count:,}** assets in {value} condition."
+                elif field == 'criticality':
+                    return f"**{count:,}** {value} criticality assets."
+                else:
+                    return f"**{count:,}** {value} assets."
+
+        elif sql_query['type'] == 'groupby':
+            # Group by query - return breakdown as markdown table
+            if not results or len(results) == 0:
+                return "I found no assets to group."
+
+            field = sql_query.get('field', 'field')
+            lines = []
+            lines.append(f"Here's the breakdown by {field}:\n")
+            lines.append(f"| {field.title()} | Count |")
+            lines.append("|" + "-" * 30 + "|" + "-" * 10 + "|")
+
+            for row in results[:20]:  # Show top 20
+                field_value = row.get(field, 'Unknown')
+                count = row.get('count', 0)
+                lines.append(f"| {field_value} | {count:,} |")
+
+            if len(results) > 20:
+                total_remaining = sum(row.get('count', 0) for row in results[20:])
+                lines.append(f"| *...and {len(results) - 20} more* | {total_remaining:,} |")
+
+            # Add total
+            total = sum(row.get('count', 0) for row in results)
+            lines.append(f"| **TOTAL** | **{total:,}** |")
+
+            return "\n".join(lines)
+
+        else:
+            # Generic result formatting
+            return f"I found {len(results)} results for your query."
+
     def query(self, question: str, asset_index_file: str, iso_kb_file: str) -> Dict[str, Any]:
         """
         Query the asset register with RAG.
@@ -536,6 +720,13 @@ Answer concisely and use inline citations [X] when referencing specific data or 
         print(f"\n=== Processing Query ===")
         print(f"Question: {question}\n")
 
+        # STEP 1: Check if this is a structured field query -> use SQL for accuracy
+        if self.structured_query_detector:
+            if self.structured_query_detector.is_structured_query(question):
+                print("[STRUCTURED QUERY DETECTED] Using SQL for high accuracy...")
+                return self._handle_structured_query(question, asset_index_file, iso_kb_file)
+
+        # STEP 2: Natural language query -> use RAG pipeline
         # Load data
         asset_index = None
         if asset_index_file:

@@ -10,7 +10,7 @@ import sys
 import logging
 import re
 from datetime import datetime
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify, session, send_file
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -41,6 +41,7 @@ from gemini_query_engine import GeminiQueryEngine
 from command_parser import CommandParser
 from asset_updater import AssetUpdater
 from question_suggester import QuestionSuggester
+from consultant_analyzer import ConsultantAnalyzer
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -69,21 +70,45 @@ ASSET_INDEX_FILE = os.path.join(DATA_DIR, 'asset_index.json')
 ISO_KB_FILE = os.path.join(DATA_DIR, 'iso_knowledge_base.json')
 
 # Initialize components
+query_engine = None
+command_parser = None
+asset_updater = None
+question_suggester = None
+consultant_analyzer = None
+
 try:
     query_engine = GeminiQueryEngine()
-    command_parser = CommandParser()
-    asset_updater = AssetUpdater()
-    question_suggester = QuestionSuggester()
-    print("[OK] All components initialized successfully")
+    print(f"[OK] Query engine initialized: {query_engine}")
+    print(f"[DEBUG] query_engine is None: {query_engine is None}")
 except Exception as e:
-    import traceback
-    print(f"[WARNING] Component initialization warning:")
-    print(f"Error: {str(e)}")
-    traceback.print_exc()
+    print(f"[ERROR] Query engine initialization failed: {e}")
     query_engine = None
-    command_parser = None
+
+try:
+    command_parser = CommandParser()
+    print("[OK] Command parser initialized")
+except Exception as e:
+    print(f"[ERROR] Command parser initialization failed: {e}")
+
+try:
+    asset_updater = AssetUpdater()
+    print("[OK] Asset updater initialized (Google Sheets sync enabled)")
+except Exception as e:
+    print(f"[WARNING] Asset updater initialization failed: {e}")
+    print("[INFO] Google Sheets sync disabled - queries will still work")
     asset_updater = None
-    question_suggester = None
+
+try:
+    question_suggester = QuestionSuggester()
+    print("[OK] Question suggester initialized")
+except Exception as e:
+    print(f"[WARNING] Question suggester initialization failed: {e}")
+
+try:
+    consultant_analyzer = ConsultantAnalyzer()
+    print("[OK] Consultant analyzer initialized")
+except Exception as e:
+    print(f"[WARNING] Consultant analyzer initialization failed: {e}")
 
 
 @app.route('/')
@@ -175,9 +200,14 @@ def api_query():
                 )
 
         if result['status'] == 'success':
+            citations = result.get('citations', [])
+            logger.info(f"[CITATIONS DEBUG] Returning {len(citations)} citations")
+            for i, cit in enumerate(citations):
+                logger.info(f"[CITATION {i+1}] Type: {cit.get('type')}, Source: {cit.get('source', 'N/A')[:50]}")
+
             return jsonify({
                 'answer': result['answer'],
-                'citations': result.get('citations', []),  # Structured citations for popups
+                'citations': citations,  # Structured citations for popups
                 'model': result.get('model', 'Unknown'),
                 'context_size': result.get('context_size', 0),
                 'citation_count': result.get('citation_count', 0)
@@ -377,6 +407,86 @@ def api_crud():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/consultant-analysis', methods=['POST'])
+@limiter.limit("5 per minute")  # Lower limit for expensive analysis
+def api_consultant_analysis():
+    """Provide consultant-level analysis of query results."""
+    try:
+        # Check if consultant analyzer is initialized
+        if consultant_analyzer is None:
+            logger.error("Consultant analyzer not initialized")
+            return jsonify({
+                'error': 'Consultant analyzer not initialized',
+                'setup_required': True
+            }), 500
+
+        data = request.get_json()
+        question = data.get('question', '').strip()
+        answer = data.get('answer', '').strip()
+        citations = data.get('citations', [])
+        asset_summary = data.get('asset_summary', {})
+
+        if not question or not answer:
+            return jsonify({'error': 'Question and answer required'}), 400
+
+        # Log analysis request
+        logger.info(f"Consultant analysis requested from {request.remote_addr}")
+
+        # Perform consultant analysis
+        result = consultant_analyzer.analyze(
+            question=question,
+            answer=answer,
+            citations=citations,
+            asset_summary=asset_summary
+        )
+
+        if result['status'] == 'success':
+            return jsonify({
+                'analysis': result['analysis'],
+                'analysis_type': result['analysis_type'],
+                'frameworks_applied': result['frameworks_applied'],
+                'citations': result.get('citations', [])
+            })
+        else:
+            return jsonify({'error': result.get('error', 'Analysis failed')}), 500
+
+    except Exception as e:
+        logger.error(f"Consultant analysis error: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/pdf/<filename>')
+def serve_pdf(filename):
+    """Serve ISO PDF files."""
+    try:
+        # Sanitize filename to prevent directory traversal
+        safe_filename = os.path.basename(filename)
+
+        # Only allow specific PDF files
+        allowed_pdfs = [
+            'ASISO55000-20241.pdf',
+            'ASISO55001-20241.pdf',
+            'ASISO55002-20241.pdf'
+        ]
+
+        if safe_filename not in allowed_pdfs:
+            logger.warning(f"Attempted access to unauthorized PDF: {safe_filename}")
+            return jsonify({'error': 'PDF not found'}), 404
+
+        pdf_path = os.path.join('data', '.tmp', safe_filename)
+
+        if not os.path.exists(pdf_path):
+            logger.error(f"PDF file not found: {pdf_path}")
+            return jsonify({'error': 'PDF file not found'}), 404
+
+        logger.info(f"Serving PDF: {safe_filename}")
+        return send_file(pdf_path, mimetype='application/pdf')
+
+    except Exception as e:
+        logger.error(f"Error serving PDF: {str(e)}")
+        return jsonify({'error': 'Error serving PDF'}), 500
 
 
 if __name__ == '__main__':

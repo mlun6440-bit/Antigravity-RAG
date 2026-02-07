@@ -54,17 +54,33 @@ class AssetUpdater:
         """Authenticate with Google OAuth (with WRITE permissions)."""
         creds = None
 
-        # Load existing token
+        # Load existing token - support both JSON and pickle formats
         if os.path.exists(self.token_path):
-            with open(self.token_path, 'rb') as token:
-                creds = pickle.load(token)
+            try:
+                # Try JSON format first (new format)
+                creds = Credentials.from_authorized_user_file(self.token_path, self.SCOPES)
+            except Exception:
+                # Fall back to pickle format (old format)
+                try:
+                    with open(self.token_path, 'rb') as token:
+                        creds = pickle.load(token)
+                except Exception as e:
+                    print(f"[WARNING] Could not load token: {e}")
+                    creds = None
 
         # If no valid credentials, authenticate
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
                 print("Refreshing expired token...")
-                creds.refresh(Request())
-            else:
+                try:
+                    creds.refresh(Request())
+                except Exception as e:
+                    print(f"[WARNING] Token refresh failed: {e}")
+                    print("[INFO] Will re-authenticate instead...")
+                    creds = None
+
+            # If still no creds, need to re-authenticate
+            if not creds:
                 if not os.path.exists(self.credentials_path):
                     raise FileNotFoundError(f"credentials.json not found at {self.credentials_path}")
 
@@ -83,9 +99,9 @@ class AssetUpdater:
                 )
                 creds = flow.run_local_server(port=0)
 
-            # Save token for future use
-            with open(self.token_path, 'wb') as token:
-                pickle.dump(creds, token)
+                # Save token for future use (JSON format)
+                with open(self.token_path, 'w') as token:
+                    token.write(creds.to_json())
 
         print("[OK] Authenticated with Google (WRITE access)")
         return creds

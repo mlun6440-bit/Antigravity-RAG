@@ -36,7 +36,8 @@ class ISOEmbeddingManager:
         genai.configure(api_key=self.api_key)
 
         # Embedding model settings
-        self.embedding_model = 'models/text-embedding-004'
+        # Use embedding-001 which is the stable model for Google AI Studio
+        self.embedding_model = 'models/embedding-001'
         self.embedding_dimension = 768
 
         print(f"[OK] ISO Embedding Manager initialized (model: {self.embedding_model})")

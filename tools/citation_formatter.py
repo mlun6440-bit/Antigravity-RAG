@@ -6,6 +6,7 @@ Formats citations in NotebookLM style for asset queries and ISO standards.
 """
 
 from typing import Dict, List, Any
+from tools.spreadsheet_config import get_spreadsheet_url, has_spreadsheet_url
 
 
 class CitationFormatter:
@@ -40,6 +41,9 @@ class CitationFormatter:
         """
         self.citation_counter += 1
 
+        # Get Google Sheets URL if available
+        spreadsheet_url = get_spreadsheet_url(sheet_name)
+
         self.citations.append({
             'number': self.citation_counter,
             'type': 'asset_data',
@@ -48,7 +52,8 @@ class CitationFormatter:
             'field': field,
             'filter': filter_criteria,
             'count': count,
-            'asset_ids': asset_ids[:10]  # Show first 10 IDs
+            'asset_ids': asset_ids[:10],  # Show first 10 IDs
+            'spreadsheet_url': spreadsheet_url  # NEW: Add Google Sheets URL
         })
 
         return self.citation_counter
@@ -70,6 +75,8 @@ class CitationFormatter:
             Citation number
         """
         self.citation_counter += 1
+
+        print(f"[ISO CITATION ADDED] #{self.citation_counter}: {iso_standard} {section_number} - {section_title[:50]}")
 
         self.citations.append({
             'number': self.citation_counter,
