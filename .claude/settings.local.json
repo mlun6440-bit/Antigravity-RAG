@@ -3,9 +3,20 @@
     "allow": [
       "Bash(git clone:*)",
       "Bash(mv:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(python tools/*.py:*)",
+      "Read(*)"
     ],
-    "deny": [],
-    "ask": []
+    "deny": [
+      "Write(data/assets.db)",
+      "Write(data/knowledge_graph.pkl)",
+      "Write(.env)",
+      "Write(credentials.json)",
+      "Write(token.pickle)"
+    ],
+    "ask": [
+      "Bash(python tools/asset_updater.py:*)",
+      "Bash(python tools/migrate_json_to_sqlite.py:*)"
+    ]
   }
 }

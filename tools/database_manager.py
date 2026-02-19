@@ -354,6 +354,102 @@ class DatabaseManager:
             cursor.execute("SELECT COUNT(*) as count FROM assets")
             return cursor.fetchone()['count']
 
+    # -------------------------------------------------------------------------
+    # Work Orders (WO) methods
+    # -------------------------------------------------------------------------
+
+    def create_work_orders_table(self):
+        """Create work_orders table and indexes if they don't exist."""
+        with self.get_connection() as conn:
+            conn.executescript("""
+                CREATE TABLE IF NOT EXISTS work_orders (
+                    row_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    site_id TEXT,
+                    site_name TEXT,
+                    description TEXT,
+                    service_type TEXT,
+                    wo_type TEXT,
+                    status TEXT,
+                    manager TEXT,
+                    tenure TEXT,
+                    nla_sqm REAL,
+                    matched_asset_id TEXT,
+                    match_confidence REAL,
+                    match_method TEXT,
+                    matched_at TEXT
+                );
+                CREATE INDEX IF NOT EXISTS idx_wo_site ON work_orders(site_id);
+                CREATE INDEX IF NOT EXISTS idx_wo_type ON work_orders(wo_type);
+                CREATE INDEX IF NOT EXISTS idx_wo_status ON work_orders(status);
+                CREATE INDEX IF NOT EXISTS idx_wo_asset ON work_orders(matched_asset_id);
+            """)
+        print("[OK] work_orders table created/verified")
+
+    def insert_work_orders_batch(self, wo_list: list, batch_size: int = 10000) -> int:
+        """Batch insert work orders. Returns total inserted count."""
+        total = 0
+        sql = """
+            INSERT INTO work_orders
+            (site_id, site_name, description, service_type, wo_type, status, manager, tenure, nla_sqm)
+            VALUES (:site_id, :site_name, :description, :service_type, :wo_type, :status, :manager, :tenure, :nla_sqm)
+        """
+        conn = sqlite3.connect(self.db_path)
+        conn.row_factory = sqlite3.Row
+        try:
+            for i in range(0, len(wo_list), batch_size):
+                batch = wo_list[i:i + batch_size]
+                conn.executemany(sql, batch)
+                conn.commit()
+                total += len(batch)
+                print(f"  WO batch {i // batch_size + 1}: {total:,} rows inserted")
+        finally:
+            conn.close()
+        return total
+
+    def get_wo_by_site(self, site_id: str, wo_type: str = None, exclude_status: str = None) -> list:
+        """Get work orders for a site, optionally filtered by RM/PM type and status."""
+        query = "SELECT * FROM work_orders WHERE site_id = ?"
+        params = [str(site_id)]
+        if wo_type:
+            query += " AND wo_type = ?"
+            params.append(wo_type)
+        if exclude_status:
+            query += " AND status != ?"
+            params.append(exclude_status)
+        with self.get_connection() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [dict(r) for r in rows]
+
+    def update_wo_match(self, row_id: int, asset_id: str, confidence: float, method: str):
+        """Store NLP match result for a work order row."""
+        import datetime
+        ts = datetime.datetime.utcnow().isoformat()
+        with self.get_connection() as conn:
+            conn.execute(
+                "UPDATE work_orders SET matched_asset_id=?, match_confidence=?, match_method=?, matched_at=? WHERE row_id=?",
+                (asset_id, confidence, method, ts, row_id)
+            )
+
+    def get_wo_summary_by_site(self) -> list:
+        """Return per-site WO counts (open RMs, open PMs, total) for dashboard."""
+        sql = """
+            SELECT
+                site_name,
+                SUM(CASE WHEN wo_type='RM' AND status != 'Completed' THEN 1 ELSE 0 END) AS open_rm,
+                SUM(CASE WHEN wo_type='PM' AND status != 'Completed' THEN 1 ELSE 0 END) AS open_pm,
+                COUNT(*) AS total_wos
+            FROM work_orders
+            GROUP BY site_name
+            ORDER BY open_rm DESC
+            LIMIT 20
+        """
+        try:
+            with self.get_connection() as conn:
+                rows = conn.execute(sql).fetchall()
+            return [dict(r) for r in rows]
+        except Exception:
+            return []  # Table may not exist yet
+
 
 # Test function
 if __name__ == '__main__':

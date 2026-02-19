@@ -489,6 +489,274 @@ def serve_pdf(filename):
         return jsonify({'error': 'Error serving PDF'}), 500
 
 
+# =============================================================================
+# Work Order (WO) Endpoints
+# =============================================================================
+
+@app.route('/api/wo/ingest', methods=['POST'])
+def wo_ingest():
+    """Trigger WO ingestion from WOs.xlsx into the work_orders table."""
+    try:
+        import subprocess
+        script = os.path.join(os.path.dirname(__file__), 'tools', 'ingest_wos.py')
+        result = subprocess.run(
+            [sys.executable, script],
+            capture_output=True, text=True, timeout=600
+        )
+        if result.returncode != 0:
+            logger.error(f"WO ingest failed: {result.stderr}")
+            return jsonify({'error': result.stderr}), 500
+
+        # Parse summary from stdout
+        lines = result.stdout + result.stderr
+        stats = {}
+        for key in ['rows_inserted', 'rm_count', 'pm_count', 'open_count', 'completed_count']:
+            import re as _re
+            m = _re.search(rf'{key.replace("_", ".*")}.*?(\d[\d,]*)', lines, _re.IGNORECASE)
+            if m:
+                stats[key] = int(m.group(1).replace(',', ''))
+
+        logger.info(f"WO ingest complete: {stats}")
+        return jsonify({'status': 'ok', **stats})
+    except Exception as e:
+        logger.error(f"WO ingest error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/wo/match', methods=['POST'])
+@limiter.limit("10 per hour")
+def wo_match():
+    """Run NLP matching for unmatched WOs. Optional body: {"site_id": "54500293", "limit": 1000}"""
+    try:
+        from tools.wo_asset_matcher import create_matcher
+        data = request.get_json(silent=True) or {}
+        site_id = data.get('site_id')
+        limit = data.get('limit')
+
+        matcher = create_matcher()
+        result = matcher.match_all_unmatched(site_id=site_id, limit=limit)
+        logger.info(f"WO match complete: {result}")
+        return jsonify({'status': 'ok', **result})
+    except Exception as e:
+        logger.error(f"WO match error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/wo/site/<site_id>', methods=['GET'])
+def wo_by_site(site_id):
+    """Get WOs and matched assets for a specific site."""
+    try:
+        from tools.database_manager import DatabaseManager
+        db = DatabaseManager()
+        wo_type = request.args.get('wo_type')  # RM or PM
+        wos = db.get_wo_by_site(site_id=site_id, wo_type=wo_type, exclude_status='Completed')
+
+        # Enrich with matched asset details
+        asset_ids = list({w['matched_asset_id'] for w in wos if w.get('matched_asset_id')})
+        asset_map = {}
+        if asset_ids:
+            placeholders = ','.join(['?'] * len(asset_ids))
+            with db.get_connection() as conn:
+                rows = conn.execute(
+                    f"SELECT asset_id, asset_name, asset_type, condition, criticality, location FROM assets WHERE asset_id IN ({placeholders})",
+                    asset_ids
+                ).fetchall()
+                asset_map = {r['asset_id']: dict(r) for r in rows}
+
+        for w in wos:
+            aid = w.get('matched_asset_id')
+            w['matched_asset'] = asset_map.get(aid) if aid else None
+
+        return jsonify({'site_id': site_id, 'count': len(wos), 'wos': wos})
+    except Exception as e:
+        logger.error(f"WO by site error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/wo/summary', methods=['GET'])
+def wo_summary():
+    """Site-level WO backlog summary (open RMs, open PMs per site)."""
+    try:
+        from tools.database_manager import DatabaseManager
+        db = DatabaseManager()
+        sites = db.get_wo_summary_by_site()
+        total_open_rm = sum(s.get('open_rm', 0) for s in sites)
+        total_open_pm = sum(s.get('open_pm', 0) for s in sites)
+        return jsonify({
+            'total_open_rm': total_open_rm,
+            'total_open_pm': total_open_pm,
+            'sites': sites
+        })
+    except Exception as e:
+        logger.error(f"WO summary error: {e}")
+        return jsonify({'error': str(e), 'sites': []}), 500
+
+
+# =============================================================================
+# Dashboard Endpoint
+# =============================================================================
+
+@app.route('/api/dashboard', methods=['GET'])
+def dashboard():
+    """Return all dashboard widget data for the 📊 Dashboard view."""
+    try:
+        from tools.database_manager import DatabaseManager
+        db = DatabaseManager()
+
+        summary = db.get_asset_summary()
+        condition_breakdown = db.get_condition_breakdown()
+        asset_types = db.get_asset_types()[:10]  # Top 10
+        wo_sites = db.get_wo_summary_by_site()
+
+        total_open_rm = sum(s.get('open_rm', 0) for s in wo_sites)
+        total_open_pm = sum(s.get('open_pm', 0) for s in wo_sites)
+
+        widgets = [
+            {
+                'type': 'stat_card',
+                'title': 'Total Assets',
+                'value': f"{summary.get('total_assets', 0):,}",
+                'subtitle': f"{summary.get('locations', 0)} sites · {summary.get('buildings', 0)} buildings",
+                'status': 'good'
+            },
+            {
+                'type': 'stat_card',
+                'title': 'Open Reactive WOs',
+                'value': str(total_open_rm),
+                'subtitle': 'Requires immediate attention',
+                'status': 'critical' if total_open_rm > 0 else 'good'
+            },
+            {
+                'type': 'stat_card',
+                'title': 'Open Planned WOs',
+                'value': str(total_open_pm),
+                'subtitle': 'Scheduled maintenance',
+                'status': 'warning' if total_open_pm > 0 else 'good'
+            },
+            {
+                'type': 'stat_card',
+                'title': 'Avg Condition Score',
+                'value': f"{summary.get('avg_condition_score', 0):.1f}/5",
+                'subtitle': 'Across all assets',
+                'status': 'good' if summary.get('avg_condition_score', 0) >= 3 else 'warning'
+            },
+            {
+                'type': 'pie_chart',
+                'title': 'Asset Condition Breakdown',
+                'segments': [
+                    {'label': cond, 'value': count}
+                    for cond, count in condition_breakdown.items()
+                ]
+            },
+            {
+                'type': 'bar_chart',
+                'title': 'Top Asset Types',
+                'labels': [t[0] for t in asset_types],
+                'values': [t[1] for t in asset_types]
+            },
+        ]
+
+        # Add WO backlog chart if data exists
+        if wo_sites:
+            widgets.append({
+                'type': 'bar_chart',
+                'title': 'Open Reactive WOs by Site (Top 10)',
+                'labels': [s.get('site_name', 'Unknown')[:30] for s in wo_sites[:10]],
+                'values': [s.get('open_rm', 0) for s in wo_sites[:10]]
+            })
+            widgets.append({
+                'type': 'bar_chart',
+                'title': 'RM vs PM by Site',
+                'labels': [s.get('site_name', 'Unknown')[:30] for s in wo_sites[:10]],
+                'values': [s.get('open_rm', 0) for s in wo_sites[:10]],
+                'values2': [s.get('open_pm', 0) for s in wo_sites[:10]],
+                'label1': 'Open RM',
+                'label2': 'Open PM'
+            })
+
+        return jsonify({'widgets': widgets})
+    except Exception as e:
+        logger.error(f"Dashboard error: {e}")
+        return jsonify({'error': str(e), 'widgets': []}), 500
+
+
+# =============================================================================
+# CSV Export Endpoint
+# =============================================================================
+
+@app.route('/api/export/csv', methods=['GET'])
+@limiter.limit("5 per hour")
+def export_csv():
+    """Export assets as CSV, with optional WO enrichment and filters."""
+    try:
+        import csv
+        import io
+
+        from tools.database_manager import DatabaseManager
+        db = DatabaseManager()
+
+        # Build filters from query params
+        filters = {}
+        condition = request.args.get('condition')
+        site = request.args.get('site')
+        asset_type_filter = request.args.get('asset_type')
+        include_wos = request.args.get('include_wos', 'false').lower() == 'true'
+
+        if condition:
+            filters['condition'] = sanitize_input(condition)
+        if site:
+            filters['location__like'] = f"%{sanitize_input(site)}%"
+        if asset_type_filter:
+            filters['asset_type__like'] = f"%{sanitize_input(asset_type_filter)}%"
+
+        assets, total = db.query_assets(filters=filters, limit=50000)
+        if not assets:
+            return jsonify({'error': 'No assets found for the given filters'}), 404
+
+        # Optional WO enrichment
+        if include_wos:
+            try:
+                with db.get_connection() as conn:
+                    rows = conn.execute("""
+                        SELECT matched_asset_id,
+                               SUM(CASE WHEN wo_type='RM' AND status!='Completed' THEN 1 ELSE 0 END) AS open_rm,
+                               SUM(CASE WHEN wo_type='PM' AND status!='Completed' THEN 1 ELSE 0 END) AS open_pm,
+                               MAX(CASE WHEN status!='Completed' THEN description END) AS last_open_wo,
+                               MAX(matched_at) AS last_wo_date
+                        FROM work_orders
+                        WHERE matched_asset_id IS NOT NULL
+                        GROUP BY matched_asset_id
+                    """).fetchall()
+                    wo_map = {r['matched_asset_id']: dict(r) for r in rows}
+                for asset in assets:
+                    aid = asset.get('asset_id')
+                    wo = wo_map.get(aid, {})
+                    asset['open_rm_count'] = wo.get('open_rm', 0)
+                    asset['open_pm_count'] = wo.get('open_pm', 0)
+                    asset['last_open_wo'] = wo.get('last_open_wo', '')
+                    asset['last_wo_date'] = wo.get('last_wo_date', '')
+            except Exception as wo_err:
+                logger.warning(f"WO enrichment skipped (table may not exist): {wo_err}")
+
+        # Stream CSV
+        output = io.StringIO()
+        writer = csv.DictWriter(output, fieldnames=list(assets[0].keys()))
+        writer.writeheader()
+        writer.writerows(assets)
+        output.seek(0)
+
+        filename = f"assets_{datetime.now().strftime('%Y-%m-%d')}.csv"
+        from flask import Response
+        return Response(
+            output.getvalue(),
+            mimetype='text/csv',
+            headers={'Content-Disposition': f'attachment; filename="{filename}"'}
+        )
+    except Exception as e:
+        logger.error(f"CSV export error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
 if __name__ == '__main__':
     # Create logs directory if it doesn't exist
     os.makedirs('logs', exist_ok=True)
