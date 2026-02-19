@@ -4,6 +4,10 @@
 # SENSITIVE DATA (NEVER COMMIT THESE!)
 # ========================================
 
+# Large data files (exceed GitHub 100MB limit)
+data/assets.db
+data/knowledge_graph.pkl
+
 # Environment variables and API keys
 .env
 .env.local
