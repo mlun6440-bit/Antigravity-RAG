@@ -1,0 +1,128 @@
+﻿======================================================================
+DATABASE SCHEMA ANALYSIS FOR QUERY CONTRACT
+======================================================================
+
+## ALL COLUMNS:
+  - asset_id (TEXT)
+  - asset_name (TEXT)
+  - asset_type (TEXT)
+  - category (TEXT)
+  - location (TEXT)
+  - building (TEXT)
+  - floor (TEXT)
+  - room (TEXT)
+  - condition (TEXT)
+  - condition_score (INTEGER)
+  - status (TEXT)
+  - criticality (TEXT)
+  - install_date (TEXT)
+  - last_maintenance_date (TEXT)
+  - next_maintenance_date (TEXT)
+  - replacement_due_date (TEXT)
+  - replacement_cost (REAL)
+  - annual_maintenance_cost (REAL)
+  - current_age (INTEGER)
+  - expected_life (INTEGER)
+  - remaining_life (INTEGER)
+  - compliance_standard (TEXT)
+  - last_inspection_date (TEXT)
+  - next_inspection_date (TEXT)
+  - inspection_status (TEXT)
+  - notes (TEXT)
+  - tags (TEXT)
+  - data_source (TEXT)
+  - created_date (TEXT)
+  - updated_date (TEXT)
+
+## DISTINCT VALUES FOR KEY FILTER COLUMNS:
+----------------------------------------------------------------------
+
+### CONDITION (5+ distinct values)
+    'Very Good' (53,324 assets)
+    'Good' (51,143 assets)
+    'Fair' (31,147 assets)
+    'Unknown' (4,380 assets)
+    'Poor' (1,893 assets)
+
+### CRITICALITY (5+ distinct values)
+    'Low' (72,220 assets)
+    'Medium' (32,332 assets)
+    'High' (31,104 assets)
+    'Critical' (3,433 assets)
+    'Unknown' (2,798 assets)
+
+### DATA_SOURCE (15+ distinct values)
+    'Fulcrum' (121,871 assets)
+    'Precise Fire' (9,491 assets)
+    'Precise Air' (4,473 assets)
+    'SCIS' (825 assets)
+    'Equilibrium ' (692 assets)
+    'Nu-Tech Air Conditioning┬á' (496 assets)
+    'Frigecorp' (191 assets)
+    'GWE Electrical' (41 assets)
+    'PDS' (27 assets)
+    ... and 5 more
+
+### CATEGORY (15+ distinct values)
+    'Building Structural & Fabric,Paintwork' (17,007 assets)
+    'Building Structural & Fabric,Doors & Door Hardware' (16,056 assets)
+    'Building Structural & Fabric,Walls' (14,192 assets)
+    'Building Structural & Fabric,Flooring' (11,110 assets)
+    'Electrical Systems,Lighting' (9,549 assets)
+    'Building Structural & Fabric,Ceiling' (8,502 assets)
+    'Electrical Systems,Emergency & Exit Lighting' (7,950 assets)
+    'Fire Systems,Fire Detection' (3,278 assets)
+    'Plumbing Systems,Sink/Basin' (3,204 assets)
+    'Building Structural & Fabric,Windows' (3,072 assets)
+    ... and 5 more
+
+### ASSET_TYPE (15+ distinct values)
+    'Paint Finish' (7,548 assets)
+    'Door Hardware (Handles/Locks)' (5,327 assets)
+    'Emergency Light' (4,129 assets)
+    'Fluorescent Lights' (3,914 assets)
+    'Solid-Core Door' (3,532 assets)
+    'Detector - Smoke' (2,926 assets)
+    'Exit Light' (2,335 assets)
+    'Air Diffusers & Grilles' (2,333 assets)
+    '10 - Fire Extinguishers - Portable' (2,216 assets)
+    ... and 5 more
+
+### LOCATION (15+ distinct values)
+    'St Leonards 1 Reserve Rd' (10,359 assets)
+    'Sydney 121 Macquarie Street' (3,535 assets)
+    'Sydney 453-463 Kent Street' (2,280 assets)
+    'Goulburn 159 Auburn Street' (2,096 assets)
+    'Bathurst 140 William Street' (2,095 assets)
+    'Bathurst 346 Panorama Avenue' (2,076 assets)
+    'Bunya Forensic Mental Health Science Unit' (2,057 assets)
+    'Heritage Building' (2,021 assets)
+    'Primary Health Institute/Nursing Research' (1,942 assets)
+    'Wirrabilla - Education and Training Services' (1,836 assets)
+    ... and 5 more
+
+### BUILDING (15+ distinct values)
+    '54500582' (7,940 assets)
+    '54500593' (3,147 assets)
+    '6093381' (2,446 assets)
+    '54500606' (2,089 assets)
+    '6060010' (2,056 assets)
+    '6060037' (1,942 assets)
+    '6060023' (1,836 assets)
+    '54500102' (1,827 assets)
+    '54500096' (1,695 assets)
+    '54500291' (1,668 assets)
+    ... and 5 more
+
+### STATUS (6+ distinct values)
+    'In Service' (130,519 assets)
+    'Retired' (107 assets)
+    'NEW ASSET PENDING REVIEW' (36 assets)
+    'Not In Service-On Site/Broken' (4 assets)
+    'Not In Service-In Store/Broken' (1 assets)
+
+## TOTAL ASSETS: 141,887
+
+======================================================================
+Use this information to build the Query Contract mapping table
+======================================================================

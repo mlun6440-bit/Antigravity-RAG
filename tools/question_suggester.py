@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Question Suggester Tool
-Generates helpful question suggestions for users unfamiliar with asset management.
+Question Suggester Tool (Enhanced)
+Generates smart, data-driven, and educational questions connecting Asset Register data to ISO 55000.
 """
 
 import os
@@ -16,370 +16,212 @@ import random
 if sys.platform == 'win32':
     import io
 
-
 class QuestionSuggester:
-    """Suggests contextual questions based on asset data."""
+    """Suggests intelligent questions based on asset data quality and ISO 55000 principles."""
 
     def __init__(self):
-        """Initialize suggester with question templates."""
-        self.question_templates = self._load_question_templates()
-
-    def _load_question_templates(self) -> Dict[str, List[Dict[str, str]]]:
-        """Load question templates organized by category."""
-        return {
-            "data_quality": [
-                {
-                    "question": "Which critical assets lack risk assessments?",
-                    "category": "Data Quality",
-                    "explanation": "ISO 55000: Identify risk assessment gaps to improve register completeness"
-                },
-                {
-                    "question": "Which assets have incomplete condition data?",
-                    "category": "Data Quality",
-                    "explanation": "ISO 55001: Find assets needing condition updates for better decision-making"
-                },
-                {
-                    "question": "Which assets are missing installation dates?",
-                    "category": "Data Quality",
-                    "explanation": "ISO 55000: Complete lifecycle data for accurate age-based planning"
-                },
-                {
-                    "question": "Which assets lack maintenance history?",
-                    "category": "Data Quality",
-                    "explanation": "ISO 55001: Build maintenance records for reliability analysis"
-                },
-                {
-                    "question": "What asset data is missing for full ISO 55000 compliance?",
-                    "category": "Data Quality",
-                    "explanation": "ISO 55002: Systematic gap analysis to improve register maturity"
-                }
-            ],
-            "beginner": [
-                {
-                    "question": "How many total assets are in the register?",
-                    "category": "Portfolio Overview",
-                    "explanation": "ISO 55000: Understand portfolio scope and scale"
-                },
-                {
-                    "question": "What types of assets do we manage?",
-                    "category": "Portfolio Overview",
-                    "explanation": "ISO 55000: Map asset diversity for strategic planning"
-                },
-                {
-                    "question": "How many poor condition fire systems do we have?",
-                    "category": "Critical Assets",
-                    "explanation": "ISO 55000: Prioritize life safety assets for immediate action"
-                },
-                {
-                    "question": "Show me all R4-R5 rated assets requiring immediate action",
-                    "category": "Critical Assets",
-                    "explanation": "ISO 55001: Identify critical condition assets for intervention planning"
-                }
-            ],
-            "maintenance": [
-                {
-                    "question": "Which electrical switchboards are over 20 years old?",
-                    "category": "Lifecycle Planning",
-                    "explanation": "ISO 55000: Age-based intervention planning for critical infrastructure"
-                },
-                {
-                    "question": "Which assets need replacement in the next 2 years?",
-                    "category": "Lifecycle Planning",
-                    "explanation": "ISO 55001: Capital planning based on remaining useful life"
-                },
-                {
-                    "question": "Show me assets approaching end-of-life with high criticality",
-                    "category": "Lifecycle Planning",
-                    "explanation": "ISO 55000: Prioritize replacement planning by risk and age"
-                },
-                {
-                    "question": "What is the maintenance backlog for R4-R5 condition assets?",
-                    "category": "Maintenance Optimization",
-                    "explanation": "ISO 55001: Identify maintenance deferrals causing condition degradation"
-                }
-            ],
-            "iso_learning": [
-                {
-                    "question": "What does ISO 55000 say about risk assessment?",
-                    "category": "ISO 55000 Learning",
-                    "explanation": "Learn ISO 55000 risk management framework principles"
-                },
-                {
-                    "question": "How should we measure asset performance per ISO 55000?",
-                    "category": "ISO 55000 Learning",
-                    "explanation": "Understand ISO performance measurement requirements"
-                },
-                {
-                    "question": "What are ISO 55001 requirements for lifecycle costing?",
-                    "category": "ISO 55000 Learning",
-                    "explanation": "Learn whole-of-life cost analysis methods"
-                },
-                {
-                    "question": "How does ISO 55000 recommend prioritizing asset interventions?",
-                    "category": "ISO 55000 Learning",
-                    "explanation": "Learn risk-based decision-making frameworks"
-                }
-            ],
-            "strategic_improvement": [
-                {
-                    "question": "What building services assets need replacement in next 2 years?",
-                    "category": "Capital Planning",
-                    "explanation": "ISO 55001: Long-term capital planning for building services portfolio"
-                },
-                {
-                    "question": "Which asset categories have the most data quality issues?",
-                    "category": "Register Improvement",
-                    "explanation": "ISO 55000: Identify systematic data gaps for targeted improvement"
-                },
-                {
-                    "question": "What is the average condition rating by asset type?",
-                    "category": "Portfolio Health",
-                    "explanation": "ISO 55000: Benchmark portfolio health to identify weak areas"
-                },
-                {
-                    "question": "Which locations have the most critical condition assets?",
-                    "category": "Portfolio Health",
-                    "explanation": "ISO 55000: Geographic risk profiling for intervention prioritization"
-                }
-            ],
-            "risk": [
-                {
-                    "question": "Show me high criticality assets with poor condition ratings",
-                    "category": "Risk Assessment",
-                    "explanation": "ISO 55000: Risk-based prioritization combining consequence and condition"
-                },
-                {
-                    "question": "What are the interdependencies between our critical assets?",
-                    "category": "System Risk",
-                    "explanation": "ISO 55001: Understand cascading failure risks in asset systems"
-                },
-                {
-                    "question": "Which life safety systems lack recent inspections?",
-                    "category": "Risk Assessment",
-                    "explanation": "ISO 55001: Identify compliance risks for critical safety assets"
-                },
-                {
-                    "question": "What is our exposure to assets with unknown condition?",
-                    "category": "Risk Assessment",
-                    "explanation": "ISO 55000: Quantify uncertainty risk from incomplete data"
-                }
-            ],
-            "continuous_improvement": [
-                {
-                    "question": "What patterns exist in our asset failures?",
-                    "category": "Continuous Improvement",
-                    "explanation": "ISO 55001: Learn from failures to improve preventive strategies"
-                },
-                {
-                    "question": "Which asset types consistently degrade faster than expected?",
-                    "category": "Continuous Improvement",
-                    "explanation": "ISO 55000: Identify systematic issues for root cause analysis"
-                },
-                {
-                    "question": "How accurate are our condition assessments compared to actual failures?",
-                    "category": "Continuous Improvement",
-                    "explanation": "ISO 55001: Validate and improve condition assessment methods"
-                },
-                {
-                    "question": "What is the correlation between maintenance frequency and asset condition?",
-                    "category": "Continuous Improvement",
-                    "explanation": "ISO 55000: Optimize maintenance strategies based on evidence"
-                }
-            ],
-            "advanced": [
-                {
-                    "question": "What is the lifecycle cost profile for building services vs infrastructure?",
-                    "category": "Advanced Analysis",
-                    "explanation": "ISO 55002: Compare total cost of ownership across asset categories"
-                },
-                {
-                    "question": "How do our asset management practices align with organizational objectives per ISO 55000?",
-                    "category": "Strategic Alignment",
-                    "explanation": "ISO 55001: Connect asset decisions to organizational strategy"
-                },
-                {
-                    "question": "What is the optimal renewal timing for assets approaching end-of-life?",
-                    "category": "Advanced Analysis",
-                    "explanation": "ISO 55000: Balance risk, cost, and performance for renewal decisions"
-                },
-                {
-                    "question": "How can we improve asset data quality systematically?",
-                    "category": "Register Maturity",
-                    "explanation": "ISO 55001: Develop data quality improvement roadmap"
-                }
-            ]
-        }
+        """Initialize suggester."""
+        pass
 
     def load_asset_index(self, index_file: str) -> Dict[str, Any]:
         """Load asset index to generate contextual suggestions."""
+        if not os.path.exists(index_file):
+            return {"assets": [], "statistics": {}}
+            
         with open(index_file, 'r', encoding='utf-8') as f:
             return json.load(f)
 
-    def analyze_data_context(self, asset_index: Dict[str, Any]) -> Dict[str, Any]:
+    def analyze_data_gaps(self, assets: List[Dict[str, Any]]) -> Dict[str, float]:
         """
-        Analyze asset data to provide context for suggestions.
-
-        Args:
-            asset_index: Asset index data
-
-        Returns:
-            Context information
+        Analyze what percentage of data is missing for key ISO fields.
+        Returns: Dict of field_name -> missing_percentage (0.0 to 1.0)
         """
-        stats = asset_index.get('statistics', {})
-        schema = asset_index.get('schema', {})
-
-        context = {
-            'total_assets': stats.get('total_assets', 0),
-            'available_fields': list(schema.get('fields', {}).keys()),
-            'has_maintenance_data': any('maintenance' in f.lower() for f in schema.get('fields', {}).keys()),
-            'has_financial_data': any('cost' in f.lower() or 'value' in f.lower() or 'price' in f.lower()
-                                     for f in schema.get('fields', {}).keys()),
-            'has_risk_data': any('risk' in f.lower() for f in schema.get('fields', {}).keys()),
-            'has_location_data': any('location' in f.lower() for f in schema.get('fields', {}).keys()),
+        if not assets:
+            return {}
+            
+        total = len(assets)
+        missing_counts = {
+            "date_installed": 0,
+            "asset_criticality": 0,
+            "status": 0, # Condition
+            "estimated_replacement_cost": 0,
+            "manufacturer": 0,
+            "warranty_expiry": 0
         }
+        
+        for asset in assets:
+            if not asset.get("date_installed"): missing_counts["date_installed"] += 1
+            if not asset.get("asset_criticality"): missing_counts["asset_criticality"] += 1
+            if not asset.get("status"): missing_counts["status"] += 1
+            if not asset.get("estimated_replacement_cost"): missing_counts["estimated_replacement_cost"] += 1
+            if not asset.get("manufacturer"): missing_counts["manufacturer"] += 1
+            if not asset.get("date_warranty_expiry"): missing_counts["warranty_expiry"] += 1
+            
+        return {k: v / total for k, v in missing_counts.items()}
 
-        return context
+    def get_categories(self, assets: List[Dict[str, Any]]) -> List[str]:
+        """Get top asset categories."""
+        counts = {}
+        for a in assets:
+            cat = a.get("asset_category", "Unknown")
+            if cat:
+                # Handle comma separated lists
+                parts = cat.split(',')
+                primary = parts[0].strip()
+                counts[primary] = counts.get(primary, 0) + 1
+        
+        # Return top 5
+        sorted_cats = sorted(counts.items(), key=lambda x: x[1], reverse=True)
+        return [c[0] for c in sorted_cats[:5]]
 
-    def filter_relevant_questions(self, context: Dict[str, Any]) -> List[Dict[str, str]]:
-        """
-        Filter questions based on available data.
-
-        Args:
-            context: Data context
-
-        Returns:
-            Relevant questions
-        """
-        all_questions = []
-
-        # Priority 1: Data Quality Improvement (always show these)
-        all_questions.extend(self.question_templates['data_quality'])
-
-        # Priority 2: ISO 55000 Learning (always show these)
-        all_questions.extend(self.question_templates['iso_learning'])
-
-        # Priority 3: Basic queries for immediate action
-        all_questions.extend(self.question_templates['beginner'])
-
-        # Priority 4: Strategic improvement questions
-        all_questions.extend(self.question_templates['strategic_improvement'])
-
-        # Priority 5: Risk-based questions
-        all_questions.extend(self.question_templates['risk'])
-
-        # Priority 6: Lifecycle planning
-        all_questions.extend(self.question_templates['maintenance'])
-
-        # Priority 7: Continuous improvement
-        all_questions.extend(self.question_templates['continuous_improvement'])
-
-        # Priority 8: Advanced analysis
-        all_questions.extend(self.question_templates['advanced'])
-
-        return all_questions
+    def generate_educational_question(self, topic: str) -> Dict[str, str]:
+        """Generate a static educational question about ISO 55000."""
+        iso_questions = [
+            {
+                "question": "What is the definition of an asset according to ISO 55000?",
+                "category": "ISO Education",
+                "explanation": "Learn the fundamental definition that scopes your entire management system."
+            },
+            {
+                "question": "What are the requirements for a Strategic Asset Management Plan (SAMP)?",
+                "category": "ISO Education",
+                "explanation": "Understand the document connecting organizational objectives to asset decisions (ISO 55001 Cl 4.3)."
+            },
+            {
+                "question": "How does ISO 55000 define 'Criticality'?",
+                "category": "ISO Education",
+                "explanation": "Learn how risk-based criticality drives maintenance priority."
+            },
+            {
+                "question": "What is the role of Top Management in asset management?",
+                "category": "ISO Education",
+                "explanation": "ISO 55001 Clause 5.1 emphasizes leadership's role in resource allocation."
+            },
+            {
+                "question": "What constitutes a 'nonconformity' in asset data?",
+                "category": "ISO Education",
+                "explanation": "Learn how data gaps can be classified as nonconformities under ISO 55001 Clause 10.2."
+            }
+        ]
+        return random.choice(iso_questions)
 
     def suggest_questions(self, asset_index_file: str, num_suggestions: int = 10, difficulty: str = "all") -> List[Dict[str, str]]:
         """
-        Generate question suggestions.
-
-        Args:
-            asset_index_file: Path to asset index
-            num_suggestions: Number of suggestions to return
-            difficulty: Question difficulty ("beginner", "advanced", "all")
-
-        Returns:
-            List of suggested questions
+        Generate smart questions based on actual data gaps and ISO principles.
         """
-        print("\n=== Generating Question Suggestions ===\n")
+        print("\n=== Generating Smart Suggestions ===\n")
 
-        # Load asset index
-        asset_index = self.load_asset_index(asset_index_file)
+        data = self.load_asset_index(asset_index_file)
+        assets = data.get("assets", [])
+        
+        if not assets:
+            return [self.generate_educational_question("general") for _ in range(5)]
 
-        # Analyze context
-        context = self.analyze_data_context(asset_index)
+        gaps = self.analyze_data_gaps(assets)
+        categories = self.get_categories(assets)
+        top_cat = categories[0] if categories else "Assets"
+        
+        suggestions = []
 
-        print(f"Asset Register Context:")
-        print(f"  Total Assets: {context['total_assets']}")
-        print(f"  Available Fields: {len(context['available_fields'])}")
-        print(f"  Has Maintenance Data: {context['has_maintenance_data']}")
-        print(f"  Has Financial Data: {context['has_financial_data']}")
-        print(f"  Has Risk Data: {context['has_risk_data']}")
+        # --- 1. Gap Analysis Questions (Data Quality) ---
+        # If > 30% missing installation date
+        if gaps["date_installed"] > 0.3:
+            suggestions.append({
+                "question": "Which assets are missing installation dates?",
+                "category": "Data Quality",
+                "explanation": f"ISO 55000 requires lifecycle data. {int(gaps['date_installed']*100)}% of your assets lack this."
+            })
+            suggestions.append({
+                "question": "How does missing installation date affect lifecycle modeling per ISO 55000?",
+                "category": "ISO Learning",
+                "explanation": "Without age data, you cannot predict End of Life accurately (ISO 55001 Cl 6.2.2)."
+            })
 
-        # Filter relevant questions
-        relevant_questions = self.filter_relevant_questions(context)
+        # If > 10% missing criticality
+        if gaps["asset_criticality"] > 0.1:
+            suggestions.append({
+                "question": "Show me assets with missing criticality ratings",
+                "category": "Risk Management",
+                "explanation": f"Criticality is key to risk-based maintenance (ISO 55001 Cl 6.1). {int(gaps['asset_criticality']*100)}% unrated."
+            })
 
-        # Filter by difficulty
-        if difficulty == "beginner":
-            relevant_questions = [q for q in relevant_questions
-                                 if q['category'] in ['Inventory', 'Data Structure', 'Maintenance']]
-        elif difficulty == "advanced":
-            relevant_questions = [q for q in relevant_questions
-                                 if q['category'] in ['Lifecycle', 'Optimization', 'System Analysis', 'Strategic']]
+        # If > 50% missing replacement cost
+        if gaps["estimated_replacement_cost"] > 0.5:
+            suggestions.append({
+                "question": "Which asset categories define replacement costs?",
+                "category": "Financial Planning",
+                "explanation": "ISO 55000 links technical and financial decisions. Cost data is vital for valid SAMPs."
+            })
 
-        # Shuffle and select
-        random.shuffle(relevant_questions)
-        suggestions = relevant_questions[:num_suggestions]
+        # --- 2. Strategic Insight Questions (Analysis) ---
+        # Condition vs Criticality
+        suggestions.append({
+            "question": "Show me High Criticality assets in Poor condition",
+            "category": "Risk Analysis",
+            "explanation": "ISO 55001 demands prioritization of risks. These are your 'burning platform' assets."
+        })
+        
+        # Category specific
+        if top_cat:
+            suggestions.append({
+                "question": f"What is the condition profile of {top_cat}?",
+                "category": "Portfolio Review",
+                "explanation": "Understanding condition by class helps target renewal budgets."
+            })
 
-        return suggestions
+        # --- 3. Education Questions (ISO 55000) ---
+        # Always mix in 2-3 pure learning questions
+        suggestions.append(self.generate_educational_question("general"))
+        suggestions.append(self.generate_educational_question("general"))
+        
+        # --- 4. "Actionable" Questions ---
+        suggestions.append({
+            "question": "Generate a summary of renewal costs for the next 5 years",
+            "category": "Strategic Planning",
+            "explanation": "Supports the 'Financial Plan' requirement of the SAMP (ISO 55001 Cl 2.5.3.4)."
+        })
+
+        # Shuffle and return requested amount
+        random.shuffle(suggestions)
+        
+        # Ensure we don't have duplicates
+        unique_suggestions = []
+        seen = set()
+        for s in suggestions:
+            if s['question'] not in seen:
+                unique_suggestions.append(s)
+                seen.add(s['question'])
+                
+        return unique_suggestions[:num_suggestions]
 
     def display_suggestions(self, suggestions: List[Dict[str, str]]):
-        """
-        Display suggestions in a user-friendly format.
-
-        Args:
-            suggestions: List of suggested questions
-        """
+        """Display suggestions."""
         print("\n" + "="*60)
-        print("SUGGESTED QUESTIONS")
+        print("SUGGESTED QUESTIONS (ISO 55000 ALIGNED)")
         print("="*60)
 
-        # Group by category
         by_category = {}
         for q in suggestions:
-            category = q['category']
-            if category not in by_category:
-                by_category[category] = []
-            by_category[category].append(q)
+            cat = q['category']
+            if cat not in by_category: by_category[cat] = []
+            by_category[cat].append(q)
 
         for category, questions in by_category.items():
             print(f"\n[{category}]")
             for q in questions:
                 print(f"  • {q['question']}")
                 print(f"    → {q['explanation']}")
-
         print("\n" + "="*60)
 
-
 def main():
-    """Main entry point for command-line usage."""
-    parser = argparse.ArgumentParser(description='Generate question suggestions for asset queries')
-    parser.add_argument('--asset-index', default='data/.tmp/asset_index.json',
-                       help='Path to asset index file')
-    parser.add_argument('--num', type=int, default=10,
-                       help='Number of suggestions')
-    parser.add_argument('--difficulty', choices=['beginner', 'advanced', 'all'], default='all',
-                       help='Question difficulty level')
-
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--asset-index', default='data/.tmp/asset_index.json')
+    parser.add_argument('--num', type=int, default=10)
     args = parser.parse_args()
 
-    try:
-        suggester = QuestionSuggester()
-        suggestions = suggester.suggest_questions(
-            asset_index_file=args.asset_index,
-            num_suggestions=args.num,
-            difficulty=args.difficulty
-        )
-
-        suggester.display_suggestions(suggestions)
-
-        print(f"\n[OK] Generated {len(suggestions)} question suggestions")
-
-    except Exception as e:
-        print(f"\n[ERROR] Error: {e}")
-        import traceback
-        traceback.print_exc()
-        sys.exit(1)
-
+    suggester = QuestionSuggester()
+    suggestions = suggester.suggest_questions(args.asset_index, args.num)
+    suggester.display_suggestions(suggestions)
 
 if __name__ == '__main__':
     main()

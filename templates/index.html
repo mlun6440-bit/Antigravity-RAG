@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asset Register ISO 55000 Specialist</title>
+    <title>Asset Specialist - DEBUG MODE</title>
     <style>
         * {
             margin: 0;
@@ -18,16 +19,20 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 10px;
+            /* Reduced padding */
         }
 
         .container {
             width: 100%;
-            max-width: 1200px;
-            height: 90vh;
+            max-width: 1400px;
+            /* Increased max-width */
+            height: calc(100vh - 20px);
+            /* Maximized height */
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            /* Premium shadow */
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -36,13 +41,15 @@
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 25px 30px;
+            padding: 15px 30px;
+            /* Reduced from 25px */
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .header h1 {
-            font-size: 28px;
+            font-size: 24px;
+            /* Reduced from 28px */
             font-weight: 600;
             margin-bottom: 5px;
         }
@@ -54,7 +61,8 @@
 
         .status-bar {
             background: #f8f9fa;
-            padding: 12px 30px;
+            padding: 8px 30px;
+            /* Reduced from 12px */
             border-bottom: 1px solid #e0e0e0;
             display: flex;
             justify-content: space-between;
@@ -123,11 +131,16 @@
         }
 
         .message-content {
-            max-width: 70%;
+            max-width: 85%;
+            /* Increased from 70% */
             background: white;
-            padding: 15px 20px;
+            padding: 15px 25px;
+            /* Slightly more padding */
             border-radius: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            /* Softer shadow */
+            line-height: 1.6;
+            /* Improved readability */
         }
 
         .message.user .message-content {
@@ -149,7 +162,7 @@
             border-collapse: collapse;
             margin: 15px 0;
             font-size: 14px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             overflow: hidden;
         }
@@ -185,7 +198,7 @@
         }
 
         .message.user .message-content pre {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             color: white;
         }
 
@@ -207,20 +220,41 @@
         /* Citation Side Panel - NotebookLM Style */
         .citation-panel {
             position: fixed;
-            right: -400px;
+            right: 0;
             top: 0;
             width: 400px;
+            /* Default width */
+            min-width: 300px;
+            max-width: 90vw;
             height: 100vh;
             background: white;
-            box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
             z-index: 10000;
-            transition: right 0.3s ease-in-out;
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(100%);
             display: flex;
             flex-direction: column;
         }
 
         .citation-panel.active {
-            right: 0;
+            transform: translateX(0);
+        }
+
+        .resizer {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 8px;
+            height: 100%;
+            cursor: ew-resize;
+            background: transparent;
+            z-index: 10001;
+            transition: background 0.2s;
+        }
+
+        .resizer:hover,
+        .resizer.resizing {
+            background: rgba(102, 126, 234, 0.3);
         }
 
         .citation-panel-header {
@@ -230,7 +264,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .citation-panel-header h3 {
@@ -331,7 +365,11 @@
         @media (max-width: 768px) {
             .citation-panel {
                 width: 100%;
-                right: -100%;
+                transform: translateX(100%);
+            }
+
+            .citation-panel.active {
+                transform: translateX(0);
             }
         }
 
@@ -395,42 +433,207 @@
             background: #da190b;
         }
 
+        /* Query Contract Confirmation UI */
+        .dqc-confirmation {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e8eaf6 100%);
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 10px 0;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .dqc-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .dqc-header::before {
+            content: '🔍';
+            font-size: 20px;
+        }
+
+        .dqc-understood {
+            background: #fff;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #4caf50;
+        }
+
+        .dqc-understood-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .dqc-understood-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .dqc-filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .dqc-filter-group {
+            background: #fff;
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .dqc-filter-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .dqc-filter-select {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .dqc-filter-select:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+
+        .dqc-filter-select option[selected] {
+            background: #667eea;
+            color: white;
+        }
+
+        .dqc-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+
+        .dqc-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .dqc-btn-run {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .dqc-btn-run:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .dqc-btn-cancel {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .dqc-btn-cancel:hover {
+            background: #e0e0e0;
+        }
+
         .suggestions {
-            padding: 20px 30px;
+            padding: 10px 30px;
+            /* Reduced from 20px */
             background: white;
             border-top: 1px solid #e0e0e0;
         }
 
         .suggestions h3 {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 10px;
-        }
-
-        .suggestion-chips {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .suggestion-chip {
-            background: #f0f0f0;
-            padding: 8px 16px;
-            border-radius: 20px;
             font-size: 13px;
+            /* Slightly smaller */
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .suggestions-dropdown-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .suggestions-select {
+            width: 100%;
+            padding: 10px 15px;
+            /* Slightly smaller */
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #555;
+            background: #fff;
+            appearance: none;
+            -webkit-appearance: none;
             cursor: pointer;
             transition: all 0.3s;
-            border: 1px solid #e0e0e0;
+            outline: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px;
         }
 
-        .suggestion-chip:hover {
-            background: #667eea;
-            color: white;
+        .suggestions-select:hover,
+        .suggestions-select:focus {
             border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+
+
+
+        /* Generic Markdown Table Styles */
+        .message-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9em;
+        }
+
+        .message-content th,
+        .message-content td {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .message-content th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .message-content tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .message-content tr:hover {
+            background-color: #f1f5f9;
         }
 
         .input-area {
-            padding: 20px 30px;
+            padding: 15px 30px;
+            /* Reduced from 20px */
             background: white;
             border-top: 2px solid #e0e0e0;
         }
@@ -511,9 +714,13 @@
         }
 
         @keyframes loading {
-            0%, 80%, 100% {
+
+            0%,
+            80%,
+            100% {
                 transform: scale(0);
             }
+
             40% {
                 transform: scale(1);
             }
@@ -544,14 +751,240 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
+
+        /* Industrial Utilitarian Table Style */
+        .message-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+        }
+
+        .message-content th {
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 2px solid #cbd5e1;
+        }
+
+        .message-content td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+        }
+
+        .message-content tr:last-child td {
+            border-bottom: none;
+        }
+
+        .message-content tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        /* Consultant Mode Toggle */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+            margin-right: 8px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #667eea;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+
+        .toggle-label {
+            font-size: 13px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        /* View PDF Button */
+        .view-pdf-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            background: #e74c3c;
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s;
+            font-size: 14px;
+        }
+
+        .view-pdf-btn:hover {
+            background: #c0392b;
+            color: white;
+        }
+
+        /* Embedded PDF Viewer */
+        .pdf-viewer-container {
+            width: 100%;
+            height: 600px;
+            margin-top: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .pdf-viewer-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Proactive Discovery Styles (Analysis Insight) */
+        .discovery-evidence {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 12px 15px;
+            margin-bottom: 12px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9em;
+            color: #4a5568;
+        }
+
+        .discovery-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            color: #2b6cb0;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.8em;
+        }
+
+        .discovery-step {
+            margin-bottom: 4px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .discovery-bullet {
+            color: #667eea;
+            font-weight: bold;
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- PDF.js for programmatic PDF page navigation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
 </head>
+
 <body>
     <div class="container">
-        <div class="header">
+        <div class="header" style="position:relative;">
             <h1>Asset Register ISO 55000 Specialist</h1>
             <p>Ask questions, update assets, and get ISO 55000-compliant answers with citations</p>
+            <button onclick="openMemoryPanel()" style="position:absolute; right:20px; top:50%; transform:translateY(-50%);
+                       background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.4);
+                       color:white; padding:6px 14px; border-radius:20px; cursor:pointer;
+                       font-size:13px; backdrop-filter:blur(4px);"
+                title="View persistent memory — past sessions, insights, history">
+                🧠 Memory
+            </button>
         </div>
+
+        <!-- Memory Panel (slide-in drawer) -->
+        <div id="memory-panel" style="display:none; position:fixed; top:0; right:0; width:420px;
+             height:100vh; background:white; box-shadow:-4px 0 20px rgba(0,0,0,0.15);
+             z-index:1000; overflow-y:auto; padding:24px; font-size:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2 style="color:#667eea; margin:0;">🧠 Persistent Memory</h2>
+                <button onclick="closeMemoryPanel()"
+                    style="background:none; border:none; font-size:20px; cursor:pointer; color:#888;">✕</button>
+            </div>
+
+            <!-- Stats row -->
+            <div id="memory-stats" style="display:flex; gap:12px; margin-bottom:20px;">
+                <div style="flex:1; background:#f8f9fa; border-radius:10px; padding:12px; text-align:center;">
+                    <div style="font-size:22px; font-weight:700; color:#667eea;" id="mem-stat-sessions">—</div>
+                    <div style="font-size:11px; color:#888;">Sessions</div>
+                </div>
+                <div style="flex:1; background:#f8f9fa; border-radius:10px; padding:12px; text-align:center;">
+                    <div style="font-size:22px; font-weight:700; color:#764ba2;" id="mem-stat-exchanges">—</div>
+                    <div style="font-size:11px; color:#888;">Exchanges</div>
+                </div>
+                <div style="flex:1; background:#f8f9fa; border-radius:10px; padding:12px; text-align:center;">
+                    <div style="font-size:22px; font-weight:700; color:#f59e0b;" id="mem-stat-insights">—</div>
+                    <div style="font-size:11px; color:#888;">Insights</div>
+                </div>
+            </div>
+
+            <!-- Insights section -->
+            <h3 style="color:#444; margin-bottom:10px; font-size:13px; text-transform:uppercase; letter-spacing:0.5px;">
+                💡 Extracted Insights
+            </h3>
+            <div id="memory-insights-list" style="margin-bottom:20px;">
+                <div style="color:#aaa; font-size:13px;">Loading…</div>
+            </div>
+
+            <!-- Recent questions -->
+            <h3 style="color:#444; margin-bottom:10px; font-size:13px; text-transform:uppercase; letter-spacing:0.5px;">
+                🕐 Recent Questions
+            </h3>
+            <div id="memory-history-list">
+                <div style="color:#aaa; font-size:13px;">Loading…</div>
+            </div>
+        </div>
+        <!-- Memory panel backdrop -->
+        <div id="memory-backdrop" onclick="closeMemoryPanel()" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+                    background:rgba(0,0,0,0.3); z-index:999;"></div>
 
         <div class="status-bar">
             <div class="status-indicator">
@@ -580,35 +1013,241 @@
 
         <div class="suggestions" id="suggestions-container">
             <h3>Suggested Questions:</h3>
-            <div class="suggestion-chips" id="suggestion-chips"></div>
+            <div class="suggestions-dropdown-container">
+                <select class="suggestions-select" id="suggestions-select">
+                    <option value="" disabled selected>Select a suggested question...</option>
+                </select>
+            </div>
         </div>
 
         <div class="input-area">
             <div class="input-container">
-                <input type="text" id="user-input" placeholder="Ask a question or give a command..." />
-                <button id="send-btn">Send</button>
+                <div class="toggle-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="consultant-mode-toggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="toggle-label">Consultant Mode</span>
+                </div>
+                <input type="text" id="user-input" placeholder="Ask anything... (Auto-routed to Data or ISO)"
+                    onkeypress="handleKeyPress(event)">
+                <button id="send-btn" onclick="sendMessage()">
+                    <span>🚀</span> Send
+                </button>
+            </div>
+            <div
+                style="font-size: 11px; color: #888; margin-top: 8px; text-align: center; display:flex; justify-content:center; align-items:center; gap:16px;">
+                <span>Auto-Routing: Data 📊 | ISO 📘 | Graph 🕸️ | Deep Analysis 🤖</span>
+                <span id="memory-indicator" style="color:#aaa; cursor:default;" title="Conversation memory">🧠 No memory
+                    yet</span>
+
+                <button
+                    onclick="clearHistory(); document.getElementById('chat-area').innerHTML=''; addMessage('assistant','<em>Conversation cleared. Starting fresh.</em>');"
+                    style="font-size:11px; padding:2px 8px; border:1px solid #ddd; border-radius:4px; background:white; color:#888; cursor:pointer;"
+                    title="Clear conversation memory and start a new chat">🗑️ New Chat</button>
             </div>
         </div>
     </div>
 
+    <!-- Hidden file input for uploads -->
+    <input type="file" id="file-input" style="display: none;" onchange="handleFileUpload(event)">
+
+
+
     <script>
-        // Global variables
+        // ── HTML Sanitization Helper (XSS Prevention) ────────────────────────
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.appendChild(document.createTextNode(String(str)));
+            return div.innerHTML;
+        }
+
+        // Global State
+        let isConsultantMode = false;
         let pendingCrudOperation = null;
 
+        // ── Conversation Memory (Context Window) ─────────────────────────────
+        // Stores the last N exchanges so follow-up questions have context
+        // Persisted to sessionStorage so page refresh doesn't lose context
+        let conversationHistory = [];
+        const MAX_HISTORY_TURNS = 6;  // 3 user + 3 assistant turns
+        let persistentMemoryStats = { exchanges: 0, insights: 0, sessions: 0 };
+
+        // Restore from sessionStorage on load
+        try {
+            const saved = sessionStorage.getItem('conversationHistory');
+            if (saved) conversationHistory = JSON.parse(saved);
+        } catch (e) { /* ignore parse errors */ }
+
+        function _saveHistoryToStorage() {
+            try { sessionStorage.setItem('conversationHistory', JSON.stringify(conversationHistory)); }
+            catch (e) { /* quota exceeded, ignore */ }
+        }
+
+        function addToHistory(role, content) {
+            // Strip HTML tags for clean context text
+            const plainContent = content.replace(/<[^>]*>/g, '').trim().slice(0, 400);
+            conversationHistory.push({ role, content: plainContent });
+            // Keep only the last MAX_HISTORY_TURNS entries
+            if (conversationHistory.length > MAX_HISTORY_TURNS) {
+                conversationHistory = conversationHistory.slice(-MAX_HISTORY_TURNS);
+            }
+            _saveHistoryToStorage();
+            updateMemoryIndicator();
+        }
+
+        function clearHistory() {
+            conversationHistory = [];
+            sessionStorage.removeItem('conversationHistory');
+            persistentMemoryStats = { exchanges: 0, insights: 0, sessions: 0 };
+            updateMemoryIndicator();
+            fetch('/api/clear-history', { method: 'POST' });
+        }
+
+        function updateMemoryIndicator() {
+            const indicator = document.getElementById('memory-indicator');
+            if (!indicator) return;
+            const sessionTurns = Math.floor(conversationHistory.length / 2);
+            const totalExchanges = persistentMemoryStats.exchanges || 0;
+
+            if (totalExchanges > 0 || sessionTurns > 0) {
+                const sessionLabel = sessionTurns > 0 ? `${sessionTurns} this session` : '';
+                const totalLabel = totalExchanges > 0 ? `${totalExchanges} total` : '';
+                const combined = [sessionLabel, totalLabel].filter(Boolean).join(' · ');
+                indicator.textContent = `🧠 ${combined}`;
+                indicator.style.color = '#667eea';
+                indicator.title = `Persistent memory: ${totalExchanges} exchanges across ${persistentMemoryStats.sessions} sessions (${persistentMemoryStats.insights} insights)`;
+            } else {
+                indicator.textContent = '🧠 No memory yet';
+                indicator.style.color = '#aaa';
+                indicator.title = 'Ask your first question to start conversation memory';
+            }
+        }
+
+        // Load persistent memory stats from backend
+        async function loadPersistentMemoryStats() {
+            try {
+                const resp = await fetch('/api/memory');
+                const data = await resp.json();
+                if (data.available) {
+                    persistentMemoryStats = {
+                        exchanges: data.total_exchanges || 0,
+                        insights: data.total_insights || 0,
+                        sessions: data.total_sessions || 0,
+                    };
+                    updateMemoryIndicator();
+                }
+            } catch (e) { /* silently fail */ }
+        }
+
+        // ── Persistent Memory Panel ───────────────────────────────────────────
+        async function openMemoryPanel() {
+            document.getElementById('memory-panel').style.display = 'block';
+            document.getElementById('memory-backdrop').style.display = 'block';
+            await loadMemoryData();
+        }
+
+        function closeMemoryPanel() {
+            document.getElementById('memory-panel').style.display = 'none';
+            document.getElementById('memory-backdrop').style.display = 'none';
+        }
+
+        async function loadMemoryData() {
+            try {
+                const response = await fetch('/api/memory');
+                const data = await response.json();
+
+                if (!data.available) {
+                    document.getElementById('memory-insights-list').innerHTML =
+                        '<div style="color:#aaa;">Memory not available</div>';
+                    return;
+                }
+
+                // Stats
+                document.getElementById('mem-stat-sessions').textContent =
+                    data.total_sessions || 0;
+                document.getElementById('mem-stat-exchanges').textContent =
+                    data.total_exchanges || 0;
+                document.getElementById('mem-stat-insights').textContent =
+                    data.total_insights || 0;
+
+                // Insights
+                const insightsList = document.getElementById('memory-insights-list');
+                if (data.insights && data.insights.length > 0) {
+                    const typeColors = {
+                        focus_area: '#667eea', finding: '#e53e3e',
+                        preference: '#38a169', action_item: '#d69e2e'
+                    };
+                    insightsList.innerHTML = data.insights.map(ins => {
+                        const color = typeColors[ins.type] || '#888';
+                        const date = ins.created_at ? escapeHtml(ins.created_at.split('T')[0]) : '';
+                        return `<div style="border-left:3px solid ${color}; padding:8px 10px;
+                                    margin-bottom:8px; background:#fafafa; border-radius:0 6px 6px 0;">
+                            <span style="font-size:10px; background:${color}; color:white;
+                                padding:1px 6px; border-radius:10px; margin-right:6px;">
+                                ${escapeHtml(ins.type.replace('_', ' '))}
+                            </span>
+                            <span style="font-size:12px; color:#555;">${escapeHtml(ins.content)}</span>
+                            <div style="font-size:10px; color:#aaa; margin-top:3px;">${date}</div>
+                        </div>`;
+                    }).join('');
+                } else {
+                    insightsList.innerHTML =
+                        '<div style="color:#aaa; font-size:13px;">No insights yet — insights are extracted after each session ends.</div>';
+                }
+
+                // Recent questions
+                const historyList = document.getElementById('memory-history-list');
+                if (data.recent_questions && data.recent_questions.length > 0) {
+                    const routeIcons = { graph: '🕸️', analytical: '📊', knowledge: '📘', unknown: '❓' };
+                    historyList.innerHTML = data.recent_questions.map((q, idx) => {
+                        const icon = routeIcons[q.route] || '❓';
+                        const date = q.timestamp ? q.timestamp.replace('T', ' ').split('.')[0] : '';
+                        return `<div style="padding:8px; border-bottom:1px solid #f0f0f0; cursor:pointer;"
+                                    data-question-idx="${idx}"
+                                    class="memory-history-item"
+                                    title="Click to re-ask this question">
+                            <span style="font-size:13px;">${icon} ${escapeHtml(q.question)}</span>
+                            <div style="font-size:10px; color:#aaa; margin-top:2px;">${escapeHtml(date)}</div>
+                        </div>`;
+                    }).join('');
+                    // Attach click handlers safely (no inline onclick with user data)
+                    historyList.querySelectorAll('.memory-history-item').forEach(el => {
+                        const idx = parseInt(el.dataset.questionIdx);
+                        el.addEventListener('click', () => {
+                            closeMemoryPanel();
+                            document.getElementById('user-input').value = data.recent_questions[idx].question;
+                            document.getElementById('user-input').focus();
+                        });
+                    });
+                } else {
+                    historyList.innerHTML =
+                        '<div style="color:#aaa; font-size:13px;">No history yet.</div>';
+                }
+
+            } catch (e) {
+                document.getElementById('memory-insights-list').innerHTML =
+                    `<div style="color:#e53e3e;">Error loading memory: ${e.message}</div>`;
+            }
+        }
+
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
+            updateMemoryIndicator();
+            loadPersistentMemoryStats();
             loadSystemStatus();
             loadSuggestions();
 
-            document.getElementById('send-btn').addEventListener('click', sendMessage);
-            document.getElementById('user-input').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    sendMessage();
-                }
-            });
-
             // Initialize close panel button
             document.getElementById('close-panel-btn').addEventListener('click', closeCitationPanel);
+
+            // Initialize toggle
+            document.getElementById('consultant-mode-toggle').addEventListener('change', function (e) {
+                isConsultantMode = e.target.checked;
+                const statusText = isConsultantMode ? "Consultant Mode Active" : "Standard Mode";
+                console.log(statusText);
+            });
         });
 
         async function loadSystemStatus() {
@@ -625,7 +1264,14 @@
                     statusText.textContent = 'Online';
 
                     if (data.stats) {
-                        statsInfo.innerHTML = `Assets: ${data.stats.total_assets} | Fields: ${data.stats.total_fields} | Sources: ${data.stats.source_files}`;
+                        statsInfo.innerHTML = `Assets: ${data.stats.total_assets} | Fields: ${data.stats.total_fields} | Sources:
+    ${data.stats.source_files}`;
+                    }
+                } else if (data.asset_index) {
+                    statusDot.className = 'status-dot active';
+                    statusText.textContent = 'Asset Data Only';
+                    if (data.stats) {
+                        statsInfo.innerHTML = `Assets: ${data.stats.total_assets} | Fields: ${data.stats.total_fields}`;
                     }
                 } else if (data.iso_kb) {
                     statusDot.className = 'status-dot active';
@@ -647,21 +1293,46 @@
                 const response = await fetch('/api/suggestions?num=5');
                 const data = await response.json();
 
-                const chipsContainer = document.getElementById('suggestion-chips');
-                chipsContainer.innerHTML = '';
+                const select = document.getElementById('suggestions-select');
+                // Clear existing options except the first one (placeholder)
+                select.innerHTML = '<option value="" disabled selected>Select a suggested question...</option>';
 
                 data.suggestions.forEach(suggestion => {
-                    const chip = document.createElement('div');
-                    chip.className = 'suggestion-chip';
-                    chip.textContent = suggestion.question;
-                    chip.addEventListener('click', () => {
-                        document.getElementById('user-input').value = suggestion.question;
-                        sendMessage();
-                    });
-                    chipsContainer.appendChild(chip);
+                    const option = document.createElement('option');
+                    option.value = suggestion.question;
+                    option.textContent = suggestion.question;
+                    select.appendChild(option);
+                });
+
+                // Handle selection
+                select.addEventListener('change', function () {
+                    if (this.value) {
+                        document.getElementById('user-input').value = this.value;
+                        sendMessage(); // Auto-send
+                        // Reset selection
+                        this.selectedIndex = 0;
+                    }
                 });
             } catch (error) {
                 console.error('Failed to load suggestions:', error);
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function showLoading() {
+            addMessage('assistant', '<div class="typing-indicator"><span></span><span></span><span></span></div>');
+        }
+
+        function hideLoading() {
+            const chatArea = document.getElementById('chat-area');
+            const indicators = chatArea.getElementsByClassName('typing-indicator');
+            if (indicators.length > 0) {
+                indicators[indicators.length - 1].parentElement.remove();
             }
         }
 
@@ -671,20 +1342,23 @@
 
             if (!message) return;
 
-            // Add user message to chat
+            // Add user message to chat + history
             addMessage('user', message);
+            addToHistory('user', message);
             input.value = '';
 
             // Show loading
             showLoading();
 
             try {
+                // Call Intelligent Auto-Routing Endpoint — include conversation history
                 const response = await fetch('/api/query', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ question: message })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        question: message,
+                        conversation_history: conversationHistory.slice(0, -1) // exclude the turn we just added
+                    })
                 });
 
                 const data = await response.json();
@@ -692,37 +1366,400 @@
 
                 if (data.error) {
                     addMessage('assistant', `<div class="error-message">Error: ${data.error}</div>`);
+                } else if (data.dqc && data.status === 'needs_confirmation') {
+                    // DQC Confirmation Flow — show filter dropdowns for user to review
+                    pendingDqcContract = data.contract;
+                    pendingDqcConfirmationUi = data.confirmation_ui;
+                    showDqcConfirmation(data.contract, data.confirmation_ui);
                 } else if (data.requires_confirmation) {
-                    // CRUD operation needs confirmation
-                    pendingCrudOperation = {
-                        operation: data.intent,
-                        params: data.params
-                    };
+                    // CRUD Intent
+                    pendingCrudOperation = { operation: data.intent, params: data.params };
                     addCrudConfirmation(data.intent, data.params, data.message);
                 } else {
-                    // Regular answer with citations
-                    console.log('=== API RESPONSE DEBUG ===');
-                    console.log('Full response data:', data);
-                    console.log('Citations array:', data.citations);
-                    console.log('Sample citation fields:', data.citations && data.citations[0] ? Object.keys(data.citations[0]) : 'No citations');
+                    // Determine response type based on 'route' or content
+                    const route = data.route || 'knowledge';
+                    const contextTurns = data.context_turns || 0;
 
-                    // Add message with citations stored in data attribute
-                    addMessage('assistant', formatAnswer(data.answer), data.citations || []);
+                    let contentHtml = '';
 
-                    // Attach click handlers after DOM update
-                    setTimeout(() => {
-                        attachCitationClickHandlers();
-                        const citationElements = document.querySelectorAll('.citation');
-                        console.log('[Citations] Attached click handlers to', citationElements.length, 'citation elements');
-                    }, 100);
+                    // Memory badge (show when context was used)
+                    const memoryBadge = contextTurns > 0
+                        ? `<span style="font-size:0.75em; color:#888; margin-left:8px;">🧠 +${contextTurns} context turns</span>`
+                        : '';
+
+                    if (data.code && route !== 'orchestrated') {
+                        // PANDAS ANALYSIS RESULT
+                        const parsedAnswer = marked.parse(data.answer);
+                        contentHtml = `
+<div class="analysis-result">
+    <div class="analysis-badge" style="font-size:0.8em; color:#667eea; margin-bottom:4px;">📊 Analyzed Data${memoryBadge}</div>
+    <div class="analysis-answer">${parsedAnswer}</div>
+    <details style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 5px;">
+        <summary style="cursor:pointer; color:#667eea; font-size: 0.9em;">View Generated Python</summary>
+        <pre style="background:#f8f9fa; padding:10px; border-radius:5px; margin-top:5px; overflow-x:auto; font-size: 0.85em; color: #333;"><code>${data.code}</code></pre>
+    </details>
+</div>`;
+
+                        addMessage('assistant', contentHtml, null, data.widgets || [], data.evidence);
+                    } else if (route === 'orchestrated') {
+                        // ORCHESTRATED MULTI-BRAIN RESULT
+                        const parsedAnswer = marked.parse(data.answer || '');
+                        const toolsUsed = data.tools_used || [];
+                        const hopCount = data.hop_count || 0;
+                        const reasoningChain = data.reasoning_chain || [];
+                        const elapsed = data.elapsed_seconds || 0;
+
+                        // Build tool badges
+                        const toolIcons = {
+                            'analyze_data': '📊 Data Analysis',
+                            'query_knowledge_graph': '🕸️ Knowledge Graph',
+                            'search_iso_standards': '📘 ISO Standards'
+                        };
+                        const toolBadges = toolsUsed.map(t =>
+                            `<span
+        style="display:inline-block; background:linear-gradient(135deg,#667eea,#764ba2); color:white; padding:2px 8px; border-radius:12px; font-size:0.7em; margin:2px;">${toolIcons[t]
+                            || t}</span>`
+                        ).join(' ');
+
+                        // Build reasoning chain (collapsible)
+                        let reasoningHtml = '';
+                        if (reasoningChain.length > 0) {
+                            const steps = reasoningChain.map(step => {
+                                const icon = step.phase === 'THINK' ? '🧠' : '👁️';
+                                const color = step.phase === 'THINK' ? '#667eea' : '#28a745';
+                                let detail = step.decision || step.result_preview || '';
+                                if (detail.length > 150) detail = detail.slice(0, 150) + '…';
+                                return `<div style="padding:3px 0; border-bottom:1px solid #f0f0f0;">
+        <span style="color:${color}; font-weight:600;">${icon} ${step.phase}</span>
+        <span style="color:#555; margin-left:6px;">${detail}</span>
+    </div>`;
+                            }).join('');
+
+                            reasoningHtml = `
+    <details style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 5px;">
+        <summary style="cursor:pointer; color:#764ba2; font-size: 0.9em;">🔍 View Reasoning Chain (${hopCount} hops,
+            ${elapsed}s)</summary>
+        <div style="padding:8px; background:#fafafa; border-radius:6px; margin-top:5px; font-size:0.82em;">${steps}
+        </div>
+    </details>`;
+                        }
+
+
+                        contentHtml = `
+<div class="analysis-result">
+    <div class="analysis-badge" style="font-size:0.8em; color:#764ba2; margin-bottom:4px;">
+        🤖 Deep Analysis <span style="font-size:0.85em; color:#999;">(${hopCount}-hop)</span>${memoryBadge}
+    </div>
+    <div style="margin-bottom:6px;">${toolBadges}</div>
+    <div class="analysis-answer">${parsedAnswer}</div>
+    ${reasoningHtml}
+</div>`;
+                        addMessage('assistant', contentHtml, null, data.widgets || []);
+                    } else if (route === 'graph') {
+                        // KNOWLEDGE GRAPH RESULT
+                        const parsedAnswer = marked.parse(data.answer || '');
+
+                        contentHtml = `
+<div class="analysis-result">
+    <div class="analysis-badge" style="font-size:0.8em; color:#764ba2; margin-bottom:4px;">🕸️ Knowledge Graph${memoryBadge}</div>
+    <div class="analysis-answer">${parsedAnswer}</div>
+</div>`;
+                        addMessage('assistant', contentHtml, null, data.widgets || []);
+                    } else {
+                        // RAG / SEMANTIC RESULT
+                        const formattedAnswer = formatAnswer(data.answer);
+                        const citations = data.citations || [];
+                        const answerWithBadge = contextTurns > 0
+                            ? formattedAnswer + `<div style="margin-top:6px;">${memoryBadge}</div>`
+                            : formattedAnswer;
+                        addMessage('assistant', answerWithBadge, citations, data.widgets || [], data.evidence);
+                        setTimeout(() => { attachCitationClickHandlers(); }, 100);
+                    }
+
+                    // Record assistant answer in history (plain text)
+                    addToHistory('assistant', data.answer || '');
+
+                    // Consultant Mode Trigger (if active)
+                    if (isConsultantMode) {
+                        triggerConsultantAnalysis(message, data.answer, data.citations || [], route);
+                    }
                 }
+
             } catch (error) {
                 hideLoading();
+                console.error('SendMessage error:', error);
                 addMessage('assistant', `<div class="error-message">Error: ${error.message}</div>`);
             }
         }
 
-        function addMessage(role, content, citations = null) {
+
+        // ============================================================================
+        // DETERMINISTIC QUERY CONTRACT (DQC) SYSTEM
+        // ============================================================================
+
+        let pendingDqcContract = null;
+        let pendingDqcConfirmationUi = null;
+
+        async function buildQueryContract(question) {
+            /**
+            * Phase 1: Build Query Contract from natural language.
+            * Returns confirmation UI for user to review/modify.
+            */
+            try {
+                const response = await fetch('/api/contract/build', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: question })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'needs_confirmation') {
+                    pendingDqcContract = data.contract;
+                    pendingDqcConfirmationUi = data.confirmation_ui;
+                    return data;
+                } else {
+                    return { error: data.error || 'Failed to build contract' };
+                }
+            } catch (error) {
+                console.error('DQC build error:', error);
+                return { error: error.message };
+            }
+        }
+
+        function showDqcConfirmation(contract, confirmationUi) {
+            /**
+            * Display the Query Contract confirmation UI.
+            * User can review understood filters and add additional filters.
+            */
+            if (!contract || !confirmationUi) {
+                addMessage('assistant', '<div class="error-message">Error: Could not build query confirmation.</div>');
+                return;
+            }
+            const chatArea = document.getElementById('chat-area');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message assistant';
+            messageDiv.id = 'dqc-confirmation-message';
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = '🔍';
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+
+            // Build the confirmation HTML
+            let filtersHtml = '';
+            const additionalFilters = confirmationUi.additional_filters || {};
+
+            // Generate filter dropdowns
+            for (const [field, config] of Object.entries(additionalFilters)) {
+                const options = config.options || [];
+                const selected = config.selected;
+                // Highlight if this filter has a detected value
+                const isActive = !!selected;
+                const activeClass = isActive ? 'dqc-filter-active' : '';
+                const activeStyle = isActive ? 'border-color: #4caf50; background-color: #f1f8e9;' : '';
+                const labelStyle = isActive ? 'color: #2e7d32; font-weight: 600;' : '';
+
+                filtersHtml += `
+    <div class="dqc-filter-group ${activeClass}" style="${activeStyle}">
+        <label class="dqc-filter-label" style="${labelStyle}">
+            ${isActive ? '✅ ' : ''}${config.label}
+        </label>
+        <select class="dqc-filter-select" data-field="${field}" style="${isActive ? 'border-color: #4caf50;' : ''}">
+            <option value="">Any</option>
+            ${options.map(opt => `
+            <option value="${opt}" ${opt === selected ? 'selected' : ''}>${opt}</option>
+            `).join('')}
+        </select>
+    </div>
+    `;
+            }
+
+            // Output type selector
+            const outputOptions = confirmationUi.output_options || {};
+
+            filtersHtml += `
+    <div class="dqc-filter-group" style="margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 15px;">
+        <label class="dqc-filter-label">Output Format</label>
+        <select class="dqc-filter-select" id="dqc-output-type">
+            <option value="list" ${contract.output_type === 'list' ? 'selected' : ''}>List Assets</option>
+            <option value="count" ${contract.action === 'count' ? 'selected' : ''}>Count Only</option>
+            <option value="groupby" ${contract.action === 'groupby' ? 'selected' : ''}>Group By</option>
+        </select>
+    </div>
+    `;
+
+            contentDiv.innerHTML = `
+    <div class="dqc-confirmation">
+        <div class="dqc-header">Refine & Confirm Query</div>
+
+        <div style="font-size: 13px; color: #666; margin-bottom: 15px;">
+            I've pre-selected filters based on your request. Adjust them below if needed:
+        </div>
+
+        <div class="dqc-filters">
+            ${filtersHtml}
+        </div>
+
+        <div class="dqc-actions">
+            <button class="dqc-btn dqc-btn-cancel" onclick="cancelDqcQuery()">Cancel</button>
+            <button class="dqc-btn dqc-btn-run" onclick="executeDqcQuery()">Run Query</button>
+        </div>
+    </div>
+    `;
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(contentDiv);
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function cancelDqcQuery() {
+            /**
+            * Cancel the pending DQC query.
+            */
+            pendingDqcContract = null;
+            pendingDqcConfirmationUi = null;
+
+            const confirmMsg = document.getElementById('dqc-confirmation-message');
+            if (confirmMsg) {
+                confirmMsg.remove();
+            }
+
+            addMessage('assistant', 'Query cancelled.');
+        }
+
+        async function executeDqcQuery() {
+            /**
+            * Phase 2: Execute the confirmed Query Contract.
+            * Reads user selections and sends to server.
+            */
+            if (!pendingDqcContract) {
+                console.error('No pending DQC contract to execute');
+                return;
+            }
+
+            // Collect user-modified filters from the UI
+            const filterSelects = document.querySelectorAll('.dqc-filter-select[data-field]');
+            const newFilters = [];
+
+            filterSelects.forEach(select => {
+                const field = select.dataset.field;
+                const value = select.value;
+
+                if (value) {
+                    newFilters.push({
+                        field: field,
+                        user_value: value,
+                        db_value: value,
+                        operator: '='
+                    });
+                }
+            });
+
+            // Get output type
+            const outputTypeSelect = document.getElementById('dqc-output-type');
+            const outputType = outputTypeSelect ? outputTypeSelect.value : 'list';
+
+            // Update contract with user selections
+            const finalContract = {
+                ...pendingDqcContract,
+                filters: newFilters,
+                action: outputType === 'count' ? 'count' : (outputType === 'groupby' ? 'groupby' : 'list'),
+                output_type: outputType
+            };
+
+            // Remove confirmation UI
+            const confirmMsg = document.getElementById('dqc-confirmation-message');
+            if (confirmMsg) {
+                confirmMsg.remove();
+            }
+
+            // Show loading
+            showLoading();
+
+            try {
+                const response = await fetch('/api/contract/execute', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contract: finalContract })
+                });
+
+                const data = await response.json();
+                hideLoading();
+
+                if (data.status === 'success') {
+                    addMessage('assistant', formatAnswer(data.answer), [], []);
+                } else {
+                    addMessage('assistant', `<div class="error-message">Error: ${data.error}</div>`);
+                }
+
+            } catch (error) {
+                hideLoading();
+                console.error('DQC execution error:', error);
+                addMessage('assistant', `<div class="error-message">Error: ${error.message}</div>`);
+            }
+
+            // Clear pending contract
+            pendingDqcContract = null;
+            pendingDqcConfirmationUi = null;
+        }
+
+        // ============================================================================
+        // END DQC SYSTEM
+        // ============================================================================
+
+
+        async function triggerConsultantAnalysis(question, answer, citations) {
+
+            // Show analyzing indicator
+            const chatArea = document.getElementById('chat-area');
+            const analyzingDiv = document.createElement('div');
+            analyzingDiv.className = 'message assistant';
+            analyzingDiv.id = 'consultant-loading';
+            analyzingDiv.innerHTML = `
+    <div class="message-avatar" style="background: #f1c40f; color: #333;">EX</div>
+    <div class="message-content">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="loading-dots"><span></span><span></span><span></span></div>
+            <em>Consultant is analyzing...</em>
+        </div>
+    </div>
+    `;
+            chatArea.appendChild(analyzingDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+
+            try {
+                const response = await fetch('/api/consultant-analysis', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        question: question,
+                        answer: answer,
+                        citations: citations,
+                        asset_summary: {} // Add asset summary if available from initial response
+                    })
+                });
+
+                const data = await response.json();
+
+                // Remove loading indicator
+                const loadingEl = document.getElementById('consultant-loading');
+                if (loadingEl) loadingEl.remove();
+
+                if (data.analysis) {
+                    addMessage('assistant', `### 🧐 Consultant Analysis\n\n${data.analysis}`);
+                }
+            } catch (error) {
+                console.error("Consultant analysis failed:", error);
+                const loadingEl = document.getElementById('consultant-loading');
+                if (loadingEl) loadingEl.remove();
+            }
+        }
+
+        function addMessage(role, content, citations = null, widgets = null, evidence = null) {
             const chatArea = document.getElementById('chat-area');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${role}`;
@@ -733,7 +1770,114 @@
 
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
-            contentDiv.innerHTML = content;
+
+            // 1. Render Text Content (Marked)
+            marked.use({
+                breaks: true,
+                gfm: true
+            });
+            contentDiv.innerHTML = role === 'user' ? content : marked.parse(content);
+
+            // 0. Render Discovery Evidence (Analysis Insight) - PREPENDED AFTER CONTENT SET
+            if (evidence && role === 'assistant') {
+                const evidenceDiv = document.createElement('div');
+                evidenceDiv.className = 'discovery-evidence';
+
+                let stepsHtml = '<div class="discovery-header">🔍 Analysis Insight</div>';
+                const steps = evidence.split('\n').filter(s => s.trim());
+                steps.forEach(step => {
+                    stepsHtml += `<div class="discovery-step"><span class="discovery-bullet">›</span> ${step}</div>`;
+                });
+
+                evidenceDiv.innerHTML = stepsHtml;
+                contentDiv.insertBefore(evidenceDiv, contentDiv.firstChild);
+            }
+
+            // 2. Render Widgets (if any)
+            if (widgets && widgets.length > 0) {
+                const widgetContainer = document.createElement('div');
+                widgetContainer.className = 'widget-container';
+                widgetContainer.style.marginTop = '15px';
+                widgetContainer.style.display = 'flex';
+                widgetContainer.style.flexWrap = 'wrap';
+                widgetContainer.style.gap = '10px';
+
+                widgets.forEach((widget, index) => {
+                    const canvasId = `chart-${Date.now()}-${index}`;
+
+                    if (widget.type === 'stat_card') {
+                        // RENDER STAT CARD
+                        const card = document.createElement('div');
+                        card.className = 'stat-card';
+                        card.style.background = '#fff';
+                        card.style.border = '1px solid #e0e0e0';
+                        card.style.borderRadius = '8px';
+                        card.style.padding = '15px';
+                        card.style.minWidth = '150px';
+                        card.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+                        card.style.flex = '1';
+
+                        let color = '#333';
+                        if (widget.status === 'success') color = '#4caf50';
+                        if (widget.status === 'warning') color = '#ff9800';
+                        if (widget.status === 'error') color = '#f44336';
+
+                        card.innerHTML = `
+    <div style="font-size: 12px; color: #666; text-transform: uppercase;">${widget.title}</div>
+    <div style="font-size: 24px; font-weight: bold; color: ${color}; margin-top: 5px;">${widget.value}</div>
+    `;
+                        widgetContainer.appendChild(card);
+
+                    } else if (widget.type === 'bar_chart' || widget.type === 'pie_chart') {
+                        // RENDER CHART
+                        const chartWrapper = document.createElement('div');
+                        chartWrapper.style.background = '#fff';
+                        chartWrapper.style.padding = '10px';
+                        chartWrapper.style.borderRadius = '8px';
+                        chartWrapper.style.border = '1px solid #e0e0e0';
+                        chartWrapper.style.marginTop = '10px';
+                        chartWrapper.style.width = '100%';
+                        chartWrapper.style.height = '300px';
+
+                        const canvas = document.createElement('canvas');
+                        canvas.id = canvasId;
+                        chartWrapper.appendChild(canvas);
+                        widgetContainer.appendChild(chartWrapper);
+
+                        // Defer chart creation until appended to DOM
+                        setTimeout(() => {
+                            new Chart(document.getElementById(canvasId), {
+                                type: widget.type === 'bar_chart' ? 'bar' : 'pie',
+                                data: {
+                                    labels: widget.type === 'bar_chart' ? widget.labels : widget.segments.map(s => s.label),
+                                    datasets: [{
+                                        label: widget.title,
+                                        data: widget.type === 'bar_chart' ? widget.values : widget.segments.map(s => s.value),
+                                        backgroundColor: [
+                                            'rgba(255, 99, 132, 0.6)',
+                                            'rgba(54, 162, 235, 0.6)',
+                                            'rgba(255, 206, 86, 0.6)',
+                                            'rgba(75, 192, 192, 0.6)',
+                                            'rgba(153, 102, 255, 0.6)'
+                                        ]
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        title: {
+                                            display: true,
+                                            text: widget.title
+                                        }
+                                    }
+                                }
+                            });
+                        }, 100);
+                    }
+                });
+                contentDiv.appendChild(widgetContainer);
+            }
 
             // Store citations as data attribute on the message content div
             if (citations && citations.length > 0) {
@@ -745,7 +1889,23 @@
             messageDiv.appendChild(contentDiv);
             chatArea.appendChild(messageDiv);
 
-            chatArea.scrollTop = chatArea.scrollHeight;
+            // Robust Auto-Scroll
+            scrollToBottom();
+            // Double-check after a short delay for dynamic content/layout shifts
+            setTimeout(scrollToBottom, 100);
+            setTimeout(scrollToBottom, 300);
+            setTimeout(scrollToBottom, 600); // For slower images/iframes
+        }
+
+        // Helper: Scroll to bottom of chat
+        function scrollToBottom() {
+            const chatArea = document.getElementById('chat-area');
+            if (chatArea) {
+                // Use requestAnimationFrame for smooth UI updates
+                requestAnimationFrame(() => {
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                });
+            }
         }
 
         function addCrudConfirmation(operation, params, message) {
@@ -762,26 +1922,26 @@
 
             let paramsHtml = '<ul style="margin: 10px 0; padding-left: 20px;">';
             for (const [key, value] of Object.entries(params)) {
-                paramsHtml += `<li><strong>${key}:</strong> ${value}</li>`;
+                paramsHtml += `<li><strong>${escapeHtml(key)}:</strong> ${escapeHtml(value)}</li>`;
             }
             paramsHtml += '</ul>';
 
             contentDiv.innerHTML = `
-                <div class="confirmation-dialog">
-                    <strong>${message}</strong>
-                    ${paramsHtml}
-                    <div class="buttons">
-                        <button class="btn-confirm" onclick="confirmCrud()">Confirm</button>
-                        <button class="btn-cancel" onclick="cancelCrud()">Cancel</button>
-                    </div>
-                </div>
-            `;
+    <div class="confirmation-dialog">
+        <strong>${message}</strong>
+        ${paramsHtml}
+        <div class="buttons">
+            <button class="btn-confirm" onclick="confirmCrud()">Confirm</button>
+            <button class="btn-cancel" onclick="cancelCrud()">Cancel</button>
+        </div>
+    </div>
+    `;
 
             messageDiv.appendChild(avatar);
             messageDiv.appendChild(contentDiv);
             chatArea.appendChild(messageDiv);
 
-            chatArea.scrollTop = chatArea.scrollHeight;
+            scrollToBottom();
         }
 
         async function confirmCrud() {
@@ -806,7 +1966,8 @@
                 hideLoading();
 
                 if (data.success) {
-                    addMessage('assistant', `<div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 10px;">Success: ${data.message}</div>`);
+                    addMessage('assistant', `<div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 10px;">
+        Success: ${data.message}</div>`);
                 } else {
                     addMessage('assistant', `<div class="error-message">Error: ${data.error}</div>`);
                 }
@@ -826,59 +1987,15 @@
 
         function formatAnswer(answer) {
             // Remove References/Sources/Bibliography sections (MUST come first)
-            let formatted = answer.replace(/\n\s*(References|Sources|Bibliography):?\s*\n[\s\S]*$/i, '');
-            formatted = formatted.replace(/\n\s*━+\s*\n\s*(References|Sources|Bibliography):?\s*\n[\s\S]*$/i, '');
+            let cleanAnswer = answer.replace(/\n\s*(References|Sources|Bibliography):?\s*\n[\s\S]*$/i, '');
+            cleanAnswer = cleanAnswer.replace(/\n\s*━+\s*\n\s*(References|Sources|Bibliography):?\s*\n[\s\S]*$/i, '');
 
-            // Convert markdown-style references section
-            formatted = formatted.replace(/━{70}/g, '<hr style="margin: 15px 0;">');
+            // Use Marked.js for everything else (tables, lists, bold, etc.)
+            let formatted = marked.parse(cleanAnswer);
 
-            // Detect and convert markdown tables
-            const tableRegex = /\n(\|[^\n]+\|)\n(\|[-: |]+\|)\n((?:\|[^\n]+\|\n?)+)/g;
-            formatted = formatted.replace(tableRegex, (match, header, separator, rows) => {
-                const headers = header.split('|').filter(h => h.trim()).map(h => h.trim());
-                const rowData = rows.trim().split('\n').map(row =>
-                    row.split('|').filter(cell => cell.trim()).map(cell => cell.trim())
-                );
-
-                let tableHTML = '<table class="data-table"><thead><tr>';
-                headers.forEach(h => tableHTML += `<th>${h}</th>`);
-                tableHTML += '</tr></thead><tbody>';
-
-                rowData.forEach(row => {
-                    tableHTML += '<tr>';
-                    row.forEach(cell => tableHTML += `<td>${cell}</td>`);
-                    tableHTML += '</tr>';
-                });
-
-                tableHTML += '</tbody></table>';
-                return tableHTML;
-            });
-
-            // Detect and convert simple list-based tables (Status: X assets format)
-            const statsPattern = /(?:^|\n)([\w\s]+):\s*(\d+)\s*assets?/gm;
-            let statsMatches = [];
-            let match;
-            while ((match = statsPattern.exec(formatted)) !== null) {
-                statsMatches.push({index: match.index, text: match[0], label: match[1], count: match[2]});
-            }
-
-            // If we found 3 or more consecutive stats, convert to table
-            if (statsMatches.length >= 3) {
-                let tableHTML = '<table class="data-table"><thead><tr><th>Status</th><th>Count</th></tr></thead><tbody>';
-                statsMatches.forEach(stat => {
-                    tableHTML += `<tr><td>${stat.label}</td><td>${stat.count}</td></tr>`;
-                    formatted = formatted.replace(stat.text, '');
-                });
-                tableHTML += '</tbody></table>';
-                formatted = formatted + tableHTML;
-            }
-
-            // Convert citations [1], [2], etc. to superscript with data attributes
+            // Convert citations [1], [2] to superscripts (after markdown parsing)
+            formatted = formatted.replace(/\[Citation (\d+)\]/g, '<sup class="citation" data-citation="$1">$1</sup>');
             formatted = formatted.replace(/\[(\d+)\]/g, '<sup class="citation" data-citation="$1">$1</sup>');
-
-            // Convert line breaks
-            formatted = formatted.replace(/\n\n/g, '</p><p>');
-            formatted = '<p>' + formatted + '</p>';
 
             return formatted;
         }
@@ -954,10 +2071,12 @@
                 cardHTML += `<div class="citation-card-header">[${citation.number}] Asset Data</div>`;
 
                 if (citation.source_file) {
-                    cardHTML += `<div class="citation-card-detail"><strong>Source:</strong><span>${citation.source_file}</span></div>`;
+                    cardHTML += `<div class="citation-card-detail"><strong>Source:</strong><span>${citation.source_file}</span>
+        </div>`;
                 }
                 if (citation.sheet_name) {
-                    cardHTML += `<div class="citation-card-detail"><strong>Sheet:</strong><span>${citation.sheet_name}</span></div>`;
+                    cardHTML += `<div class="citation-card-detail"><strong>Sheet:</strong><span>${citation.sheet_name}</span></div>
+        `;
                 }
                 if (citation.field) {
                     cardHTML += `<div class="citation-card-detail"><strong>Field:</strong><span>${citation.field}</span></div>`;
@@ -966,19 +2085,26 @@
                     cardHTML += `<div class="citation-card-detail"><strong>Filter:</strong><span>${citation.filter}</span></div>`;
                 }
                 if (citation.count !== undefined) {
-                    cardHTML += `<div class="citation-card-detail"><strong>Records:</strong><span>${citation.count.toLocaleString()}</span></div>`;
+                    cardHTML += `<div class="citation-card-detail">
+            <strong>Records:</strong><span>${citation.count.toLocaleString()}</span>
+        </div>`;
                 }
                 if (citation.asset_ids && citation.asset_ids.length > 0) {
                     const idsDisplay = citation.asset_ids.slice(0, 5).join(', ');
-                    const remaining = citation.count > citation.asset_ids.length ? ` +${citation.count - citation.asset_ids.length} more` : '';
-                    cardHTML += `<div class="citation-card-detail"><strong>Asset IDs:</strong><span>${idsDisplay}${remaining}</span></div>`;
+                    const remaining = citation.count > citation.asset_ids.length ? ` +${citation.count - citation.asset_ids.length}
+        more` : '';
+                    cardHTML += `<div class="citation-card-detail"><strong>Asset IDs:</strong><span>${idsDisplay}${remaining}</span>
+        </div>`;
                 }
 
             } else if (citation.type === 'iso_standard') {
-                cardHTML += `<div class="citation-card-header">[${citation.number}] ${citation.standard || 'ISO Standard'}</div>`;
+                cardHTML += `<div class="citation-card-header">[${citation.number}] ${citation.standard || 'ISO Standard'}</div>
+        `;
 
                 if (citation.section) {
-                    cardHTML += `<div class="citation-card-detail"><strong>Section:</strong><span>${citation.section}${citation.title ? ' - ' + citation.title : ''}</span></div>`;
+                    cardHTML += `<div class="citation-card-detail">
+            <strong>Section:</strong><span>${citation.section}${citation.title ? ' - ' + citation.title : ''}</span>
+        </div>`;
                 }
                 if (citation.pages) {
                     cardHTML += `<div class="citation-card-detail"><strong>Pages:</strong><span>${citation.pages}</span></div>`;
@@ -987,14 +2113,72 @@
                     cardHTML += `<div class="citation-card-quote">"${citation.quote}"</div>`;
                 }
 
+                // Add PDF Link
+                const pdfMap = {
+                    'ISO 55000': 'ASISO55000-20241.pdf',
+                    'ISO 55001': 'ASISO55001-20241.pdf',
+                    'ISO 55002': 'ASISO55002-20241.pdf'
+                };
+
+                // Find matching PDF
+                let pdfFilename = null;
+                for (const [key, value] of Object.entries(pdfMap)) {
+                    if (citation.standard && citation.standard.includes(key)) {
+                        pdfFilename = value;
+                        break;
+                    }
+                }
+
+                if (pdfFilename) {
+                    // Extract first page number
+                    let pageNum = 1;
+                    if (citation.pages) {
+                        const match = citation.pages.match(/(\d+)/);
+                        if (match) pageNum = parseInt(match[1], 10);
+                        console.log('[PDF Viewer] Extracted page number:', pageNum, 'from pages:', citation.pages);
+                    }
+
+                    cardHTML += `<a href="/api/pdf/${pdfFilename}#page=${pageNum}" target="_blank" class="view-pdf-btn">Open PDF in
+            New Tab (Page ${pageNum})</a>`;
+
+                    // PDF.js canvas viewer for reliable page navigation
+                    cardHTML += `
+        <div id="citation-pdf-viewer" style="margin-top: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <button onclick="pdfPrevPage()"
+                    style="padding:4px 12px; border:1px solid #ddd; border-radius:4px; cursor:pointer;">◀ Prev</button>
+                <span id="pdf-page-info" style="font-size:13px; color:#666;">Loading...</span>
+                <button onclick="pdfNextPage()"
+                    style="padding:4px 12px; border:1px solid #ddd; border-radius:4px; cursor:pointer;">Next ▶</button>
+            </div>
+            <div id="pdf-canvas-container"
+                style="width:100%; height:500px; overflow-y:auto; border:1px solid #e0e0e0; border-radius:8px; background:#525659;">
+                <canvas id="pdf-canvas" style="display:block; margin:0 auto;"></canvas>
+            </div>
+        </div>
+        `;
+
+                    // Load PDF with PDF.js after innerHTML is applied
+                    const targetPage = pageNum;
+                    const targetFile = pdfFilename;
+                    setTimeout(() => {
+                        loadPDFWithPDFJS(`/api/pdf/${targetFile}`, targetPage);
+                    }, 100);
+
+                    console.log('[PDF Viewer] Loading PDF at page', pageNum, 'via PDF.js');
+                }
+
             } else if (citation.type === 'calculation') {
                 cardHTML += `<div class="citation-card-header">[${citation.number}] Calculation</div>`;
 
                 if (citation.description) {
-                    cardHTML += `<div class="citation-card-detail"><strong>Description:</strong><span>${citation.description}</span></div>`;
+                    cardHTML += `<div class="citation-card-detail"><strong>Description:</strong><span>${citation.description}</span>
+        </div>`;
                 }
                 if (citation.formula) {
-                    cardHTML += `<div class="citation-card-detail"><strong>Formula:</strong><span><code>${citation.formula}</code></span></div>`;
+                    cardHTML += `<div class="citation-card-detail">
+            <strong>Formula:</strong><span><code>${citation.formula}</code></span>
+        </div>`;
                 }
                 if (citation.sources && citation.sources.length > 0) {
                     cardHTML += `<div class="citation-card-detail"><strong>Sources:</strong><span>${citation.sources.join(', ')}</span></div>`;
@@ -1020,10 +2204,128 @@
 
             console.log('[Citation Panel] Panel closed');
         }
+
+        // ===== PDF.js VIEWER FUNCTIONS =====
+        let currentPdfDoc = null;
+        let currentPdfPage = 1;
+        const pdfScale = 1.5;
+
+        async function loadPDFWithPDFJS(pdfUrl, targetPage) {
+            const canvas = document.getElementById('pdf-canvas');
+            const ctx = canvas.getContext('2d');
+            const pageInfo = document.getElementById('pdf-page-info');
+
+            try {
+                console.log('[PDF.js] Loading PDF from:', pdfUrl);
+                const loadingTask = pdfjsLib.getDocument(pdfUrl);
+                currentPdfDoc = await loadingTask.promise;
+                console.log(`[PDF.js] PDF loaded: ${currentPdfDoc.numPages} pages`);
+
+                // Clamp target page
+                currentPdfPage = Math.min(targetPage, currentPdfDoc.numPages);
+                currentPdfPage = Math.max(1, currentPdfPage);
+
+                // Render target page
+                await renderPDFPage(currentPdfPage);
+                pageInfo.textContent = `Page ${currentPdfPage} of ${currentPdfDoc.numPages}`;
+
+                // Auto-scroll to PDF viewer
+                setTimeout(() => {
+                    const pdfViewer = document.getElementById('citation-pdf-viewer');
+                    const panelContent = document.getElementById('citation-panel-content');
+                    if (pdfViewer && panelContent) {
+                        panelContent.scrollTo({
+                            top: pdfViewer.offsetTop - 20,
+                            behavior: 'smooth'
+                        });
+                    }
+                    console.log(`[PDF.js] Auto - scrolled to page ${currentPdfPage} `);
+                }, 300);
+
+            } catch (error) {
+                console.error('[PDF.js] Error loading PDF:', error);
+                if (pageInfo) pageInfo.textContent = 'Error loading PDF';
+            }
+        }
+
+        async function renderPDFPage(pageNum) {
+            const canvas = document.getElementById('pdf-canvas');
+            const ctx = canvas.getContext('2d');
+
+            try {
+                const page = await currentPdfDoc.getPage(pageNum);
+                const viewport = page.getViewport({ scale: pdfScale });
+
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+                console.log(`[PDF.js] Rendered page ${pageNum} `);
+
+                // Update page info
+                const pageInfo = document.getElementById('pdf-page-info');
+                if (pageInfo) pageInfo.textContent = `Page ${currentPdfPage} of ${currentPdfDoc.numPages}`;
+            } catch (error) {
+                console.error('[PDF.js] Error rendering page:', error);
+            }
+        }
+
+        function pdfPrevPage() {
+            if (currentPdfDoc && currentPdfPage > 1) {
+                currentPdfPage--;
+                renderPDFPage(currentPdfPage);
+            }
+        }
+
+        function pdfNextPage() {
+            if (currentPdfDoc && currentPdfPage < currentPdfDoc.numPages) { currentPdfPage++; renderPDFPage(currentPdfPage); }
+        }
+        // ===== RESIZABLE PANEL LOGIC =====
+        document.addEventListener('DOMContentLoaded', () => {
+            const panel = document.getElementById('citation-panel');
+            const resizer = document.getElementById('citation-panel-resizer');
+            let isResizing = false;
+
+            if (resizer && panel) {
+                resizer.addEventListener('mousedown', (e) => {
+                    e.preventDefault(); // Prevent text selection
+                    isResizing = true;
+                    resizer.classList.add('resizing');
+                    panel.style.transition = 'none'; // Disable transition for smooth dragging
+                    document.addEventListener('mousemove', handleMouseMove);
+                    document.addEventListener('mouseup', stopResize);
+                    document.body.style.cursor = 'ew-resize'; // Force cursor
+                });
+            }
+
+            function handleMouseMove(e) {
+                if (!isResizing) return;
+                // Calculate new width: Window width - mouse X position
+                // Since panel is on the right, the width is the distance from the right edge
+                const newWidth = document.body.clientWidth - e.clientX;
+
+                // Constraints (min 300px, max 90% of screen)
+                if (newWidth >= 300 && newWidth <= document.body.clientWidth * 0.9) {
+                    panel.style.width = newWidth + 'px';
+                }
+            }
+
+            function stopResize() {
+                if (isResizing) {
+                    isResizing = false;
+                    if (resizer) resizer.classList.remove('resizing');
+                    if (panel) panel.style.transition = 'transform 0.3s ease-in-out'; // Restore transition
+                    document.removeEventListener('mousemove', handleMouseMove);
+                    document.removeEventListener('mouseup', stopResize);
+                    document.body.style.cursor = '';
+                }
+            }
+        });
     </script>
 
     <!-- Citation Side Panel (NotebookLM Style) -->
     <div id="citation-panel" class="citation-panel">
+        <div id="citation-panel-resizer" class="resizer" title="Drag to resize"></div>
         <div class="citation-panel-header">
             <h3>Source Details</h3>
             <button id="close-panel-btn" class="close-panel-btn">&times;</button>
@@ -1033,4 +2335,5 @@
         </div>
     </div>
 </body>
+
 </html>

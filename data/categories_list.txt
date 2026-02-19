@@ -1,0 +1,170 @@
+Building Structural & Fabric,Automatic Doors
+Building Structural & Fabric,Ceiling
+Building Structural & Fabric,Disabled Access
+Building Structural & Fabric,Door Closer - Manual
+Building Structural & Fabric,Door Lock
+Building Structural & Fabric,Doors & Door Hardware
+Building Structural & Fabric,External Paint
+Building Structural & Fabric,Facade
+Building Structural & Fabric,Fire/Smoke/Exit Door
+Building Structural & Fabric,Flooring
+Building Structural & Fabric,Guttering
+Building Structural & Fabric,Height Safety
+Building Structural & Fabric,Manual Swing Door
+Building Structural & Fabric,Other
+Building Structural & Fabric,Paintwork
+Building Structural & Fabric,Roller Doors
+Building Structural & Fabric,Roofing
+Building Structural & Fabric,Security Barriers & Structures
+Building Structural & Fabric,Signage & Livery (Non-Powered)
+Building Structural & Fabric,Signage & Livery (Powered)
+Building Structural & Fabric,Stairs & Ramps
+Building Structural & Fabric,Wall Finishes-Paint
+Building Structural & Fabric,Walls
+Building Structural & Fabric,Window Shades & Furnishings
+Building Structural & Fabric,Windows
+Communication Systems,BMS Field Equipment
+Electrical Systems,Battery Chargers
+Electrical Systems,Distribution Board
+Electrical Systems,Elec Outlets & Circuits
+Electrical Systems,Electrical Distribution
+Electrical Systems,Electrical Switches & Outlets
+Electrical Systems,Electrical Transformer
+Electrical Systems,Electricity Meter
+Electrical Systems,Emergency & Exit Lighting
+Electrical Systems,Emergency Power Generation
+Electrical Systems,Lighting
+Electrical Systems,Lightning Protection
+Electrical Systems,Main Switchboard
+Electrical Systems,Mechanical Switchboard
+Electrical Systems,Other
+Electrical Systems,Power Factor Correction
+Electrical Systems,Residual Current Device
+Electrical Systems,Solar Power
+Electrical Systems,Switchgear
+Electrical Systems,UPS
+Fire Systems
+Fire Systems,EWIS
+Fire Systems,Fire Alarm System
+Fire Systems,Fire Blanket
+Fire Systems,Fire Dampers
+Fire Systems,Fire Detection
+Fire Systems,Fire Extinguisher
+Fire Systems,Fire Hydrants & Hose Reels
+Fire Systems,Fire Pumps
+Fire Systems,Fire Sprinkler System
+Fire Systems,Other
+Furniture Fittings & Equipment,Barbeque
+Furniture Fittings & Equipment,Bathroom Fittings
+Furniture Fittings & Equipment,Benches/Tables
+Furniture Fittings & Equipment,Clothes Dryer
+Furniture Fittings & Equipment,Dishwasher
+Furniture Fittings & Equipment,First Aid Equipment
+Furniture Fittings & Equipment,Freezer
+Furniture Fittings & Equipment,Hand Dryers
+Furniture Fittings & Equipment,Kitchen Fittings
+Furniture Fittings & Equipment,Lockers
+Furniture Fittings & Equipment,Microwave
+Furniture Fittings & Equipment,Office Equipment
+Furniture Fittings & Equipment,Office Storage
+Furniture Fittings & Equipment,Other
+Furniture Fittings & Equipment,Paper Towel Dispenser
+Furniture Fittings & Equipment,Refrigerator
+Furniture Fittings & Equipment,Seating
+Furniture Fittings & Equipment,Shelving & Racking
+Furniture Fittings & Equipment,Toilet Roll Holders
+Furniture Fittings & Equipment,Washing Machine
+Furniture Fittings & Equipment,Whiteboards & Blackboards
+Grounds & Gardens,Bike Storage
+Grounds & Gardens,Flags & Monuments
+Grounds & Gardens,Gardening Equipment
+Grounds & Gardens,Gates & Fences
+Grounds & Gardens,Indoor Plants
+Grounds & Gardens,Landscaping
+Grounds & Gardens,Linemarking
+Grounds & Gardens,Outdoor Structures
+Grounds & Gardens,Playground
+Grounds & Gardens,Pools Spa & Sauna
+Grounds & Gardens,Roads & Hardstands
+Grounds & Gardens,Sports/Gym Equipment
+HVAC & Refrigeration,Air Curtains
+HVAC & Refrigeration,Air Handling Units
+HVAC & Refrigeration,Boilers
+HVAC & Refrigeration,Ceiling Fan
+HVAC & Refrigeration,Chemical Dosing
+HVAC & Refrigeration,Chillers
+HVAC & Refrigeration,Compressor
+HVAC & Refrigeration,Condensor
+HVAC & Refrigeration,Cool Room
+HVAC & Refrigeration,Cooling Towers
+HVAC & Refrigeration,Duct
+HVAC & Refrigeration,Evaporative Cooling
+HVAC & Refrigeration,Fans
+HVAC & Refrigeration,HVAC Control
+HVAC & Refrigeration,HVAC Equipment
+HVAC & Refrigeration,HVAC Pumps
+HVAC & Refrigeration,Heaters
+HVAC & Refrigeration,Other
+HVAC & Refrigeration,Packaged AC
+HVAC & Refrigeration,Portable AC
+HVAC & Refrigeration,Split AC
+HVAC & Refrigeration,VRV System
+HVAC & Refrigeration,Variable Speed Drive
+HVAC & Refrigeration,Window/Wall Box AC
+IT/Communication Systems,AV Equipment
+IT/Communication Systems,BMS
+IT/Communication Systems,Desktop PC
+IT/Communication Systems,Intercom
+IT/Communication Systems,Radio Equipment
+IT/Communication Systems,Server Equipment
+IT/Communication Systems,Telephone Equipment
+Plumbing Systems,Domestic Water Pump
+Plumbing Systems,Emergency Shower/Eyewash
+Plumbing Systems,Floor Drain
+Plumbing Systems,Gas Supply
+Plumbing Systems,Grease Trap
+Plumbing Systems,Hot Water Service
+Plumbing Systems,Irrigation Systems
+Plumbing Systems,Other
+Plumbing Systems,Sewage System
+Plumbing Systems,Sewage Treatment
+Plumbing Systems,Shower
+Plumbing Systems,Sink/Basin
+Plumbing Systems,Stormwater Systems
+Plumbing Systems,Tapware & Sanitaryware
+Plumbing Systems,Toilet
+Plumbing Systems,Urinal
+Plumbing Systems,Water Boiling/Cooling Unit
+Plumbing Systems,Water Features
+Plumbing Systems,Water Meter
+Plumbing Systems,Water Reticulation
+Plumbing Systems,Water Tanks
+Plumbing Systems,Water Treatment
+Plumbing Systems,Water Valves
+Security Systems,Access Control
+Security Systems,Alarm Monitoring
+Security Systems,Alarm Zone
+Security Systems,CCTV Camera
+Security Systems,CCTV System
+Security Systems,Duress System
+Security Systems,Entry Detection Systems
+Security Systems,Intruder Alarm System
+Security Systems,Other
+Security Systems,Secure Storage
+Specialist Equipment,Car Wash
+Specialist Equipment,Fuel/Oil Pumps
+Specialist Equipment,Fuel/Oil System Controls
+Specialist Equipment,Fuel/Oil Tanks
+Specialist Equipment,Kitchen Equipment
+Specialist Equipment,Ladder
+Specialist Equipment,Medical & Laboratory Equipment
+Specialist Equipment,Retail Furniture & Equipment
+Specialist Equipment,School Equipment
+Specialist Equipment,Vehicle Maintenance
+Specialist Equipment,Warehouse/Packing Equipment
+Transportation Systems,Dumb Waiters
+Transportation Systems,Lifts
+Waste Cleaning & Pest Control,Cleaning Equipment
+Waste Cleaning & Pest Control,Pest Control
+Waste Cleaning & Pest Control,Sharps Bin
+Waste Cleaning & Pest Control,Waste Bins

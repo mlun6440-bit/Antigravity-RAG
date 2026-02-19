@@ -1,0 +1,5 @@
+GenAI Version: 0.8.6
+
+--- Available Models ---
+Name: models/gemini-embedding-001
+Methods: ['embedContent', 'countTextTokens', 'countTokens', 'asyncBatchEmbedContent']

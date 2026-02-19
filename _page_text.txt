@@ -1,0 +1,195 @@
+=== PAGE 9 ===
+vii
+© Standards Australia Limited 2024
+and integrate its asset management system with related management system requirements.
+AS ISO 55001:2024
+
+=== PAGE 11 ===
+1
+© Standards Australia Limited 2024
+Australian Standard®
+Asset management — Asset management system — Requirements
+management system include:
+— continual improvement of asset management, the asset management system and the 
+performance of assets.
+asset types.
+used to refer to a management system for asset management.
+The following documents are referred to in the text in such a way that some or all of their content 
+ISO55000, Asset management — Vocabulary, overview and principles
+— ISO Online browsing platform: available at https:/ /www.iso.org/obp
+https:/ /www.electropedia.org/
+3.1
+person or
+
+=== PAGE 12 ===
+2
+3.3
+person or group of people who directs and controls an organization3.1
+Note 1to entry: Top management has the power to delegate authority and provide resources within the 
+Note 2to entry: If the scope of the management system3.4
+3.4
+set of interrelated or interacting elements of an organization3.1 policies3.5
+objectives3.6 processes3.8
+Note 1to entry: A management system can address a single discipline or several disciplines.
+planning and operation.
+3.5
+intentions and direction of an organization3.1 top management3.3
+3.6
+objective
+result to be achieved
+Note 1to entry: An objective can be 
+
+=== PAGE 13 ===
+3
+3.9
+ability to apply knowledge and skills to achieve intended results
+3.10
+information required to be controlled and maintained by an organization3.1
+which it is contained
+— the management system3.4 processes3.8
+3.11
+measurable result
+processes3.8
+organizations3.1
+requirements3.17 objectives3.6
+3.12
+recurring activity to enhance performance3.11
+3.13
+3.14
+need or expectation that is stated, generally implied or obligatory
+organization3.1
+stakeholders3.2
+documented information3.10
+3.15
+requirement3.14
+3.16
+requirement3.14
+Note 1 to entry:Nonconformity can be any deviation from asset management
+
+=== PAGE 14 ===
+4
+3.18
+action to eliminate the cause of a potential nonconformity3.16
+Note 1to entry: There can be more than one cause for a potential nonconformity.
+corrective action3.17
+or prior to the initiation of functional failure.
+functional requirement.
+3.19
+incident
+unplanned event or occurrence
+3.20
+audit
+systematic and independent process3.8
+Note 2to entry: An internal audit is conducted by the organization3.1
+behalf.
+3.21
+process3.8
+of stakeholder’s3.2
+3.22
+determining the status of a system, a process3.8
+Note 1to entry: To determine the status, there can be a need to check, supervise or criticall
+
+=== PAGE 15 ===
+5
+monitoring.
+revenue, environmental impact, reputation, quality, sustainability and compliance.
+establish its scope.
+4.1;
+4.2;
+system.
+The scope shall be available as documented information. The scope shall include details of the asset 
+portfolio covered. 
+system, including the processes needed and their interactions, in accordance with the requirements of 
+this document.
+The decision-making framework shall be used to:
+the asset management system;
+value.
+AS ISO 55001:2024
+© Standards Australia Limited 2024
+
+=== PAGE 16 ===
+6
+about assets, asset management and the asset management system;
+take into account:
+occur;
+determine and select appropriate methods, processes and tools, considering the necessity to:
+Top management shall demonstrate leadership and commitment with respect to the asset management 
+system by:
+business processes;
+management system requirements;
+AS ISO 55001:2024
+© Standards Australia Limited 2024
+
+=== PAGE 17 ===
+7
+the asset management system;
+responsibility;
+Top management shall establish an asset management policy that:
+The asset management policy shall:
+— be available as documented information;
+— be available to stakeholders, as appropriate.
+Top management shall ensure that the responsibilities and authorities for relevant roles are assigned 
+Top management shall assign the responsibility and authority for:
+system to top management and relevant stakeholders.
+AS ISO 55001:2024
+© Standards Australia Limited 2024
+
+=== PAGE 18 ===
+8
+in 4.1 and the requirements referred to in 4.2 and determine the risks and opportunities that need to be 
+addressed to:
+management and the asset management system, including for:
+— the analysis of risks and how they change over time;
+— the evaluation of risks;
+— determining the criticality of assets in achieving asset management objectives;
+— considering alternatives and deciding on preferred options to treat risks.
+contingency planning.
+and the asset management system, taking into account how these risks can change with time;
+— integrate and implement the actions into its asset management s
+
+=== PAGE 19 ===
+9
+opportunities can change with time;
+— integrate and implement the actions into its asset management system processes;
+— evaluate the effectiveness of these actions.
+evaluation.
+and the implementation and alignment of asset management activities.
+them;
+objectives;
+assets.
+outlines how that is achieved.
+updated.
+— its current and future internal and external context ;
+— risks and opportunities;
+— the condition, performance and capabilities of its assets.
+AS ISO 55001:2024
+© Standards Australia Limited 2024
+
+=== PAGE 20 ===
+10
+The asset management objectives shall:
+4.2
+management objectives. Asset management plans shall be aligned with the asset management policy 
+human resources and other support functions;
+— developed using the decision-making framework;
+— made available as documented information.
+management system, the changes shall be carried out in a planned manner.
+changes that can have an impact on achieving the asset management objectives, before the change is 
+implemented.
+AS ISO 55001:2024
+© Standards Australia Limited 2024
+
+=== PAGE 21 ===
+11
+implementation, maintenance and continual improvement of the asset management system.
+its asset performance, asset management performance and asset management system 
+performance;
+experience;
+effectiveness of the actions taken;
+required competencies are still appropriate and available;
+Appropriate documented information shall be available as evidence of competence.
+assignment of currently employed persons; or the hiring or contracting of competent persons.
+asset management objectives, shall be aware of:
+management.
+relevant to assets, asset management and the asset management system includi
+

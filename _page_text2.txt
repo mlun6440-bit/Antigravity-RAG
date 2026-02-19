@@ -1,0 +1,172 @@
+=== PAGE 10 ===
+2
+Note 2to entry: The naming of the stages and the activities under each stage can vary in different industry 
+sectors and is determined by the organization (3.3.1). An example of the naming of the stages is: conception of 
+need, design, construct, operate and maintain, renew/replace, dispose and extinguishment of liabilities.
+Note 3to entry: The contractual liability of an entity can involve less than one or multiple life cycle stages and 
+may be shorter than an asset life (3.1.2).
+3.1.4
+applying asset management (3.2.1) over the life cycle (3.1.3) of assets (3.1.1)
+grouping of assets (3.1.1)
+
+=== PAGE 11 ===
+3
+3.2.1
+coordinated activity of an organization (3.3.1) to realize value (3.3.28) from assets (3.1.1)
+Note 1to entry: Realization of value normally involves a balancing of costs, risks (3.3.8), opportunities (3.3.9) and 
+performance (3.3.13
+Note 2to entry: Activity can also refer to the application of the elements of an asset management system (3.3.5).
+Note 3to entry: The term “activity” has a broad meaning and can include, for example, the approach, planning 
+and plans, and their implementation.
+3.2.2
+overarching objective (3.3.7) that sets the context and direction for an organization’s (3.3
+
+=== PAGE 12 ===
+4
+3.2.6
+measure of capacity and the ability of an entity (system or organization (3.3.1)) to achieve its objectives
+(3.3.7)
+Note 1 to entry:Asset management (3.2.1) capabilities include processes (3.3.10), resources, competences (3.3.11) 
+asset management plans (3.2.5) 
+and asset life (3.1.2) activities, and their continual improvement (3.3.14).
+3.2.7
+outcomes that an organization (3.3.1) delivers
+Note 1 to entry:The parameters may include safety, customer satisfaction, quality, quantity, capacity, reliability, 
+responsiveness, environmental acceptability, cost and availability.
+3.3.1
+person o
+
+=== PAGE 13 ===
+5
+3.3.6
+intentions and direction of an organization (3.3.1) as formally expressed by its top management (3.3.3)
+3.3.7
+objective
+result to be achieved
+Note 1to entry: An objective can be strategic, tactical, or operational.
+process (3.3.10).
+Note 3to entry: An objective can be expressed in other ways, e.g. as an intended result, as a purpose, as an 
+operational criterion, as an asset management objective or by the use of other words with similar meaning (e.g. 
+aim, goal, or target).
+Note 4to entry: In the context of asset management systems (3.3.5), asset management objectives are set by the 
+o
+
+=== PAGE 14 ===
+6
+— evidence of results achieved (records).
+3.3.13
+measurable result
+processes (3.3.10), products, services, systems or 
+organizations (3.3.1).
+Note 3to entry: For the purposes of asset management (3.2.1), performance can relate to assets (3.1.1) in their 
+requirements (3.3.16) or objectives (3.3.7) and thereby their ability to realize value (3.3.28).
+3.3.14
+recurring activity to enhance performance (3.3.13)
+extent to which planned activities are realized and planned results are achieved
+3.3.16
+need or expectation that is stated, generally implied or obligatory
+organization (3.3.1) and 
+stakeh
+
+=== PAGE 15 ===
+7
+3.3.21
+action that predicts future behaviour of a parameter required to support decision-making
+asset management (3.2.1) decisions inclusive of preventing and/or 
+correcting a nonconformity (3.3.18) as well as the realization of maximum value (3.3.28) from an opportunity
+(3.3.9).
+assets (3.1.1) and/or systems themselves.
+acquisition, exploration, research, investigation, experimentation, modelling, testing, surveillance, monitoring
+(3.3.25
+intelligence system development, digital twinning, alarm and warning system development.
+3.3.22
+incident
+unplanned event or occurrence
+3.3.23
+audit
+system
+
+=== PAGE 16 ===
+8
+3.3.27
+state of the global system, including environmental, social and economic aspects, in which the needs 
+of the present are met without compromising the ability of future generations to meet their own needs
+Note 1to entry: The environmental, social and economic aspects interact, are interdependent and are often 
+referred to as the three dimensions of sustainability.
+Note 2to entry: Sustainability is the objective (3.3.7) of sustainable development.
+Note 3to entry: In asset management (3.2.1), sustainability of assets (3.1.1) or asset systems (3.1.6) refer to their 
+ability to meet presen
+
+=== PAGE 17 ===
+9
+Since long-lived assets span multiple changes in organizational leadership, the realization of value over 
+the life cycle requires a long-term perspective and consistent stewardship aligned with organizational 
+objectives. Effective asset management contributes to organizational objectives and sustainability by 
+planning for, and creating and preserving value from, the total asset life cycle.
+To establish effective asset management, an organization should apply and adopt certain fundamental 
+principles. These, consolidated within a structured asset management system, ensure that there is 
+co
+
+=== PAGE 18 ===
+10
+looking beyond short-term needs and priorities to consider future impacts and consequences, 
+in order to develop and deliver sustainable plans and activities.
+compromising organizational objectives in the short or long term.
+in the use of data to support these decisions and in the value represented by options that are 
+chosen.
+c) Managed risk and opportunity: Systematically identifying, evaluating, and controlling risks 
+resilience, occupational health and safety, and environmental and social impact.
+leading to better service delivery that consistently meets customer and other stakeholder 
+
+
+=== PAGE 19 ===
+11
+ISO 55001 and ISO 55002 specify requirements and give guidance on how to apply the asset management 
+system.
+Management systems can be organized in different ways, either informally or with a more formal 
+their management activities.
+The Harmonized Structure, which serves as the basis for all ISO Management System Standards, 
+facilitates this integrated approach. An asset management system can become part of the organization’s 
+broader management framework by aligning the requirements of various management systems. 
+Moreover, it improves process management and makes it easier for the organi
+
+=== PAGE 20 ===
+12
+Indicators of an organization’s asset management maturity include:
+— understanding and communicating the value the organization wants from its assets and 
+— integration of the asset management system into the overall organization’s management 
+— effective management of risks and opportunities, particularly understanding the services, 
+— awareness of the external context and potential changes, setting appropriate objectives, 
+— integration and collaboration across the organization, especially in setting priorities and 
+— established continual improvement.
+AS ISO 55000:2024
+© Standards Austra
+
+=== PAGE 21 ===
+13
+[1] ISO 9000:2015, Quality management systems — Fundamentals and vocabulary
+[2] ISO 19011, Guidelines for auditing management systems
+[3] ISO 30401, Knowledge management systems — Requirements
+[4] ISO 31073, Risk management — Vocabulary
+[5] ISO 55001, Asset management — Asset management system — Requirements
+[6] ISO 55002, Asset management — Management systems — Guidelines for the application of 
+ISO 55001
+[7] ISO/TS 55010, 
+functions in asset management
+[8] ISO 55011, Asset management — Guidance for the development of public policy to enable asset 
+management
+[9] ISO 55012, Asset managemen
+
+=== PAGE 22 ===
+NOTES
+
+=== PAGE 23 ===
+Standards Australia
+interest. These Standards are developed through an open process of consultation and consensus, in which all 
+interested parties are invited to participate. Through a Memorandum of Understanding with the Commonwealth 
+Government, Standards Australia is recognized as Australia’s peak non-government national standards body.
+For further information visit www.standards.org.au
+Australian Standards®
+Committees of experts from industry, governments, consumers and other relevant sectors prepare Australian 
+Standards. The requirements or recommendations contained in published Standar
+

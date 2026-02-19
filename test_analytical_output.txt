@@ -1,0 +1,66 @@
+﻿py : C:\Users\eralu\OneDrive\Desktop\Asset 
+managment\Anrtigravity rag\RAG-iso55000\tool
+s\gemini_query_engine.py:13: FutureWarning: 
+At line:1 char:1
++ py test_analytical_system.py 2>&1 | 
+Out-File -Encoding UTF8 test_anal ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: 
+    (C:\Users\eralu\...FutureWarning: :Str  
+  ing) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommand 
+   Error
+ 
+
+All support for the `google.generativeai` 
+package has ended. It will no longer be 
+receiving 
+updates or bug fixes. Please switch to the 
+`google.genai` package as soon as possible.
+See README for more details:
+
+https://github.com/google-gemini/deprecated-
+generative-ai-python/blob/main/README.md
+
+  import google.generativeai as genai
+======================================================================
+ANALYTICAL QUERY SYSTEM - END-TO-END TEST
+======================================================================
+[OK] Two-stage pipeline: gemini-3-flash-preview (retrieval) -> gemini-3-flash-preview (synthesis)
+[OK] Structured query detector enabled (SQL-based field queries)
+[INFO] Embeddings not available (install scikit-learn & numpy)
+[OK] ISO Embedding Manager initialized (model: models/embedding-001)
+[OK] ISO semantic search enabled (vector embeddings)
+
+[OK] Query engine initialized
+
+
+======================================================================
+TEST 1/5: Structured: Count query
+======================================================================
+Query: How many Precise Air assets
+Detected mode: structured
+Traceback (most recent call last):
+  File 
+"C:\Users\eralu\OneDrive\Desktop\Asset 
+managment\Anrtigravity rag\RAG-iso55000\test
+_analytical_system.py", line 135, in 
+<module>
+    success = test_all_query_modes()
+  File 
+"C:\Users\eralu\OneDrive\Desktop\Asset 
+managment\Anrtigravity rag\RAG-iso55000\test
+_analytical_system.py", line 82, in 
+test_all_query_modes
+    print(f"\u2713 Mode detection PASS")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\eralu\AppData\Local\Program
+s\Python\Python313\Lib\encodings\cp1252.py",
+ line 19, in encode
+    return codecs.charmap_encode(input,self.
+errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't 
+encode character '\u2713' in position 0: 
+character maps to <undefined>

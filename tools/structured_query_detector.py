@@ -113,14 +113,21 @@ class StructuredQueryDetector:
             if not self.db_path.exists():
                 return values
 
-            conn = sqlite3.connect(self.db_path)
-            cursor = conn.cursor()
+            # Whitelist columns to prevent SQL injection
+            allowed_columns = [
+                'condition', 'criticality', 'data_source', 'category',
+                'status', 'location', 'building', 'floor', 'asset_type',
+                'compliance_standard', 'inspection_status', 'asset_name',
+            ]
+            if field not in allowed_columns:
+                logger.warning(f"[SQD] Blocked query for non-whitelisted column: {field}")
+                return values
 
-            # Query distinct values
-            cursor.execute(f"SELECT DISTINCT {field} FROM assets WHERE {field} IS NOT NULL AND {field} != ''")
-            values = [row[0] for row in cursor.fetchall()]
-
-            conn.close()
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                # Column name is validated via whitelist above, safe to use in query
+                cursor.execute(f"SELECT DISTINCT {field} FROM assets WHERE {field} IS NOT NULL AND {field} != ''")
+                values = [row[0] for row in cursor.fetchall()]
 
             # Update cache
             self._value_cache[cache_key] = values
@@ -131,13 +138,14 @@ class StructuredQueryDetector:
 
         return values
 
-    def fuzzy_match_value(self, user_input: str, field: str) -> Optional[str]:
+    def fuzzy_match_value(self, user_input: str, field: str, threshold: float = 0.6) -> Optional[str]:
         """
         Find closest database value using fuzzy string matching.
 
         Args:
             user_input: User's input value (e.g., "poor", "good")
             field: Database column name (e.g., "condition", "data_source")
+            threshold: Similarity threshold (0.0 to 1.0, default 0.6)
 
         Returns:
             Matched database value or None if no good match
@@ -166,13 +174,90 @@ class StructuredQueryDetector:
             return substring_matches[0]
 
         # Strategy 3: Fuzzy match for typos (e.g., "por" -> "Poor")
-        matches = get_close_matches(user_input, distinct_values, n=1, cutoff=0.6)
+        matches = get_close_matches(user_input, distinct_values, n=1, cutoff=threshold)
         if matches:
             print(f"[FUZZY MATCH] Fuzzy: '{user_input}' -> '{matches[0]}'")
             return matches[0]
 
         # No good match found - return None to fall back to LIKE query
         return None
+
+    def detect_query_mode(self, query: str) -> str:
+        """
+        Detect query mode for 3-way routing.
+        
+        Args:
+            query: User query
+            
+        Returns:
+            'structured': Count/list queries → SQL only
+            'analytical': Analysis + data filters → SQL + LLM + ISO
+            'knowledge': Pure knowledge queries → RAG only
+        """
+        query_lower = query.lower()
+        
+        # Define pattern keywords
+        analytical_keywords = [
+            'analyze', 'assess', 'evaluate', 'review', 'prioritize',
+            'per iso', 'compliance with', 'according to', 'should i',
+            'recommend', 'risk', 'what should', 'how should'
+        ]
+        
+        knowledge_keywords = [
+            'what is', 'explain', 'describe', 'define', 'how does',
+            'why does', 'best practice', 'requirement', 'standard',
+            'guidelines', 'framework'
+        ]
+        
+        structured_keywords = [
+            'how many', 'count', 'total', 'number of', 'list all',
+            'show all', 'which assets', 'what assets', 'breakdown by',
+            'group by'
+        ]
+        
+        # Check for knowledge queries (no data filtering)
+        has_knowledge_keyword = any(kw in query_lower for kw in knowledge_keywords)
+        has_data_filter = self._has_data_filter(query_lower)
+        
+        if has_knowledge_keyword and not has_data_filter:
+            return 'knowledge'
+        
+        # Check for analytical queries (analysis + data)
+        has_analytical_keyword = any(kw in query_lower for kw in analytical_keywords)
+        
+        if has_analytical_keyword and has_data_filter:
+            return 'analytical'
+        
+        # Check for structured queries (count/list only)
+        has_structured_keyword = any(kw in query_lower for kw in structured_keywords)
+        
+        if has_structured_keyword:
+            return 'structured'
+        
+        # Default: knowledge query (safest fallback)
+        return 'knowledge'
+    
+    def _has_data_filter(self, query_lower: str) -> bool:
+        """
+        Check if query contains data filtering terms.
+        
+        Args:
+            query_lower: Lowercased query
+            
+        Returns:
+            True if query references specific asset data/fields
+        """
+        # Check for field references
+        data_fields = [
+            'condition', 'criticality', 'location', 'building',
+            'category', 'type', 'age', 'cost', 'asset', 'system',
+            'equipment', 'fire', 'electrical', 'hvac', 'plumbing',
+            'poor', 'fair', 'good', 'excellent', 'critical', 'high',
+            'medium', 'low', 'years old', 'precise', 'fulcrum'
+        ]
+        
+        return any(field in query_lower for field in data_fields)
+
 
     def is_structured_query(self, query: str) -> bool:
         """
@@ -226,7 +311,13 @@ class StructuredQueryDetector:
         filters = []
         query_lower = query.lower()
 
-        # Pattern 1: Data source detection
+        # PATTERN 0: Use generalized detect_field_value FIRST to catch specific column values
+        # This ensures exact/fuzzy matches against actual database values take priority
+        primary_detection = self.detect_field_value(query)
+        if primary_detection:
+            filters.append(primary_detection)
+
+        # Pattern 1: Data source detection (only if Pattern 0 didn't find anything)
         # "Precise Fire assets" or "from Precise Fire"
         asset_keywords = ['assets?', 'systems?', 'equipment', 'items?']
         for keyword in asset_keywords:
@@ -246,48 +337,72 @@ class StructuredQueryDetector:
                     value = re.sub(r'\s*condition\b', '', value, flags=re.IGNORECASE).strip()
 
                 if value and len(value) > 2:
-                    filters.append(('data_source', value))
+                    # Use generalized detection to identify the field type for this value
+                    # This prevents misclassifying categories as data_source
+                    detected = self.detect_field_value(value)
+                    if detected:
+                        filters.append(detected)
+                    else:
+                        # Fallback to data_source if no other field matches
+                        filters.append(('data_source', value))
                 break
 
         # Pattern 2: Condition detection
+        # Defines (pattern, extractor_function)
         condition_patterns = [
-            (r'\b(very\s+poor)\b', 'Very Poor'),
-            (r'\b(very\s+good)\b', 'Very Good'),
-            (r'\b(poor)\s+condition\b', 'Poor'),
-            (r'\b(fair)\s+condition\b', 'Fair'),
-            (r'\b(good)\s+condition\b', 'Good'),
-            (r'\b(excellent)\s+condition\b', 'Excellent'),
-            (r'\bin\s+(poor)\b', 'Poor'),
-            (r'\bin\s+(fair)\b', 'Fair'),
-            (r'\bin\s+(good)\b', 'Good'),
-            (r'\b(r1)\b', 'Very Poor'),
-            (r'\b(r2)\b', 'Poor'),
-            (r'\b(r3)\b', 'Fair'),
-            (r'\b(r4)\b', 'Good'),
-            (r'\b(r5)\b', 'Very Good'),
+            # Negation first
+            (r'\bnot\s+(?:in\s+)?(very\s+poor|r1)\b', lambda m: ('condition__neq', 'Very Poor')),
+            (r'\bnot\s+(?:in\s+)?(poor|r2)\s*(?:condition)?\b', lambda m: ('condition__neq', 'Poor')),
+            (r'\bnot\s+(?:in\s+)?(fair|r3)\s*(?:condition)?\b', lambda m: ('condition__neq', 'Fair')),
+            (r'\bnot\s+(?:in\s+)?(good|r4)\s*(?:condition)?\b', lambda m: ('condition__neq', 'Good')),
+            (r'\bnot\s+(?:in\s+)?(excellent|r5)\s*(?:condition)?\b', lambda m: ('condition__neq', 'Excellent')),
+            
+            # Standard positive matches
+            (r'\b(very\s+poor)\b', lambda m: ('condition', 'Very Poor')),
+            (r'\b(very\s+good)\b', lambda m: ('condition', 'Very Good')),
+            (r'\b(poor)\s+condition\b', lambda m: ('condition', 'Poor')),
+            (r'\b(fair)\s+condition\b', lambda m: ('condition', 'Fair')),
+            (r'\b(good)\s+condition\b', lambda m: ('condition', 'Good')),
+            (r'\b(excellent)\s+condition\b', lambda m: ('condition', 'Excellent')),
+            (r'\bin\s+(poor)\b', lambda m: ('condition', 'Poor')),
+            (r'\bin\s+(fair)\b', lambda m: ('condition', 'Fair')),
+            (r'\bin\s+(good)\b', lambda m: ('condition', 'Good')),
+            (r'\b(r1)\b', lambda m: ('condition', 'Very Poor')),
+            (r'\b(r2)\b', lambda m: ('condition', 'Poor')),
+            (r'\b(r3)\b', lambda m: ('condition', 'Fair')),
+            (r'\b(r4)\b', lambda m: ('condition', 'Good')),
+            (r'\b(r5)\b', lambda m: ('condition', 'Very Good')),
         ]
 
-        for pattern, standard_value in condition_patterns:
-            if re.search(pattern, query_lower):
-                filters.append(('condition', standard_value))
+        for pattern, extractor in condition_patterns:
+            match = re.search(pattern, query_lower)
+            if match:
+                new_filter = extractor(match)
+                # Avoid duplicate condition filters
+                if new_filter not in filters and not any(f[0] == 'condition' for f in filters):
+                    filters.append(new_filter)
                 break
 
         # Pattern 3: Criticality detection
         criticality_patterns = [
-            (r'\b(critical)\s+(?:assets|systems|equipment)', 'Critical'),
-            (r'\b(high)\s+criticality\b', 'High'),
-            (r'\b(medium)\s+criticality\b', 'Medium'),
-            (r'\b(low)\s+criticality\b', 'Low'),
-            (r'\bcriticality\s*=\s*["\']?(\w+)', lambda m: m.group(1).title()),
+            # Negation first
+            (r'\bnot\s+(?:in\s+)?(critical)\s*(?:condition|criticality)?\b', lambda m: ('criticality__neq', 'Critical')),
+            (r'\bnot\s+(high)\s+criticality\b', lambda m: ('criticality__neq', 'High')),
+            (r'\bnot\s+(medium)\s+criticality\b', lambda m: ('criticality__neq', 'Medium')),
+            (r'\bnot\s+(low)\s+criticality\b', lambda m: ('criticality__neq', 'Low')),
+
+            # Standard positive matches
+            (r'\b(critical)\s+(?:assets|systems|equipment|condition)', lambda m: ('criticality', 'Critical')),
+            (r'\b(high)\s+criticality\b', lambda m: ('criticality', 'High')),
+            (r'\b(medium)\s+criticality\b', lambda m: ('criticality', 'Medium')),
+            (r'\b(low)\s+criticality\b', lambda m: ('criticality', 'Low')),
+            (r'\bcriticality\s*=\s*["\']?(\w+)', lambda m: ('criticality', m.group(1).title())),
         ]
 
-        for pattern, value in criticality_patterns:
+        for pattern, extractor in criticality_patterns:
             match = re.search(pattern, query_lower)
             if match:
-                if callable(value):
-                    filters.append(('criticality', value(match)))
-                else:
-                    filters.append(('criticality', value))
+                filters.append(extractor(match))
                 break
 
         # Pattern 4: Location detection
@@ -320,101 +435,131 @@ class StructuredQueryDetector:
                 filters.append(extractor(match))
                 break
 
+        # Pattern 6: Category detection
+        category_patterns = [
+            (r'\b(electrical)\b', 'Electrical'),
+            (r'\b(mechanical)\b', 'Mechanical'),
+            (r'\b(fire)\b', 'Fire Services'),
+            (r'\b(hydraulic)\b', 'Hydraulics'),
+            (r'\b(transport)\b', 'Transport'),
+            (r'\b(building fabric)\b', 'Building Fabric'),
+            (r'\b(hvac)\b', 'Mechanical'), # HVAC usually maps to Mechanical
+            (r'\b(lift)\b', 'Lifts'),
+        ]
+
+        for pattern, value in category_patterns:
+            match = re.search(pattern, query_lower)
+            if match:
+                # Avoid conflict with data_source if it captured these words
+                # But data_source logic excludes condition words, it doesn't exclude categories
+                # Let's trust category specific match.
+                
+                # Check if this category is already part of a data_source match (e.g. "Precise Fire")
+                # But precise matching is better. 
+                # If data_source is "Precise Fire", and we match "Fire", we might duplicate.
+                # But data_source logic (Line 321) excludes condition words, NOT category words.
+                
+                # Simple check: if we found a data_source that contains the category name (case insensitive)
+                if not any(f[0] == 'data_source' and value.lower() in f[1].lower() for f in filters):
+                    filters.append(('category', value))
+
         return filters
 
     def detect_field_value(self, query: str) -> Optional[Tuple[str, str]]:
         """
-        Detect field=value pattern in query.
+        Detect field=value pattern in query by scanning ALL schema columns.
+        Prioritizes exact matches, then high-confidence fuzzy matches.
 
         Args:
             query: User query
 
         Returns:
             Tuple of (field, value) or None
-
-        Examples:
-            "How many Precise Fire assets?" -> ('data_source', 'Precise Fire')
-            "Count assets in Building A" -> ('building', 'Building A')
         """
         query_lower = query.lower()
-
-        # Remove common question starters to avoid false matches
-        stopwords = ['how many', 'count', 'total', 'number of', 'show me', 'list', 'find']
+        
+        # Remove common question starters to clean up the query
+        stopwords = ['how many', 'count', 'total', 'number of', 'show me', 'list', 'find', 'assets', 'items']
         cleaned_query = query_lower
         for stopword in stopwords:
             cleaned_query = cleaned_query.replace(stopword, '').strip()
+        
+        # Get all textual columns from schema
+        # We focus on columns that likely contain categorical text data
+        # EXCLUDE free-text fields like notes/description to prevent false positives
+        excluded_cols = ['id', 'Asset ID', 'created_at', 'updated_at', 'geometry', 'notes', 'comments', 'description', 'image_url']
+        target_columns = [col for col in self.schema['columns'] if col.lower() not in excluded_cols]
+        
+        best_match = None
+        best_score = 0.0
 
-        # Pattern 0: Check for condition values FIRST (highest priority)
-        # This prevents "poor" from being detected as data_source
+        # Try to match the cleaned query against values in each column
+        # We check phrases of varying lengths (n-grams) from the query
+        
+        # Normalize punctuation: replace commas, dashes with spaces to ensure correct tokenization
+        # "Electrical Systems,Distribution Board" -> "Electrical Systems Distribution Board"
+        cleaned_query_normalized = re.sub(r'[,\-]', ' ', cleaned_query)
+        
+        # Split query into words to check combinations
+        words = cleaned_query_normalized.split()
+        if not words:
+            return None
+            
+        # Generate n-grams (up to 8 words long to handle long category names)
+        # Category names can be quite long e.g. "HVAC & Refrigeration,Air Conditioning"
+        phrases = []
+        for n in range(8, 0, -1):
+            for i in range(len(words) - n + 1):
+                phrase = " ".join(words[i:i+n])
+                if len(phrase) > 2: # Ignore tiny fragments
+                    phrases.append(phrase)
+        
+        # Iterate through phrases (longest to shortest) first to prioritize more specific matches 
+        # irrespective of column order
+        for phrase in phrases:
+            for column in target_columns:
+                distinct_values = self.get_distinct_values(column)
+                if not distinct_values:
+                    continue
+
+                # 1. Exact match check (case-insensitive and normalized)
+                for val in distinct_values:
+                    # Normalize DB value too
+                    normalized_val = re.sub(r'[,\-]', ' ', str(val)).lower()
+                    if normalized_val == phrase:
+                        # Exact match is priority 1
+                        return (column, str(val))
+                
+                # 2. Fuzzy match
+                # Only attempt fuzzy match if phrase is reasonably long (>3 chars) to avoid noise
+                if len(phrase) > 3:
+                     # Normalize all DB values for comparison
+                    normalized_db_values = [re.sub(r'[,\-]', ' ', str(v)).lower() for v in distinct_values]
+                    matches = get_close_matches(phrase, normalized_db_values, n=1, cutoff=0.85)
+                    
+                    if matches:
+                        # Find the original value that corresponds to the match
+                        matched_normalized = matches[0]
+                        original_val_index = normalized_db_values.index(matched_normalized)
+                        original_val = distinct_values[original_val_index]
+                        return (column, str(original_val))
+                    
+        # Fallback to existing logic if no strong database match found
+        # Pattern 0: Check for condition values
         condition_values = ['very poor', 'very good', 'poor', 'fair', 'good', 'excellent', 'unknown']
         for condition in condition_values:
             if condition in query_lower:
                 return ('condition', condition.title())
 
-        # Pattern 1: "X Y assets" or "X Y systems" -> data_source = "X Y"
-        # Example: "Precise Fire assets" -> data_source = "Precise Fire"
-        asset_keywords = ['assets?', 'systems?', 'equipment', 'items?']
-        for keyword in asset_keywords:
-            # Match: "Capitalized Word(s) + keyword"
-            # Use lookahead to find content between question words and asset keywords
-            pattern = r'(?:how many|count|total|number of)\s+(.+?)\s+' + keyword
-            match = re.search(pattern, query_lower)
-            if match:
-                value = match.group(1).strip()
-                # Capitalize it properly (was lowercase from query_lower)
-                # Find the original case in the query
-                original_match = re.search(re.escape(value), query, re.IGNORECASE)
-                if original_match:
-                    value = original_match.group(0)
-                # Remove common filler words
-                value = re.sub(r'\b(the|all|our|my)\b\s*', '', value, flags=re.IGNORECASE).strip()
-                if value:
-                    return ('data_source', value)
-
-        # Pattern 1b: Single capitalized word before asset keyword (fallback)
-        for keyword in asset_keywords:
-            pattern = r'([A-Z][a-z]{2,})\s+' + keyword.replace('?', '')
-            match = re.search(pattern, query)
-            if match:
-                value = match.group(1).strip()
-                # Only accept if it looks like a proper noun
-                if value and value not in ['Many', 'All', 'The', 'Our', 'My', 'These', 'Those']:
-                    return ('data_source', value)
-
-        # Pattern 2: "in/at/from X" -> location/building/source
-        location_patterns = [
-            (r'in\s+([A-Z][a-z]+(?:\s+[A-Z])?)', 'location'),
-            (r'at\s+([A-Z][a-z]+(?:\s+[A-Z])?)', 'location'),
-            (r'from\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)', 'data_source'),
-        ]
-        for pattern, field in location_patterns:
-            match = re.search(pattern, query)
-            if match:
-                value = match.group(1).strip()
-                return (field, value)
-
-        # Pattern 3: Check if query contains recognized field values in capitalized form
-        # "Precise Fire" in "How many Precise Fire assets?" -> data_source
-        # BUT exclude the question words themselves
+        # Pattern 3: Capitalized phrases fallback (Data Source assumptions)
         capitalized_pattern = r'\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)\b'
         matches = re.findall(capitalized_pattern, query)
-
-        # Filter out question words and common phrases
         exclude_phrases = ['How Many', 'How many', 'Building A', 'Part A', 'Part B', 'Part C']
-
+        
         for match in matches:
-            # Check if this is after the question words
-            match_index = query.find(match)
-            question_words_index = max(
-                query.lower().find('how many'),
-                query.lower().find('count'),
-                query.lower().find('total'),
-                query.lower().find('number of')
-            )
-
-            # Only use matches that come AFTER the question words
-            if match not in exclude_phrases and match_index > question_words_index:
-                return ('data_source', match)
+             match_index = query.find(match)
+             if match not in exclude_phrases and match_index > 5:
+                  return ('data_source', match)
 
         return None
 
@@ -436,7 +581,7 @@ class StructuredQueryDetector:
         # Check if it's a COUNT query
         is_count = any(keyword in query_lower for keyword in ['how many', 'count', 'total', 'number of'])
 
-        # Check if it's a GROUP BY query
+        # Check if it's a GROUP BY query (MUST CHECK THIS FIRST!)
         groupby_field = None
         for pattern in self.groupby_patterns:
             match = re.search(pattern, query_lower)
@@ -447,6 +592,42 @@ class StructuredQueryDetector:
         # Try multi-filter detection first
         filters = self.detect_multiple_filters(query)
 
+        # PRIORITY 1: GROUP BY queries (e.g., "count by criticality")
+        if groupby_field:
+            # Group by query
+            db_field = self._map_to_db_column(groupby_field)
+
+            sql = f"SELECT {db_field}, COUNT(*) as count FROM assets GROUP BY {db_field} ORDER BY count DESC"
+            params = []
+
+            return {
+                'sql': sql,
+                'params': params,
+                'type': 'groupby',
+                'field': groupby_field,
+                'description': f"Breakdown of assets by {groupby_field}"
+            }
+
+        # PRIORITY 1.5: Count ALL assets (no filter)
+        # Handles: "How many total assets?", "Count all assets", etc.
+        # MUST CHECK BEFORE multi-filter detection to avoid "total" being detected as a filter
+        if is_count:
+            all_patterns = ['total assets', 'all assets', 'how many assets', 'count assets',
+                          'number of assets', 'many assets are in', 'total in the register',
+                          'assets in the register', 'count all', 'how many total']
+            
+            if any(pattern in query_lower for pattern in all_patterns):
+                sql = "SELECT COUNT(*) as count FROM assets"
+                return {
+                    'sql': sql,
+                    'params': [],
+                    'type': 'count',
+                    'field': None,
+                    'value': None,
+                    'description': 'Total count of all assets'
+                }
+
+        # PRIORITY 2: Multi-filter count queries
         if is_count and filters:
             # Multi-filter count query
             where_clauses = []
@@ -477,6 +658,14 @@ class StructuredQueryDetector:
                         where_clauses.append(f"{db_field} <= ?")
                         params.append(value)
                         filter_descriptions.append(f"{base_field} <= {value}")
+                    elif operator == 'neq':
+                        where_clauses.append(f"{db_field} != ?")
+                        params.append(value)
+                        filter_descriptions.append(f"{base_field} != {value}")
+                    elif operator == 'not_like':
+                        where_clauses.append(f"{db_field} NOT LIKE ?")
+                        params.append(f"%{value}%")
+                        filter_descriptions.append(f"{base_field} NOT LIKE '{value}'")
                 else:
                     # Regular field match - use fuzzy matching for precision
                     matched_value = self.fuzzy_match_value(value, db_field)
@@ -504,6 +693,7 @@ class StructuredQueryDetector:
                 'description': f"Count assets where {' AND '.join(filter_descriptions)}"
             }
 
+        # PRIORITY 3: Single filter count queries
         elif is_count:
             # Single filter fallback
             field_value = self.detect_field_value(query)
@@ -534,21 +724,7 @@ class StructuredQueryDetector:
                     'description': description
                 }
 
-        elif groupby_field:
-            # Group by query
-            db_field = self._map_to_db_column(groupby_field)
-
-            sql = f"SELECT {db_field}, COUNT(*) as count FROM assets GROUP BY {db_field} ORDER BY count DESC"
-            params = []
-
-            return {
-                'sql': sql,
-                'params': params,
-                'type': 'groupby',
-                'field': groupby_field,
-                'description': f"Breakdown of assets by {groupby_field}"
-            }
-
+        # No structured query detected
         return None
 
     def _map_to_db_column(self, field_name: str) -> str:

@@ -43,8 +43,10 @@ class AssetMigrator:
         asset_id = (
             raw_asset.get('') or  # Empty string key for UUID
             raw_asset.get('asset_id') or
+            raw_asset.get('asset_id') or
             raw_asset.get('id') or
             raw_asset.get('record_id') or
+            raw_asset.get('fulcrum_id') or
             'unknown'
         )
 
@@ -131,12 +133,15 @@ class AssetMigrator:
             # Calculate from replacement year if available
             if replacement_due_date:
                 try:
-                    remaining_life = int(replacement_due_date) - 2026
+                    from datetime import datetime
+                    current_year = datetime.now().year
+                    remaining_life = int(replacement_due_date) - current_year
                 except (ValueError, TypeError):
                     pass
 
         # Compliance
-        compliance_standard = raw_asset.get('data_source', '')
+        data_source = raw_asset.get('data_source', '')
+        compliance_standard = raw_asset.get('compliance_standard', '')
         last_inspection_date = raw_asset.get('last_compliance_testinspection_date')
         next_inspection_date = raw_asset.get('inspection_date_mandatory')
         inspection_status = 'Compliant' if next_inspection_date else 'Unknown'
@@ -181,6 +186,7 @@ class AssetMigrator:
 
             'notes': notes,
             'tags': tags,
+            'data_source': data_source,
             'created_date': created_date,
             'updated_date': updated_date
         }

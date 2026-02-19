@@ -36,11 +36,44 @@ class ISOEmbeddingManager:
         genai.configure(api_key=self.api_key)
 
         # Embedding model settings
-        # Use embedding-001 which is the stable model for Google AI Studio
-        self.embedding_model = 'models/embedding-001'
-        self.embedding_dimension = 768
+        # Use gemini-embedding-001 (the current supported model)
+        self.embedding_model = 'models/gemini-embedding-001'
+        self.embedding_dimension = 3072
+        self.embedding_version = 'v2.0'  # v2: Upgraded to gemini-embedding-001 (3072 dim)
+        
+        # API Cost Tracking
+        self.api_calls = 0
+        self.tokens_processed = 0  # Estimation based on char count / 4
+        
+        # Initialize Advanced Search Components
+        try:
+            from faiss_index_manager import FAISSIndexManager
+            self.faiss_manager = FAISSIndexManager(dimension=self.embedding_dimension)
+        except ImportError:
+            self.faiss_manager = None
+            
+        try:
+            from bm25_scorer import BM25Scorer
+            self.bm25_scorer = BM25Scorer()
+        except ImportError:
+            self.bm25_scorer = None
+            
+        try:
+            from cross_encoder_reranker import CrossEncoderReranker
+            self.reranker = CrossEncoderReranker()
+        except ImportError:
+            self.reranker = None
+            
+        # Index state tracking
+        self.indexed_chunk_ids = set()
 
-        print(f"[OK] ISO Embedding Manager initialized (model: {self.embedding_model})")
+        print(f"[OK] ISO Embedding Manager initialized (model: {self.embedding_model}, version: {self.embedding_version})")
+        if self.faiss_manager and self.faiss_manager.is_available:
+            print("[OK] FAISS acceleration enabled")
+        if self.bm25_scorer and self.bm25_scorer.is_available:
+            print("[OK] BM25 scoring enabled")
+        if self.reranker and self.reranker.is_available:
+            print("[OK] Cross-Encoder re-ranking enabled")
 
     def generate_embedding(self, text: str, task_type: str = "retrieval_document") -> np.ndarray:
         """
@@ -54,6 +87,10 @@ class ISOEmbeddingManager:
             Numpy array of embedding vector (768 dimensions)
         """
         try:
+            self.api_calls += 1
+            # Estimate tokens (rough approximation)
+            self.tokens_processed += len(text) // 4
+            
             response = genai.embed_content(
                 model=self.embedding_model,
                 content=text,
@@ -95,6 +132,47 @@ class ISOEmbeddingManager:
         print(f"[OK] Generated {len(embeddings)} embeddings")
         return embeddings
 
+    def _ensure_indexes(self, chunks: List[Dict[str, Any]]):
+        """Ensure FAISS and BM25 indexes are built and up-to-date."""
+        current_chunk_ids = {id(c) for c in chunks}
+        
+        # If indexes already cover these chunks, skip
+        if self.indexed_chunk_ids == current_chunk_ids:
+            return
+
+        print("[INFO] Building search indexes...")
+        
+        # Build FAISS Index
+        if self.faiss_manager and self.faiss_manager.is_available:
+            embeddings = []
+            valid_chunks = []
+            for chunk in chunks:
+                if 'embedding' in chunk:
+                    emb = chunk['embedding']
+                    if isinstance(emb, list):
+                        emb = np.array(emb)
+                    embeddings.append(emb)
+                    valid_chunks.append(chunk)
+            
+            if len(embeddings) > 0:
+                self.faiss_manager.build_index(embeddings)
+                self.faiss_chunks = valid_chunks  # Keep reference to map indices back to chunks
+        
+        # Build BM25 Index
+        if self.bm25_scorer and self.bm25_scorer.is_available:
+            corpus = []
+            for chunk in chunks:
+                # Combine title and text for keyword search
+                text = chunk.get('text', '') or chunk.get('content', '')
+                title = chunk.get('title', '') or chunk.get('section_title', '')
+                corpus.append(f"{title} {text}")
+            
+            self.bm25_scorer.index_corpus(corpus)
+            self.bm25_chunks = chunks
+            
+        self.indexed_chunk_ids = current_chunk_ids
+        print("[OK] Search indexes updated")
+
     def cosine_similarity(self, vec1: np.ndarray, vec2: np.ndarray) -> float:
         """
         Calculate cosine similarity between two vectors.
@@ -132,12 +210,30 @@ class ISOEmbeddingManager:
         # Generate query embedding
         query_embedding = self.generate_embedding(query, task_type="retrieval_query")
 
-        # Calculate similarities
+        # Ensure indexes are ready
+        self._ensure_indexes(chunks)
+
+        # Use FAISS if available
+        if self.faiss_manager and self.faiss_manager.is_available and hasattr(self, 'faiss_chunks'):
+            indices, scores = self.faiss_manager.search(query_embedding, top_k=top_k*2) # Get more candidates
+            results = []
+            for i, idx in enumerate(indices):
+                if idx != -1 and idx < len(self.faiss_chunks):
+                    # FAISS returns cosine similarity directly if normalized
+                    score = scores[i]
+                    if score >= similarity_threshold:
+                        results.append((self.faiss_chunks[idx], float(score)))
+            
+            # Sort and limit
+            results.sort(key=lambda x: x[1], reverse=True)
+            return results[:top_k]
+
+        # Fallback to Linear Scan
         results = []
         for chunk in chunks:
             # Check if chunk has embedding
             if 'embedding' not in chunk:
-                print(f"[WARN] Chunk missing embedding, skipping: {chunk.get('chunk_id', 'unknown')}")
+                # print(f"[WARN] Chunk missing embedding, skipping: {chunk.get('chunk_id', 'unknown')}")
                 continue
 
             # Convert embedding to numpy array if it's a list
@@ -159,73 +255,73 @@ class ISOEmbeddingManager:
         return results[:top_k]
 
     def hybrid_search(self, query: str, chunks: List[Dict[str, Any]],
-                     top_k: int = 5, vector_weight: float = 0.7,
-                     keyword_weight: float = 0.3) -> List[Tuple[Dict[str, Any], float]]:
+                     top_k: int = 5, rrf_k: int = 60) -> List[Tuple[Dict[str, Any], float]]:
         """
-        Hybrid search combining vector similarity and keyword matching.
-
+        Hybrid search using Reciprocal Rank Fusion (RRF).
+        Combines Vector Search and BM25 Keyword Search results.
+        
+        RRF Score = 1 / (k + rank_vector) + 1 / (k + rank_keyword)
+        
         Args:
             query: Search query
             chunks: List of chunk dictionaries
             top_k: Number of top results to return
-            vector_weight: Weight for vector similarity (0.0 to 1.0)
-            keyword_weight: Weight for keyword matching (0.0 to 1.0)
+            rrf_k: Constant for RRF formula (default 60 is standard)
 
         Returns:
-            List of (chunk, combined_score) tuples
+            List of (chunk, rrf_score) tuples, sorted by score
         """
-        # Vector search
-        vector_results = self.semantic_search(query, chunks, top_k=top_k * 2, similarity_threshold=0.0)
-        vector_scores = {id(chunk): score for chunk, score in vector_results}
+        self._ensure_indexes(chunks)
+        
+        # ── 1. Run Retrievers in Parallel ─────────────────────────────────────
+        
+        # A. Vector Search (Semantic)
+        # Get more candidates than needed (top_k * 3) to allow for intersection
+        vector_results = self.semantic_search(query, chunks, top_k=top_k * 3, similarity_threshold=0.0)
+        # Create map of {chunk_id: rank} (0-indexed)
+        vector_ranks = {id(chunk): rank for rank, (chunk, _) in enumerate(vector_results)}
+        
+        # B. Keyword Search (Lexical)
+        keyword_ranks = {}
+        if self.bm25_scorer and self.bm25_scorer.is_available:
+            # Get raw scores
+            raw_scores = self.bm25_scorer.get_scores(query)
+            # Create list of (index, score) and sort
+            valid_scores = []
+            for i, score in enumerate(raw_scores or []):
+                if i < len(self.bm25_chunks) and score > 0:
+                    valid_scores.append((self.bm25_chunks[i], score))
+            
+            # Sort by score desc to get ranks
+            valid_scores.sort(key=lambda x: x[1], reverse=True)
+            
+            # Keep top candidates only
+            top_keywords = valid_scores[:top_k * 3]
+            keyword_ranks = {id(chunk): rank for rank, (chunk, _) in enumerate(top_keywords)}
 
-        # Keyword search (simple BM25-like scoring)
-        query_lower = query.lower()
-        query_terms = set(query_lower.split())
-        keyword_scores = {}
-
-        for chunk in chunks:
-            text = chunk.get('text', '').lower()
-            score = 0
-
-            # Count term frequencies
-            for term in query_terms:
-                if len(term) > 2:  # Ignore very short terms
-                    count = text.count(term)
-                    if count > 0:
-                        # Simple scoring: more occurrences = higher score
-                        score += count * (1 / (1 + count))  # Diminishing returns
-
-            if score > 0:
-                keyword_scores[id(chunk)] = score
-
-        # Normalize keyword scores to 0-1 range
-        if keyword_scores:
-            max_keyword_score = max(keyword_scores.values())
-            if max_keyword_score > 0:
-                keyword_scores = {k: v / max_keyword_score for k, v in keyword_scores.items()}
-
-        # Combine scores
-        combined_results = []
-        all_chunks = {id(chunk): chunk for chunk in chunks}
-        all_chunk_ids = set(vector_scores.keys()) | set(keyword_scores.keys())
-
-        for chunk_id in all_chunk_ids:
-            chunk = all_chunks[chunk_id]
-
-            # Get scores (default to 0 if not found)
-            vec_score = vector_scores.get(chunk_id, 0.0)
-            kw_score = keyword_scores.get(chunk_id, 0.0)
-
-            # Calculate weighted combination
-            combined_score = (vector_weight * vec_score) + (keyword_weight * kw_score)
-
-            if combined_score > 0:
-                combined_results.append((chunk, combined_score))
-
-        # Sort by combined score
-        combined_results.sort(key=lambda x: x[1], reverse=True)
-
-        return combined_results[:top_k]
+        # ── 2. Fuse Scores (RRF) ──────────────────────────────────────────────
+        all_candidates = set(vector_ranks.keys()) | set(keyword_ranks.keys())
+        chunk_map = {id(c): c for c in chunks}
+        
+        fused_scores = []
+        for chunk_id in all_candidates:
+            if chunk_id not in chunk_map:
+                continue
+                
+            # RRF Formula: sum(1 / (k + rank))
+            score = 0.0
+            
+            if chunk_id in vector_ranks:
+                score += 1.0 / (rrf_k + vector_ranks[chunk_id])
+            
+            if chunk_id in keyword_ranks:
+                score += 1.0 / (rrf_k + keyword_ranks[chunk_id])
+                
+            fused_scores.append((chunk_map[chunk_id], score))
+            
+        # Sort by RRF score descending
+        fused_scores.sort(key=lambda x: x[1], reverse=True)
+        return fused_scores[:top_k]
 
     def add_embeddings_to_chunks(self, chunks: List[Dict[str, Any]],
                                 force_regenerate: bool = False) -> List[Dict[str, Any]]:
@@ -291,10 +387,17 @@ class ISOEmbeddingManager:
 
         # Update chunks
         kb['all_chunks'] = chunks
+        
+        # Add rich metadata
+        from datetime import datetime
         kb['embedding_metadata'] = {
             'model': self.embedding_model,
+            'version': self.embedding_version,
             'dimension': self.embedding_dimension,
-            'total_chunks': len(chunks)
+            'total_chunks': len(chunks),
+            'generated_at': datetime.now().isoformat(),
+            'api_calls_used': self.api_calls,
+            'estimated_tokens': self.tokens_processed
         }
 
         # Save
@@ -302,6 +405,7 @@ class ISOEmbeddingManager:
             json.dump(kb, f, indent=2, ensure_ascii=False)
 
         print(f"[OK] Saved {len(chunks)} chunks with embeddings to {kb_file}")
+        print(f"[METADATA] Calls: {self.api_calls}, Est. Tokens: {self.tokens_processed}")
 
 
 def example_usage():
@@ -340,6 +444,14 @@ def example_usage():
         print(f"\n[{score:.3f}] {chunk['standard']} - {chunk['title']}")
         print(f"  {chunk['text'][:100]}...")
 
+
+    def get_api_stats(self) -> Dict[str, Any]:
+        """Get current API usage statistics."""
+        return {
+            'api_calls': self.api_calls,
+            'tokens_processed': self.tokens_processed,
+            'estimated_cost_usd': self.tokens_processed * (0.000025 / 1000)  # ~$0.000025 per 1k chars
+        }
 
 if __name__ == '__main__':
     example_usage()

@@ -1,0 +1,55 @@
+ISO 55000 AUDITOR STRESS TEST REPORT
+=====================================
+
+Initializing Auditor Protocol (GeminiQueryEngine)...
+[OK] Engine loaded in 0.08s
+
+================================================================================
+SCENARIO #1: ACCURACY
+QUERY: How many Precise Air assets are there?
+EXPECT: Exact count (4473)
+MODE DETECTED: structured
+TIME: 0.11s
+MODEL: SQL (Structured Query)
+CITATIONS: 1
+----------------------------------------
+ANSWER PREVIEW:
+**4,473** Precise Air assets. [1]...
+----------------------------------------
+AUDIT JUDGMENT: FAIL  (Empty/Short answer)
+
+================================================================================
+SCENARIO #2: COMPLEXITY
+QUERY: Analyze my poor condition electrical assets per ISO 55001
+EXPECT: Hybrid response: SQL count + ISO risk analysis + Recs
+MODE DETECTED: analytical
+TIME: 47.71s
+MODEL: gemini-3-flash-preview
+CITATIONS: 9
+----------------------------------------
+ANSWER PREVIEW:
+Based on the provided asset register and the principles of ISO 55001, your electrical assets categorized as "R1 Poor" represent a significant risk to organizational objectives, particularly where criticality is high [7]. ISO 55001 requires that an organization establish, implement, and maintain processes for the management of risks associated with assets throughout their life cycle [6].
+
+### Analy...
+----------------------------------------
+AUDIT JUDGMENT: PASS 
+
+================================================================================
+SCENARIO #3: SEGMENTATION
+QUERY: Count assets by criticality
+EXPECT: Table breakdown of Critical, High, Medium, Low
+MODE DETECTED: structured
+TIME: 0.05s
+MODEL: SQL (Structured Query)
+CITATIONS: 1
+----------------------------------------
+ANSWER PREVIEW:
+**0** Count assets. [1]...
+----------------------------------------
+AUDIT JUDGMENT: FAIL  (Empty/Short answer)
+
+================================================================================
+SCENARIO #4: KNOWLEDGE
+QUERY: What does ISO 55001 say about risk management?
+EXPECT: ISO definitions and clauses (e.g. 6.1)
+MODE DETECTED: analytical

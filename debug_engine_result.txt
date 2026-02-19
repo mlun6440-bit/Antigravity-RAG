@@ -1,0 +1,2 @@
+Result:
+{'question': 'how many precise air assets are there?', 'answer': '**4,473** precise air assets. [1]', 'citations': [{'number': 1, 'type': 'asset_data', 'source_file': 'Asset Database (SQLite)', 'sheet_name': 'assets', 'field': 'Multiple fields', 'filter': "Count assets where data_source='Precise Air'", 'count': 1, 'asset_ids': [], 'spreadsheet_url': None}], 'model': 'SQL (Structured Query)', 'context_size': 145, 'citation_count': 1, 'status': 'success', 'sql_query': 'SELECT COUNT(*) as count FROM assets WHERE data_source = ?', 'query_type': 'structured'}

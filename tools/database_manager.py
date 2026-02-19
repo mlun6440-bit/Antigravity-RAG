@@ -83,6 +83,7 @@ class DatabaseManager:
             -- Metadata
             notes TEXT,
             tags TEXT,
+            data_source TEXT,
             created_date TEXT,
             updated_date TEXT
         );

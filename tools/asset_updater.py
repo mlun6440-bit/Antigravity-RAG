@@ -35,10 +35,11 @@ SCOPES = [
 class AssetUpdater:
     """Updates asset data in Google Sheets and Excel files."""
 
-    def __init__(self, credentials_path: str = 'credentials.json', token_path: str = 'token.pickle'):
+    def __init__(self, credentials_path: str = 'credentials.json', token_path: str = 'token.pickle', allow_interactive: bool = True):
         """Initialize with OAuth credentials."""
         self.credentials_path = credentials_path
         self.token_path = token_path
+        self.allow_interactive = allow_interactive
         self.creds = self._authenticate()
         self.sheets_service = build('sheets', 'v4', credentials=self.creds)
         self.drive_service = build('drive', 'v3', credentials=self.creds)
@@ -84,20 +85,28 @@ class AssetUpdater:
                 if not os.path.exists(self.credentials_path):
                     raise FileNotFoundError(f"credentials.json not found at {self.credentials_path}")
 
+                if not self.allow_interactive:
+                    raise Exception("Interactive authentication required but allow_interactive is False")
+
                 print("[WARNING]  IMPORTANT: You need to re-authenticate with WRITE permissions!")
                 print("   Your browser will open. Grant full access to Google Sheets and Drive.")
 
                 # Skip input prompt if running non-interactively
-                import sys
-                if sys.stdin.isatty():
-                    input("   Press ENTER to continue...")
-                else:
-                    print("   (Running non-interactively - opening browser automatically...)")
+                # CRITICAL FIX: Do not block for interactive auth in headless mode
+                print("[WARN] Interactive authentication required but disabled to prevent blocking.")
+                print("       Please run 'tools/asset_updater.py' manually to authenticate.")
+                return None
 
-                flow = InstalledAppFlow.from_client_secrets_file(
-                    self.credentials_path, SCOPES
-                )
-                creds = flow.run_local_server(port=0)
+                # import sys
+                # if sys.stdin.isatty():
+                #     input("   Press ENTER to continue...")
+                # else:
+                #     print("   (Running non-interactively - opening browser automatically...)")
+
+                # flow = InstalledAppFlow.from_client_secrets_file(
+                #     self.credentials_path, SCOPES
+                # )
+                # creds = flow.run_local_server(port=0)
 
                 # Save token for future use (JSON format)
                 with open(self.token_path, 'w') as token:

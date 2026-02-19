@@ -1,0 +1,410 @@
+{
+  "summary": {
+    "precision_at_k": 0.4,
+    "avg_keyword_recall": 0.6300000000000001,
+    "avg_faithfulness": 0.75,
+    "k": 5
+  },
+  "details": [
+    {
+      "question": "What is the definition of an asset according to ISO 55000?",
+      "retrieval": {
+        "found": true,
+        "rank": 5,
+        "retrieved_sections": [
+          "0 (General)",
+          "0 (General)",
+          "0 (General)",
+          "0 (General)",
+          "3.1.4 (Note)"
+        ],
+        "retrieved_chunks": [
+          {
+            "chunk_id": "ASISO55002-20241.pdf_c33",
+            "iso_standard": "ASISO55002-20241",
+            "section_number": "0",
+            "section_title": "General",
+            "title": "General",
+            "text": "asset management system;\nb) those involved in delivering asset management activities, including service providers.\ndocument, is provided in ISO 55000.\nAn asset is something that has potential or actual value to an organization. Asset management enables \nan organization to realize value from assets in the achievement of its organizational objectives. \nAn asset management system is used by the organization to direct, coordinate and control asset \nmanagement activities.\nthereof, whether incorporated or not, public or private. The organization, for example, can be an asset owner, \ncustodian, operator, service provider, subsidiary, alliance or joint venture.",
+            "page_range": "N/A",
+            "source_file": "ASISO55002-20241.pdf"
+          },
+          {
+            "chunk_id": "ASISO55002-20241.pdf_c37",
+            "iso_standard": "ASISO55002-20241",
+            "section_number": "0",
+            "section_title": "General",
+            "title": "General",
+            "text": "ment systems.\nFigure 1 shows the relationship between the key elements of an asset management system, together \nwith the related clauses in ISO 55001.\nThis document provides guidance on the implementation of the requirements for an asset management \nof clauses and subclauses as in ISO 55001 (the subclauses in Clause 6 and Clause 10 are not in strict \nalignment). Throughout this document distinction is made, where relevant, between assets and \nasset portfolio, asset management and the asset management system. In ISO 55000:2014, 2.4.3, the \norganization to direct, coordinate and control asset management activities to realize value from its \naware of this relationship.",
+            "page_range": "N/A",
+            "source_file": "ASISO55002-20241.pdf"
+          },
+          {
+            "chunk_id": "ASISO55002-20241.pdf_c44",
+            "iso_standard": "ASISO55002-20241",
+            "section_number": "0",
+            "section_title": "General",
+            "title": "General",
+            "text": "tions.\napplied to other asset types.\ntypes, however, in Annex F\nasset management functions.\nused to refer to a management system for asset management.\nThe following documents are referred to in the text in such a way that some or all of their content \nconstitutes requirements of this document. For dated references, only the edition cited applies. For \nundated references, the latest edition of the referenced document (including any amendments) applies.\nISO 55000:2014, Asset management \u2014 Overview, principles and terminology\nISO and IEC maintain terminological databases for use in standardization at the following addresses:\n\u2014 ISO Online browsing platform: available at https:/ / www .iso .org/ obp\n\u2014 IEC Electropedia: available at http:/ / www .electropedia .",
+            "page_range": "N/A",
+            "source_file": "ASISO55002-20241.pdf"
+          },
+          {
+            "chunk_id": "ASISO55002-20241.pdf_c61",
+            "iso_standard": "ASISO55002-20241",
+            "section_number": "0",
+            "section_title": "General",
+            "title": "General",
+            "text": "rtant to be aware of, and to clarify, any variations in terminology between ISO 55000 and the \nterminology used in the organization\u2019s common practice.\nConformity to the requirements of ISO 55001 should be considered as achieving only the minimum \nMoving beyond conformity also requires embracing the fundamentals of asset management described \nin ISO 55000 (i.e. alignment, assurance, leadership and value).\nAn asset management system and asset management activities should be scaled to the size and \ncomplexity of the organization and its assets and their criticality. For example, for small organizations, \nthe organizational plan can be a single piece of documented information that includes separate \nsections on:\na) the organizational objectives;\nc) the asset management plan(s).",
+            "page_range": "N/A",
+            "source_file": "ASISO55002-20241.pdf"
+          },
+          {
+            "chunk_id": "ASISO55000-20241.pdf_c11",
+            "iso_standard": "ASISO55000-20241",
+            "section_number": "3.1.4",
+            "section_title": "Note",
+            "title": "Note",
+            "text": "be shorter than an asset life (3.1.2).\n3.1.4\napplying asset management (3.2.1) over the life cycle (3.1.3) of assets (3.1.1)\ngrouping of assets (3.1.1) having common characteristics that distinguish those assets as a group or \nclass\n3.1.6\nset of assets (3.1.1) that interact or are interrelated\n3.1.7\nassets (3.1.1) that are within the scope of an asset management system (3.3.5)\nNote 1 to entry:A portfolio is typically established and assigned for managerial control purposes.\n3.1.8\nasset (3.1.1 organization\u2019s (3.3.1) \nobjectives (3.3.7)\nNote 1to entry: Assets can be safety-critical, environment-critical or performance-critical and can relate to legal, \nregulatory or statutory requirements (3.3.16).\nNote 2to entry: Critical assets can refer to those assets necessary to provide services to critical customers.\nNote 3to entry:Asset systems (3.1.6) can be distinguished as being critical in a similar manner to individual \nassets.\n3.1.9\nobject, noun\nanything perceivable or conceivable\nNote 1 to entry:An object can be physical (e.g. a pump, a bridge, a building), or non-physical (e.g. a project plan, \ncopyright, software).\n3.1.10\ndata\nfacts about an object (3.1.9)\n[SOURCE: ISO 9000:2015, 3.8.1]\n3.1.11\nmeaningful result of organizing and processing data (3.1.10)\nasset (3.1.1) performance\n(3.3.13) indicator, an asset\u2019s current total cost of ownership.",
+            "page_range": "N/A",
+            "source_file": "ASISO55000-20241.pdf"
+          }
+        ],
+        "keyword_recall": 0.6,
+        "keywords_found": [
+          "thing",
+          "potential",
+          "value"
+        ],
+        "keywords_missing": [
+          "item",
+          "entity"
+        ]
+      },
+      "faithfulness": {
+        "sufficient": true,
+        "reason": "The retrieved context explicitly states that the definition of an asset is provided in ISO 55000. It further provides this definition, stating that \"An asset is something that has potential or actual value to an organization.\"",
+        "score": 1.0
+      }
+    },
+    {
+      "question": "What are the requirements for a Strategic Asset Management Plan (SAMP)?",
+      "retrieval": {
+        "found": false,
+        "rank": -1,
+        "retrieved_sections": [
+          "3.2.1 (Note)",
+          "0 (General)",
+          "0 (General)",
+          "0 (General)",
+          "0 (General)"
+        ],
+        "retrieved_chunks": [
+          {
+            "chunk_id": "ASISO55000-20241.pdf_c13",
+            "iso_standard": "ASISO55000-20241",
+            "section_number": "3.2.1",
+            "section_title": "Note",
+            "title": "Note",
+            "text": "ch, planning \nand plans, and their implementation.\n3.2.2\noverarching objective (3.3.7) that sets the context and direction for an organization\u2019s (3.3.1) activities\nNote 1 to entry:Organizational objectives are established through the strategic level planning activities of the \norganization.\n3.2.3\ndocumented information (3.3.12 organizational objectives (3.2.2)\n3.2.4\ncoordinated activities to direct and control an organization (3.3.1)\nNote 1to entry: Management can include establishing strategies, policies (3.3.6) and objectives (3.3.7), and \nprocesses (3.3.10) to achieve those objectives.\nNote 2to entry: Management includes the processes of planning, organizing, directing and controlling (e.g. the \noutcomes of people, groups or organizations).\nand rewards, and empowering and engaging people.\nNote 4to entry: The word \u201cmanagement\u201d sometimes refers to people, i.e. a person or group of people with the \nauthority and responsibility for the conduct and control of an organization. When \u201cmanagement\u201d is used in this \npublic health management, environmental management and risk (3.3.8) management.\nshortened and renumbered as Note 4 to entry. Notes 2, 3 and 5 to entry added.]\nAMP\ndocumented information (3.3.12\nfor an individual asset (3.1.1), or a grouping of assets, to achieve an organization\u2019s (3.3.1) asset \nmanagement (3.2.1) objectives (3.3.7)\nNote 1to entry: The grouping of assets may be by asset type (3.1.5), asset class, asset system (3.1.6) or asset \nportfolio (3.1.7).\nNote 2to entry: An asset management plan is derived from the strategic asset management plan (3.3.29).\nNote 3to entry: An asset management plan may be contained in, or may be a subsidiary plan of, the strategic \nasset management plan.",
+            "page_range": "N/A",
+            "source_file": "ASISO55000-20241.pdf"
+          },
+          {
+            "chunk_id": "ASISO55002-20241.pdf_c78",
+            "iso_standard": "ASISO55002-20241",
+            "section_number": "0",
+            "section_title": "General",
+            "title": "General",
+            "text": "y should align to the purpose of the organization and be consistent with \nthe organizational plan and the other relevant policies of the organization.\nThe asset management policy should provide guiding principles for asset management and asset \nmanagement objectives, and include, for example, commitments for:\na) satisfying applicable legal and regulatory requirements;\nb) providing resources to realize the asset management objectives;\nc) reporting on and evaluating asset management performance;\nd) supporting long-term objectives, sustainable outcomes and stakeholder requirements;\ne) abiding by any relevant contractual obligations;\nf) continual improvement of asset management and the asset management system.",
+            "page_range": "N/A",
+            "source_file": "ASISO55002-20241.pdf"
+          },
+          {
+            "chunk_id": "ASISO55002-20241.pdf_c84",
+            "iso_standard": "ASISO55002-20241",
+            "section_number": "0",
+            "section_title": "General",
+            "title": "General",
+            "text": "elating to managing assets (ISO 55001:2014, 4.2).\nof needs based on the current performance of assets, asset management and the asset management \n4.4.2 and Annex C) \ncovers the strategic objectives, strategies, decision-making criteria and high-level plans for the entire \nasset portfolio and the asset management system. The asset management plans can be developed for an \nasset portfolio and/or assets; for example, at business unit level, at a site/facility level or at the complex \nasset system level. The interrelation between different levels of planning is illustrated in Figure 1.\nIn planning, an organization should:\na) adhere to the asset management policy and incorporate asset management principles (see \nISO 55000:2014, 2.4.2);\nb) address risks and opportunities for the asset management system (see ISO 55001:2014, 6.1) and \nthe asset management objectives (see ISO 55001:2014, 6.2), taking into account how these risks \nand opportunities can change with time;\nc) consider costs, performance and risks related to the asset portfolio by applying the organization\u2019s \ndecision-making criteria and approach to risk management;\n10\n\nd) align the timeframe with the organization\u2019s planning and other management systems, while also \nconsidering longer-term implications;\ne) consider the results of performance evaluation, including internal and external audits as well as \nmanagement review.\nthat risks and opportunities are determined and plan actions to address them. The purpose is to \nprevent or reduce negative consequences, reduce the probabilities of undesired effects and to pursue \nopportunities that could enhance the achievement of the organization\u2019s asset management objectives. It \nshould be noted that risks and opportunities are addressed through the planning process, as explained \nin 6.2 and Annex E.\nExamples of risks to the asset management system could be: the failure or lack of processes in the \nauthorities and competences of personnel. Examples of opportunities could be",
+            "page_range": "N/A",
+            "source_file": "ASISO55002-20241.pdf"
+          },
+          {
+            "chunk_id": "ASISO55002-20241.pdf_c35",
+            "iso_standard": "ASISO55002-20241",
+            "section_number": "0",
+            "section_title": "General",
+            "title": "General",
+            "text": "objectives form a key part of the context of the asset management system and are the starting point for \nestablishing the asset management objectives.\nmaintain its asset management system, asset management and the assets, in alignment with the \npurpose of the organization, its objectives and its stakeholder needs and requirements.\nThe asset management system includes:\na) the asset management policy (see 5.2);\nb) the asset management objectives (see 6.2);\nd) the asset management plan(s) (see 6.2.",
+            "page_range": "N/A",
+            "source_file": "ASISO55002-20241.pdf"
+          },
+          {
+            "chunk_id": "ASISO55002-20241.pdf_c62",
+            "iso_standard": "ASISO55002-20241",
+            "section_number": "0",
+            "section_title": "General",
+            "title": "General",
+            "text": "an be a single piece of documented information that includes separate \nsections on:\na) the organizational objectives;\nc) the asset management plan(s).\nrequirement of ISO 55001 to create separate pieces of documented information for each.\n5\n\nSee  for further information on the scalability of asset management.\nThe principles by which the organization intends applying asset management to achieve its \norganizational objectives should be set out in an asset management policy. The approach to \nobjectives and the framework required to achieve the asset management objectives.\nAsset capability and performance, as well as the outputs from asset management activities [e.g.",
+            "page_range": "N/A",
+            "source_file": "ASISO55002-20241.pdf"
+          }
+        ],
+        "keyword_recall": 0.75,
+        "keywords_found": [
+          "documented",
+          "objectives",
+          "planning"
+        ],
+        "keywords_missing": [
+          "strategy"
+        ]
+      },
+      "faithfulness": {
+        "sufficient": true,
+        "reason": "The retrieved context discusses the requirements for a Strategic Asset Management Plan (SAMP). It mentions aligning with organizational objectives, incorporating asset management principles, addressing risks and opportunities, considering costs and risks, aligning timeframes, and considering performance evaluation results. It also includes references to relevant standards such as ISO 55000 and ISO 55001.",
+        "score": 0.9
+      }
+    },
+    {
+      "question": "How often should management reviews be conducted?",
+      "retrieval": {
+        "found": false,
+        "rank": -1,
+        "retrieved_sections": [
+          "0 (General)",
+          "0 (General)",
+          "3.18 (Note)",
+          "0 (General)",
+          "3.18 (Note)"
+        ],
+        "retrieved_chunks": [
+          {
+            "chunk_id": "ASISO55002-20241.pdf_c56",
+            "iso_standard": "ASISO55002-20241",
+            "section_number": "0",
+            "section_title": "General",
+            "title": "General",
+            "text": "ties can in itself \nIt is important that the terminology used in communicating with stakeholders is consistent and aligned \ninformation (See Annex F).\nOrganizations could manage their communication needs through registers or matrices identifying with \nwhom, what, when, how and why they need to communicate.\nBased on the outcomes of reviews of its context and stakeholders (see 4.1 and 4.2), the organization \nshould be communicated to all relevant stakeholders, both internal and external to the organization.",
+            "page_range": "N/A",
+            "source_file": "ASISO55002-20241.pdf"
+          },
+          {
+            "chunk_id": "ASISO55002-20241.pdf_c60",
+            "iso_standard": "ASISO55002-20241",
+            "section_number": "0",
+            "section_title": "General",
+            "title": "General",
+            "text": "vailable. The review can guide the organization in formulating \nplan(s) for implementing and prioritizing improvements to its asset management system.\nAn appropriate starting point may be the establishment of an asset management policy, which often \nhelps to provide focus for the organization and to identify its intentions. Following this, the organization \nenabling and support elements (as per ISO 55001:2014, Clause 7) and implementing operational controls \ndocumented information, to the extent needed to ensure that the asset management system is effective.\nIt is important to be aware of, and to clarify, any variations in terminology between ISO 55000 and the \nterminology used in the organization\u2019s common practice.",
+            "page_range": "N/A",
+            "source_file": "ASISO55002-20241.pdf"
+          },
+          {
+            "chunk_id": "ASISO55001-20241.pdf_c18",
+            "iso_standard": "ASISO55001-20241",
+            "section_number": "3.18",
+            "section_title": "Note",
+            "title": "Note",
+            "text": "t management policy that:\nThe asset management policy shall:\n\u2014 be available as documented information;\n\u2014 be available to stakeholders, as appropriate.\nTop management shall ensure that the responsibilities and authorities for relevant roles are assigned \nTop management shall assign the responsibility and authority for:\nsystem to top management and relevant stakeholders.\n\nin 4.1 and the requirements referred to in 4.2 and determine the risks and opportunities that need to be \naddressed to:\nmanagement and the asset management system, including for:\n\u2014 the analysis of risks and how they change over time;\n\u2014 the evaluation of risks;\n\u2014 determining the criticality of assets in achieving asset management objectives;\n\u2014 considering alternatives and deciding on preferred options to treat risks.",
+            "page_range": "N/A",
+            "source_file": "ASISO55001-20241.pdf"
+          },
+          {
+            "chunk_id": "ASISO55002-20241.pdf_c51",
+            "iso_standard": "ASISO55002-20241",
+            "section_number": "0",
+            "section_title": "General",
+            "title": "General",
+            "text": "s at all levels \nof government;\ne) taxpayers;\nf) local communities;\ni) external employee representatives (e.g. an employee of an industry body/union).\naddress the expectations of different stakeholder groups. These statements should reference any \nmandatory requirements.\nThe organization should consider a means of tracking how current the information collected is, and \nand expectations, the organization can use the list of context-related issues given in 4.1 to frame the \ndiscussions.\nOne objective of asset management is to enable the organization to meet the service needs of the \ncustomers and users of its asset(s). The organization should measure the levels of service (see 6.2.",
+            "page_range": "N/A",
+            "source_file": "ASISO55002-20241.pdf"
+          },
+          {
+            "chunk_id": "ASISO55001-20241.pdf_c20",
+            "iso_standard": "ASISO55001-20241",
+            "section_number": "3.18",
+            "section_title": "Note",
+            "title": "Note",
+            "text": "es to be addressed to improve performance of the assets, asset \nmanagement and the asset management system.\n4.1 and stakeholder requirements under \n4.2 and deviations from expected intended results, cause analysis, risk analysis, review of unplanned events,\n\nopportunities can change with time;\n\u2014 integrate and implement the actions into its asset management system processes;\n\u2014 evaluate the effectiveness of these actions.\nevaluation.\nand the implementation and alignment of asset management activities.\nthem;\nobjectives;\nassets.\noutlines how that is achieved.\nupdated.\n\u2014 its current and future internal and external context ;\n\u2014 risks and opportunities;\n\u2014 the condition, performance and capabilities of its assets.",
+            "page_range": "N/A",
+            "source_file": "ASISO55001-20241.pdf"
+          }
+        ],
+        "keyword_recall": 0.3333333333333333,
+        "keywords_found": [
+          "planned"
+        ],
+        "keywords_missing": [
+          "intervals",
+          "periodically"
+        ]
+      },
+      "faithfulness": {
+        "sufficient": false,
+        "reason": "The retrieved context discusses asset management reviews and stakeholder communication but does not specify how often management reviews should be conducted. Therefore, it does not contain sufficient information to accurately answer the question.",
+        "score": 0.0
+      }
+    },
+    {
+      "question": "What constitutes a nonconformity?",
+      "retrieval": {
+        "found": true,
+        "rank": 3,
+        "retrieved_sections": [
+          "3.3.13 (Note)",
+          "4.2 (Definition)",
+          "3.18 (Note)",
+          "3.9 (Note)",
+          "4.2 (Definition)"
+        ],
+        "retrieved_chunks": [
+          {
+            "chunk_id": "ASISO55000-20241.pdf_c19",
+            "iso_standard": "ASISO55000-20241",
+            "section_number": "3.3.13",
+            "section_title": "Note",
+            "title": "Note",
+            "text": "d planned results are achieved\n3.3.16\nneed or expectation that is stated, generally implied or obligatory\norganization (3.3.1) and \nstakeholders (3.3.2) that the need or expectation under consideration is implied.\ndocumented information (3.3.12).\n3.3.17\nrequirement (3.3.16)\n3.3.18\nrequirement (3.3.16)\nNote 1 to entry:Nonconformity can be any deviation from asset management system (3.3.5) requirements (e.g. \nfrom relevant work standards, practices, procedures, legal requirements) or any failure of an asset (3.1.1) to \n3.3.19\naction to eliminate the cause(s) of a nonconformity (3.3.18) and to prevent recurrence\n3.3.20\naction to eliminate the cause of a potential nonconformity (3.3.18) or other undesirable potential \nsituation\nNote 1to entry: There can be more than one cause for a potential nonconformity.\nasset\u2019s (3.1.1) function \nwhereas corrective action (3.3.19) is taken to prevent recurrence.\nor prior to the initiation of functional failure.\nfunctional requirement.",
+            "page_range": "N/A",
+            "source_file": "ASISO55000-20241.pdf"
+          },
+          {
+            "chunk_id": "ASISO55001-20241.pdf_c28",
+            "iso_standard": "ASISO55001-20241",
+            "section_number": "4.2",
+            "section_title": "Definition",
+            "title": "Definition",
+            "text": "m;\n\u2014 nonconformities and corrective actions;\n\u2014 monitoring and measurement results;\n\u2014 audit results;\nof the asset management objectives;\nopportunities.\nThe results of the management review shall include decisions related to continual improvement \nopportunities, the adequacy of resources and any need for changes to the assets, asset management and \nasset management system.\n\nWhen a nonconformity or incident occurs in its assets, asset management or asset management system, \n\u2014 take action to control and correct it;\n\u2014 deal with the consequences;\nnonconformity or incident, in order that it does not recur or occur elsewhere, by:\n\u2014 reviewing the nonconformity or incident;\n\u2014 determining the causes of nonconformity or incident;\n\u2014 determining if similar nonconformities exist, or can potentially occur",
+            "page_range": "N/A",
+            "source_file": "ASISO55001-20241.pdf"
+          },
+          {
+            "chunk_id": "ASISO55001-20241.pdf_c15",
+            "iso_standard": "ASISO55001-20241",
+            "section_number": "3.18",
+            "section_title": "Note",
+            "title": "Note",
+            "text": "10\n3.15\nrequirement3.14\n3.16\nrequirement3.14\nNote 1 to entry:Nonconformity can be any deviation from asset management system3.4\n3.17\nnonconformity3.16\n\n3.18\naction to eliminate the cause of a potential nonconformity3.16\nNote 1to entry: There can be more than one cause for a potential nonconformity.\ncorrective action3.17\nor prior to the initiation of functional failure.\nfunctional requirement.\n3.19\nincident\nunplanned event or occurrence\n3.20\naudit\nsystematic and independent process3.8\nNote 2to entry: An internal audit is conducted by the organization3.1\nbehalf.\n3.21\nprocess3.8\nof stakeholder\u2019s3.2\n3.22\ndetermining the status of a system, a process3.8\nNote 1to entry: To determine the status, there can be a need to check, supervise or critically observe.\nasset.",
+            "page_range": "N/A",
+            "source_file": "ASISO55001-20241.pdf"
+          },
+          {
+            "chunk_id": "ASISO55001-20241.pdf_c14",
+            "iso_standard": "ASISO55001-20241",
+            "section_number": "3.9",
+            "section_title": "Note",
+            "title": "Note",
+            "text": "deliver a result\nNote 1 to entry:Whether the result of a process is called an output, a product or a service depends on the context \nof the reference.\n\n3.9\nability to apply knowledge and skills to achieve intended results\n3.10\ninformation required to be controlled and maintained by an organization3.1\nwhich it is contained\n\u2014 the management system3.4 processes3.8\n3.11\nmeasurable result\nprocesses3.8\norganizations3.1\nrequirements3.17 objectives3.6\n3.12\nrecurring activity to enhance performance3.11\n3.13\n3.14\nneed or expectation that is stated, generally implied or obligatory\norganization3.1\nstakeholders3.2\ndocumented information3.10\n3.15\nrequirement3.14\n3.16\nrequirement3.14\nNote 1 to entry:Nonconformity can be any deviation from asset management system3.4\n3.17\nnonconformity3.16",
+            "page_range": "N/A",
+            "source_file": "ASISO55001-20241.pdf"
+          },
+          {
+            "chunk_id": "ASISO55001-20241.pdf_c29",
+            "iso_standard": "ASISO55001-20241",
+            "section_number": "4.2",
+            "section_title": "Definition",
+            "title": "Definition",
+            "text": "onformity or incident;\n\u2014 determining the causes of nonconformity or incident;\n\u2014 determining if similar nonconformities exist, or can potentially occur;\nor incidents encountered.\n\u2014 the nature of the nonconformities or incidents and any subsequent actions taken;\n\u2014 the results of any corrective action or prevention action.\nconsider the need to:\nimprovement of assets, asset management and the asset management system;\ndisposal of assets;\n\u2014 determine the relationship of asset condition to performance, opportunity, risk and \ncost;\n\nrequirements in 10.2 and integrate these actions in its asset management planning.\nbased on predictive actions on assets and asset management performance.",
+            "page_range": "N/A",
+            "source_file": "ASISO55001-20241.pdf"
+          }
+        ],
+        "keyword_recall": 0.6666666666666666,
+        "keywords_found": [
+          "requirement",
+          "failure"
+        ],
+        "keywords_missing": [
+          "non-fulfillment"
+        ]
+      },
+      "faithfulness": {
+        "sufficient": true,
+        "reason": "The provided context defines nonconformity as a deviation from the asset management system requirements. It also mentions examples of nonconformities like deviations from work standards, practices, procedures, or any asset failure.",
+        "score": 0.9
+      }
+    },
+    {
+      "question": "Explain the role of leadership in asset management.",
+      "retrieval": {
+        "found": false,
+        "rank": -1,
+        "retrieved_sections": [
+          "0 (General)",
+          "3.3.27 (Note)",
+          "0 (General)",
+          "0 (General)",
+          "0 (General)"
+        ],
+        "retrieved_chunks": [
+          {
+            "chunk_id": "ASISO55002-20241.pdf_c66",
+            "iso_standard": "ASISO55002-20241",
+            "section_number": "0",
+            "section_title": "General",
+            "title": "General",
+            "text": "nternal \nstakeholders, at all levels of the organization, understand why asset life cycle activities and asset \nmanagement activities are implemented.\nSee Annex C\nLeadership should be exercised at all levels within the organization, however, top management \nshould ensure that it demonstrates leadership and commitment by taking an active role in engaging, \npromoting, directing and supporting, communicating and monitoring the performance, effectiveness \nand continual improvement of the assets, asset management and the asset management system. The \nways these can be demonstrated are based on various factors, such as the size and complexity of an \norganization, its management style and culture.",
+            "page_range": "N/A",
+            "source_file": "ASISO55002-20241.pdf"
+          },
+          {
+            "chunk_id": "ASISO55000-20241.pdf_c28",
+            "iso_standard": "ASISO55000-20241",
+            "section_number": "3.3.27",
+            "section_title": "Note",
+            "title": "Note",
+            "text": "while horizontal alignment \nrepresents collaboration across departments, functions and responsibilities for different stages of the \nasset life cycle.\nLeadership and sustained commitment at all levels are crucial for successful asset management. Effective \nleadership establishes a clear direction, roles, responsibilities and authorities, with transparent \nconsultation and the development of a collaborative culture that is aligned to organizational success.\nThe primary outcomes of asset management are the realization of value and the achievement of \norganizational objectives.",
+            "page_range": "N/A",
+            "source_file": "ASISO55000-20241.pdf"
+          },
+          {
+            "chunk_id": "ASISO55002-20241.pdf_c69",
+            "iso_standard": "ASISO55002-20241",
+            "section_number": "0",
+            "section_title": "General",
+            "title": "General",
+            "text": "ant that top management \nretains ownership of the asset management system and provides clarity with respect to responsibilities \nand accountabilities.\nTop management responsibility includes:\na) ensuring that internal stakeholders, at all levels of the organization, are appropriately engaged in \nthe planning, development, implementation, and operation of the asset management system;\nb) creating the vision, culture and values that guide the asset management policy and practice, and \nactively promoting these values inside and outside the organization;\nc) ensuring the asset management policy aligns to the purpose of the organization, and is consistent \nwith the organizational plan and other relevant policies of the organization;\nd) ensuring that those in leadership positions, at all levels wit",
+            "page_range": "N/A",
+            "source_file": "ASISO55002-20241.pdf"
+          },
+          {
+            "chunk_id": "ASISO55002-20241.pdf_c70",
+            "iso_standard": "ASISO55002-20241",
+            "section_number": "0",
+            "section_title": "General",
+            "title": "General",
+            "text": "stent \nwith the organizational plan and other relevant policies of the organization;\nd) ensuring that those in leadership positions, at all levels within the organization:\n1) facilitate the understanding of stakeholder value expectations and translation of the \norganization\u2019s objectives into asset management objectives;\n2) lend their authority in supporting the asset management system and be active and visible \nchampions and sponsors for asset management;\n7\n\n3) achieve alignment to other management systems within the organization through \nappropriate cross-functional approaches and design of the organization\u2019s divisional or \ndepartmental structures;\n4) support integration of asset management systems into business processes, creating vertical \nand horizontal alignment of the asset managemen",
+            "page_range": "N/A",
+            "source_file": "ASISO55002-20241.pdf"
+          },
+          {
+            "chunk_id": "ASISO55002-20241.pdf_c80",
+            "iso_standard": "ASISO55002-20241",
+            "section_number": "0",
+            "section_title": "General",
+            "title": "General",
+            "text": "asset management policy, especially if the \norganization\u2019s external or internal context changes.\nbetween the functions should be clearly established. This clarity of delineating responsibilities becomes \nmore important in situations in which asset management activities are outsourced.\nIt should be clear whose role is responsible for which activity. This role and activity alignment can be \nachieved through the development of accurate job descriptions and role statements, by including asset \nmanagement responsibilities in existing job descriptions, or through the establishment of documented \ninformation giving an organizational chart.",
+            "page_range": "N/A",
+            "source_file": "ASISO55002-20241.pdf"
+          }
+        ],
+        "keyword_recall": 0.8,
+        "keywords_found": [
+          "top management",
+          "policy",
+          "responsibility",
+          "authority"
+        ],
+        "keywords_missing": [
+          "resources"
+        ]
+      },
+      "faithfulness": {
+        "sufficient": true,
+        "reason": "The retrieved context provides a detailed explanation of the role of leadership in asset management. It highlights the importance of leadership at all levels, the responsibilities of top management, and how leadership contributes to the success of asset management by establishing direction, roles, and a collaborative culture. The context also mentions the alignment of asset management objectives with organizational goals and the integration of asset management systems into business processes.",
+        "score": 0.95
+      }
+    }
+  ]
+}

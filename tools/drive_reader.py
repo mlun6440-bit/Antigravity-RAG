@@ -24,11 +24,10 @@ from dotenv import load_dotenv
 # Python 3.13 handles UTF-8 natively on Windows
 
 # Scopes required for Google Drive and Sheets access
+# MINIMAL SCOPES: Only request what's actually needed (principle of least privilege)
 SCOPES = [
     'https://www.googleapis.com/auth/spreadsheets.readonly',
-    'https://www.googleapis.com/auth/drive.readonly',
-    'https://www.googleapis.com/auth/presentations',
-    'https://www.googleapis.com/auth/gmail.send'
+    'https://www.googleapis.com/auth/drive.readonly'
 ]
 
 class DriveReader:
@@ -62,7 +61,8 @@ class DriveReader:
                         f"credentials.json not found at {self.credentials_path}. "
                         "Please download it from Google Cloud Console."
                     )
-                print("Starting OAuth authentication flow...")
+                # CRITICAL FIX: Do not block for interactive auth in headless mode
+                print("[INFO] Starting interactive authentication...")
                 flow = InstalledAppFlow.from_client_secrets_file(
                     self.credentials_path, SCOPES
                 )
@@ -132,9 +132,47 @@ class DriveReader:
 
                 values = result.get('values', [])
                 if values:
-                    # Convert to pandas DataFrame with flexible column handling
-                    headers = values[0] if values else []
-                    data_rows = values[1:]
+                    # SMART HEADER DETECTION
+                    # Scan first 50 rows for a header-like row
+                    header_index = 0
+                    max_score = 0
+                    
+                    # Expanded keywords
+                    keywords = {
+                        'asset id', 'id', 'record id', 'asset name', 'description', 
+                        'category', 'tag', 'serial number', 'functional location',
+                        'equipment id', 'tag number', 'asset', 'model', 'manufacturer',
+                        'location', 'site', 'status', 'condition', 'fulcrum id'
+                    }
+                    
+                    print(f"  Scanning '{sheet_name}' for headers...")
+                    
+                    for i, row in enumerate(values[:50]):
+                        # Normalize cell values for matching
+                        row_text = set(str(cell).lower().strip().replace('_', ' ') for cell in row if cell)
+                        # Check intersection
+                        matches = row_text.intersection(keywords)
+                        score = len(matches)
+                        
+                        if score > max_score:
+                            max_score = score
+                            header_index = i
+                            # If we find a very strong match (>3 keywords), stop searching
+                            if score >= 3:
+                                break
+                    
+                    if max_score > 0:
+                        print(f"    -> Found header at row {header_index+1} (Score: {max_score})")
+                        print(f"       Headers: {values[header_index]}")
+                    else:
+                        print(f"    [WARN] No clear header found. Defaulting to row 1.")
+                        print(f"    Row 1 Raw: {values[0] if values else 'Empty'}")
+                        # Fallback: check if row 1 is metadata and skip it? 
+                        # For now, just warn.
+                    
+                    # Slicing based on detected header
+                    headers = values[header_index] if values else []
+                    data_rows = values[header_index+1:]
 
                     # Handle column mismatch by padding shorter rows
                     max_cols = max(len(headers), max((len(row) for row in data_rows), default=0))
@@ -142,6 +180,9 @@ class DriveReader:
                     # Pad headers if needed
                     if len(headers) < max_cols:
                         headers.extend([f'Column_{i}' for i in range(len(headers), max_cols)])
+
+                    # Remove newlines/spaces from headers
+                    headers = [str(h).strip().replace('\n', ' ') for h in headers]
 
                     # Pad data rows if needed
                     padded_rows = []

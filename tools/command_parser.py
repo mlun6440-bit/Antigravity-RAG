@@ -212,7 +212,7 @@ class CommandParser:
             return True
 
         # Bulk UPDATE needs confirmation
-        if intent == 'UPDATE' and params.get('type') == 'bulk':
+        if intent == 'UPDATE' and params and params.get('type') == 'bulk':
             return True
 
         # Single updates don't need confirmation

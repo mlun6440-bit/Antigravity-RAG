@@ -1,0 +1,245 @@
+ISO 55000 AUDITOR STRESS TEST v2 - EXPANDED
+============================================================
+
+Initializing GeminiQueryEngine...
+[OK] Engine loaded in 0.13s
+
+
+================================================================================
+SCENARIO #1: ACCURACY
+QUERY: How many Precise Air assets are there?
+EXPECT: Exact count (4473)
+MODE DETECTED: structured
+TIME: 0.72s
+MODEL: SQL (Structured Query)
+CITATIONS: 1
+----------------------------------------
+ANSWER PREVIEW:
+**4,473** Precise Air assets. [1]...
+----------------------------------------
+JUDGMENT: PASS 
+
+================================================================================
+SCENARIO #2: COMPLEXITY
+QUERY: Analyze my poor condition electrical assets per ISO 55001
+EXPECT: Hybrid response: SQL count + ISO risk analysis
+MODE DETECTED: analytical
+TIME: 34.31s
+MODEL: gemini-3-flash-preview
+CITATIONS: 10
+----------------------------------------
+ANSWER PREVIEW:
+Based on the provided asset register, there are **1,893 assets** currently classified with a status of **"R1 Poor"** [Asset Register Overview]. Under ISO 55001, these assets represent a significant risk to the organization's ability to provide value and maintain assurance [Citation 8].
+
+### Analysis...
+----------------------------------------
+JUDGMENT: PASS 
+
+================================================================================
+SCENARIO #3: SEGMENTATION
+QUERY: Count assets by criticality
+EXPECT: Table breakdown of Critical, High, Medium, Low
+MODE DETECTED: structured
+TIME: 0.08s
+MODEL: SQL (Structured Query)
+CITATIONS: 1
+----------------------------------------
+ANSWER PREVIEW:
+Here's the breakdown by criticality:
+
+| Criticality | Count |
+|------------------------------|----------|
+| Low | 72,220 |
+| Medium | 32,332 |
+| High | 31,104 |
+| Critical | 3,433 |
+| Unknown | 2,798 |
+| **TOTAL** | **141,887** | [1]...
+----------------------------------------
+JUDGMENT: PASS 
+
+================================================================================
+SCENARIO #4: KNOWLEDGE
+QUERY: What does ISO 55001 say about risk management?
+EXPECT: ISO definitions and clauses
+MODE DETECTED: analytical
+TIME: 54.45s
+MODEL: gemini-3-flash-preview
+CITATIONS: 7
+----------------------------------------
+ANSWER PREVIEW:
+ISO 55001 requires organizations to establish, implement, and maintain processes for identifying and assessing risks and opportunities related to asset management [6]. Under the standard, risk management is not a standalone activity but is integrated into the planning of the asset management system ...
+----------------------------------------
+JUDGMENT: WARN  (Mode mismatch: analytical vs knowledge)
+
+================================================================================
+SCENARIO #5: HALLUCINATION_CHECK
+QUERY: How many flux capacitors in the database?
+EXPECT: Zero / No results found
+MODE DETECTED: structured
+TIME: 0.00s
+MODEL: SQL (Structured Query)
+CITATIONS: 0
+----------------------------------------
+ANSWER PREVIEW:
+I couldn't find any assets matching your criteria....
+----------------------------------------
+JUDGMENT: PASS 
+
+================================================================================
+SCENARIO #6: STRATEGY
+QUERY: Recommend a maintenance strategy for High Criticality assets in Poor condition
+EXPECT: Specific actionable advice citing ISO
+MODE DETECTED: analytical
+TIME: 80.10s
+MODEL: gemini-3-flash-preview
+CITATIONS: 10
+----------------------------------------
+ANSWER PREVIEW:
+For assets identified as "High" (4) or "Very High" (5) criticality that are currently in "R1 Poor" condition, a risk-based maintenance and renewal strategy is essential to align with ISO 55000 principles of value and assurance.
+
+### Recommended Strategy for High Criticality/Poor Condition Assets
+
+1....
+----------------------------------------
+JUDGMENT: PASS 
+
+================================================================================
+SCENARIO #7: FILTERING
+QUERY: List all Fire assets created by 'Precise Fire'
+EXPECT: List of assets filtered by category and source
+MODE DETECTED: structured
+TIME: 0.00s
+MODEL: SQL (Structured Query)
+CITATIONS: 0
+----------------------------------------
+ANSWER PREVIEW:
+I couldn't find any assets matching your criteria....
+----------------------------------------
+JUDGMENT: PASS 
+
+================================================================================
+SCENARIO #8: AMBIGUITY
+QUERY: Assess the state of our infrastructure
+EXPECT: General overview or clarification request
+MODE DETECTED: knowledge
+TIME: 51.77s
+MODEL: gemini-3-flash-preview
+CITATIONS: 5
+----------------------------------------
+ANSWER PREVIEW:
+Based on the provided asset register overview, the infrastructure portfolio consists of 141,887 assets, primarily dominated by building structural and fabric components [Asset Register Overview]. The overall state of the infrastructure is currently categorized as "Good" to "Excellent," with approxim...
+----------------------------------------
+JUDGMENT: PASS 
+
+================================================================================
+SCENARIO #9: ISO_MAPPING
+QUERY: What are the requirements for an Asset Management Plan?
+EXPECT: Reference to ISO 55002 / AMP elements
+MODE DETECTED: knowledge
+TIME: 67.19s
+MODEL: gemini-3-flash-preview
+CITATIONS: 9
+----------------------------------------
+ANSWER PREVIEW:
+Based on the ISO 55000 series, an Asset Management Plan (AMP) is documented information that specifies the activities, resources, and timescales required for an individual asset, or a grouping of assets, to achieve the organization's asset management objectives [7]. 
+
+The core requirements for an ef...
+----------------------------------------
+JUDGMENT: PASS 
+
+================================================================================
+SCENARIO #10: DATA_INTEGRITY
+QUERY: Show me assets with replacement cost over $1
+EXPECT: List of assets with costs
+MODE DETECTED: knowledge
+TIME: 62.54s
+MODEL: gemini-3-flash-preview
+CITATIONS: 10
+----------------------------------------
+ANSWER PREVIEW:
+Based on the asset register, several assets have documented estimated replacement costs exceeding $1. Tracking these costs is a fundamental requirement of ISO 55002, which states that optimal planning solutions involve forecasting asset lifecycle costs, including acquisition and replacement costs [6...
+----------------------------------------
+JUDGMENT: PASS 
+
+================================================================================
+SCENARIO #11: DATE_RANGE
+QUERY: How many assets are over 20 years old?
+EXPECT: Count of aged assets
+MODE DETECTED: structured
+TIME: 0.05s
+MODEL: SQL (Structured Query)
+CITATIONS: 1
+----------------------------------------
+ANSWER PREVIEW:
+**2,980** assets over 20 years old. [1]...
+----------------------------------------
+JUDGMENT: PASS 
+
+================================================================================
+SCENARIO #12: NEGATION
+QUERY: List assets that are not in Critical condition
+EXPECT: Assets excluding Critical
+MODE DETECTED: knowledge
+TIME: 119.20s
+MODEL: gemini-3-flash-preview
+CITATIONS: 9
+----------------------------------------
+ANSWER PREVIEW:
+Based on the asset register and ISO 55000 principles, assets categorized as R3 (Average), R4 (Good), or R5 (Excellent) are generally considered to be in a non-critical condition from a physical state perspective. These assets provide assurance that they will fulfill their required purpose without im...
+----------------------------------------
+JUDGMENT: WARN  (Mode mismatch: knowledge vs structured)
+
+================================================================================
+SCENARIO #13: MULTI_FILTER
+QUERY: Count High criticality electrical assets in Poor condition
+EXPECT: Combined filters: criticality + category + condition
+MODE DETECTED: structured
+TIME: 0.18s
+MODEL: SQL (Structured Query)
+CITATIONS: 1
+----------------------------------------
+ANSWER PREVIEW:
+**0** criticality electrical in Poor condition (High criticality) location='Poor' assets. [1]...
+----------------------------------------
+JUDGMENT: PASS 
+
+================================================================================
+SCENARIO #14: AGGREGATION
+QUERY: What is the average age of HVAC assets?
+EXPECT: Statistical aggregation
+MODE DETECTED: knowledge
+TIME: 13.53s
+MODEL: Unknown
+CITATIONS: 0
+----------------------------------------
+ANSWER PREVIEW:
+**None**...
+----------------------------------------
+JUDGMENT: FAIL  (Empty answer)
+
+================================================================================
+SCENARIO #15: LOCATION_HIERARCHY
+QUERY: How many assets are in Building A?
+EXPECT: Location-based count
+MODE DETECTED: structured
+TIME: 0.00s
+MODEL: SQL (Structured Query)
+CITATIONS: 1
+----------------------------------------
+ANSWER PREVIEW:
+**11** assets in Building. [1]...
+----------------------------------------
+JUDGMENT: PASS 
+
+================================================================================
+FINAL AUDIT REPORT
+================================================================================
+SCENARIOS: 15
+PASSED:    12
+WARNED:    2
+FAILED:    1
+CRASHED:   0
+
+FINAL SCORE: 86.7/100
+VERDICT: COMPLIANT WITH OBSERVATIONS

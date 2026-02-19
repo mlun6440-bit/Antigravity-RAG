@@ -31,7 +31,7 @@ class EmbeddingManager:
             raise ValueError("GEMINI_API_KEY not found in environment")
 
         genai.configure(api_key=self.api_key)
-        self.embedding_model = 'models/text-embedding-004'
+        self.embedding_model = 'models/gemini-embedding-001'
         print(f"[OK] Initialized embedding model: {self.embedding_model}")
 
     def generate_embedding(self, text: str) -> List[float]:
@@ -48,7 +48,7 @@ class EmbeddingManager:
             result = genai.embed_content(
                 model=self.embedding_model,
                 content=text,
-                task_type="retrieval_document"
+                # task_type="retrieval_document" # Not strictly required for 001 and prevents errors
             )
             return result['embedding']
         except Exception as e:
@@ -69,7 +69,7 @@ class EmbeddingManager:
             result = genai.embed_content(
                 model=self.embedding_model,
                 content=query,
-                task_type="retrieval_query"
+                # task_type="retrieval_query"
             )
             return result['embedding']
         except Exception as e:

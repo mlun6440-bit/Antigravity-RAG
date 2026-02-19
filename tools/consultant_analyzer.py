@@ -190,7 +190,12 @@ Apply ISO 55000 COMPLIANCE frameworks:
    - Priority compliance gaps
    - Improvement recommendations
 
-3. **Best Practice Guidance**
+3. **Data Quality Audit (Clause 7.5)**
+   - Evaluate: Accuracy, Consistency, Completeness, Timeliness
+   - Check against "Information Requirements" (7.5)
+   - Identify "Data Gaps" and "Information Risks"
+
+4. **Best Practice Guidance**
    - Australian Standards integration (AS 1670, 1851, 2118, 2419, 2444)
    - Industry benchmarks
    - Implementation considerations

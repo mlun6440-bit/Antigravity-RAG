@@ -323,6 +323,7 @@ class ISOPDFParser:
 
         for page_data in pages_data:
             page_num = page_data['page_number']
+            print(f"    Processing page {page_num}...", flush=True)
             text = page_data['text']
             lines = text.split('\n')
 
@@ -416,7 +417,8 @@ class ISOPDFParser:
         """
         optimized_chunks = []
 
-        for chunk in chunks:
+        for i, chunk in enumerate(chunks):
+            print(f"    Optimizing chunk {i+1}/{len(chunks)} (Size: {chunk['char_count']} chars)...", flush=True)
             text = chunk['text']
             char_count = chunk['char_count']
 
@@ -428,8 +430,12 @@ class ISOPDFParser:
             # Split large chunk into smaller pieces with overlap
             sub_chunks = []
             start = 0
+            iteration = 0
 
             while start < char_count:
+                iteration += 1
+                if iteration % 100 == 0:
+                    print(f"      Loop iteration {iteration} (start={start}/{char_count})...", flush=True)
                 end = min(start + max_chunk_size, char_count)
                 sub_text = text[start:end]
 
@@ -449,8 +455,17 @@ class ISOPDFParser:
 
                 sub_chunks.append(sub_chunk)
 
+                if end >= char_count:
+                    break
+                
                 # Move start forward, accounting for overlap
-                start = end - overlap
+                new_start = end - overlap
+                
+                # Safety check to prevent infinite loops
+                if new_start <= start:
+                    new_start = start + 50 # Force advance by at least 50 chars
+                    
+                start = new_start
 
             optimized_chunks.extend(sub_chunks)
 

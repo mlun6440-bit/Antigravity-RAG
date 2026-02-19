@@ -1,0 +1,57 @@
+[
+    {
+        "question": "What is the definition of an asset according to ISO 55000?",
+        "expected_keywords": [
+            "item",
+            "thing",
+            "entity",
+            "potential",
+            "value"
+        ],
+        "expected_citation_iso": "3.2.1",
+        "category": "definition"
+    },
+    {
+        "question": "What are the requirements for a Strategic Asset Management Plan (SAMP)?",
+        "expected_keywords": [
+            "documented",
+            "objectives",
+            "strategy",
+            "planning"
+        ],
+        "expected_citation_iso": "4.3",
+        "category": "requirement"
+    },
+    {
+        "question": "How often should management reviews be conducted?",
+        "expected_keywords": [
+            "planned",
+            "intervals",
+            "periodically"
+        ],
+        "expected_citation_iso": "9.3",
+        "category": "process"
+    },
+    {
+        "question": "What constitutes a nonconformity?",
+        "expected_keywords": [
+            "non-fulfillment",
+            "requirement",
+            "failure"
+        ],
+        "expected_citation_iso": "3.4",
+        "category": "definition"
+    },
+    {
+        "question": "Explain the role of leadership in asset management.",
+        "expected_keywords": [
+            "top management",
+            "policy",
+            "resources",
+            "responsibility",
+            "authority"
+        ],
+        "expected_citation_iso": "5.1",
+        "category": "concept"
+    }
+]

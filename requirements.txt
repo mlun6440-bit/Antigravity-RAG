@@ -27,6 +27,10 @@ Flask-Limiter==3.5.0
 tqdm==4.66.1
 colorama==0.4.6
 
+# Knowledge Graph (Third Brain)
+networkx>=3.0
+
 # Machine Learning & Embeddings
 scikit-learn==1.3.2
 numpy==1.26.2
+tabulate

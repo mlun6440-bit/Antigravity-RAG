@@ -84,6 +84,7 @@ $RECYCLE.BIN/
 # Test files (keep test_citations.html but exclude test results)
 test_results/
 *.test.json
+verify_*.txt
 
 # Backup files
 *.bak
